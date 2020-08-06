@@ -1,0 +1,25 @@
+{
+  "name": "trailr",
+  "version": "1.0.0",
+  "description": "Giving users a social-media-style community to share their experiences while engaging in an outdoor (and socially distant) activity",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build-react": "parcel client/index.html -d client/dist"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JamesFThomas/trailr.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/JamesFThomas/trailr/issues"
+  },
+  "homepage": "https://github.com/JamesFThomas/trailr#readme",
+  "dependencies": {
+    "parcel-bundler": "^1.12.4",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1"
+  }
+}
