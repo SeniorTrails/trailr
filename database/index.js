@@ -13,8 +13,11 @@ const getUser = () => new Promise((resolve, reject) => {
   resolve(console.log('GET USER INVOKED'));
 });
 
-const getTrail = () => new Promise((resolve, reject) => {
-  resolve(console.log('GET TRAIL INVOKED'));
+const getTrail = (id_trail) => new Promise((resolve, reject) => {
+  console.log('GET TRAIL INVOKED')
+  // resolve(console.log('GET TRAIL INVOKED'));
+  const getTrailCommand = `SELECT * FROM trails WHERE id = ?;`
+  connection.query(getTrailCommand, [id_trail],)
 });
 
 const addTrail = () => new Promise((resolve, reject) => {
