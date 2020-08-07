@@ -9,13 +9,9 @@ import {
 
 import * as trailData from '../data/trail-data.json';
 
-let userLocation = { lat: 30.33735, lng: -90.03733 };
-navigator.geolocation.getCurrentPosition((position) => {
-  const { latitude, longitude } = position.coords;
-  userLocation = { lat: latitude, lng: longitude };
-});
 function Map() {
   const [selectedTrail, setSelectedTrail] = useState(null);
+  const [userLocation, setUserLocation] = useState({ lat: 30.33735, lng: -90.03733 })
 
   useEffect(() => {
     const listener = (e) => {
@@ -24,14 +20,17 @@ function Map() {
       }
     };
     window.addEventListener('keydown', listener);
-
+    navigator.geolocation.getCurrentPosition((position) => {
+      const { latitude, longitude } = position.coords;
+      setUserLocation({ lat: latitude, lng: longitude });
+    });
     return () => {
       window.removeEventListener('keydown', listener);
     };
   }, []);
 
   return (
-    <GoogleMap defaultZoom={12} defaultCenter={userLocation}>
+    <GoogleMap defaultZoom={12} defaultCenter={userLocation} center={userLocation}>
       {trailData.data.map((trail) => (
         <Marker
           key={trail.id}
