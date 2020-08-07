@@ -17,7 +17,17 @@ const getTrail = (id_trail) => new Promise((resolve, reject) => {
   console.log('GET TRAIL INVOKED')
   // resolve(console.log('GET TRAIL INVOKED'));
   const getTrailCommand = `SELECT * FROM trails WHERE id = ?;`
-  connection.query(getTrailCommand, [id_trail],)
+  connection.query(getTrailCommand, [id_trail], (error, rows) => {
+    if (error) {
+      console.error(error);
+      return reject(error);
+    }
+    console.log('GOT TRAIL: ', rows)
+    const trail = {
+      name: 'TRAIL NAME GOES HERE'
+    };
+    resolve(trail);
+  });
 });
 
 const addTrail = () => new Promise((resolve, reject) => {
