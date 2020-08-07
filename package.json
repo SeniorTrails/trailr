@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build-react": "parcel client/index.html -d client/dist"
+    "build-react": "parcel client/index.html -d client/dist",
+    "start:dev": "nodemon server/index.js"
   },
   "repository": {
     "type": "git",
@@ -18,6 +19,9 @@
   },
   "homepage": "https://github.com/JamesFThomas/trailr#readme",
   "dependencies": {
+    "express": "^4.17.1",
+    "nodemon": "^2.0.4",
+    "parcel-bundler": "^1.12.4",
     "eslint-plugin-jsx-a11y": "^6.3.1",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
