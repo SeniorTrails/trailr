@@ -10,26 +10,31 @@ import {
 
 import * as trailData from './data/trail-data.json';
 
+let userLocation = { lat: 30.33735, lng: -90.03733 };
+navigator.geolocation.getCurrentPosition((position) => {
+  const { latitude, longitude } = position.coords;
+  userLocation = { lat: latitude, lng: longitude };
+});
 function Map() {
   const [selectedTrail, setSelectedTrail] = useState(null);
 
   useEffect(() => {
-    const listener = e => {
-      if (e.key === "Escape") {
+    const listener = (e) => {
+      if (e.key === 'Escape') {
         setSelectedTrail(null);
       }
     };
-    window.addEventListener("keydown", listener);
+    window.addEventListener('keydown', listener);
 
     return () => {
-      window.removeEventListener("keydown", listener);
+      window.removeEventListener('keydown', listener);
     };
   }, []);
 
   return (
     <GoogleMap
       defaultZoom={12}
-      defaultCenter={{ lat: 30.33735, lng: -90.03733 }}
+      defaultCenter={userLocation}
     >
       {trailData.data.map((trail) => (
         <Marker
