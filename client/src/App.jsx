@@ -13,8 +13,24 @@ import * as trailData from './data/trail-data.json';
 function Map() {
   const [selectedTrail, setSelectedTrail] = useState(null);
 
+  useEffect(() => {
+    const listener = e => {
+      if (e.key === "Escape") {
+        setSelectedTrail(null);
+      }
+    };
+    window.addEventListener("keydown", listener);
+
+    return () => {
+      window.removeEventListener("keydown", listener);
+    };
+  }, []);
+
   return (
-    <GoogleMap defaultZoom={12} defaultCenter={{ lat: 30.33735, lng: -90.03733 }}>
+    <GoogleMap
+      defaultZoom={12}
+      defaultCenter={{ lat: 30.33735, lng: -90.03733 }}
+    >
       {trailData.data.map((trail) => (
         <Marker
           key={trail.id}
@@ -34,12 +50,12 @@ function Map() {
             setSelectedTrail(null);
           }}
           position={{
-            lat: selectedTrail.lat,
-            lng: selectedTrail.lon,
+            lat: +selectedTrail.lat,
+            lng: +selectedTrail.lon,
           }}
         >
           <div>
-            <h3>{selectedTrail.name}</h3>
+            <h2>{selectedTrail.name}</h2>
             <p>{selectedTrail.description}</p>
           </div>
         </InfoWindow>
