@@ -30,7 +30,7 @@ function Map() {
   }, []);
 
   return (
-    <GoogleMap defaultZoom={12} defaultCenter={userLocation}>
+    <GoogleMap defaultZoom={12} defaultCenter={userLocation} center={userLocation}>
       {trailData.data.map((trail) => (
         <Marker
           key={trail.id}

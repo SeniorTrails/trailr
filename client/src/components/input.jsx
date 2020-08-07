@@ -7,14 +7,15 @@ import React from 'react';
  */
 const input = ({ value, changeHandler, name, label }) => {
   value = value || '';
-  
+
   return (
     <div>
-      <label>{label}
+      <label>
+        {label}
         <input name={name} type="text" value={value} onChange={changeHandler} />
       </label>
     </div>
-    );
-}
+  );
+};
 
 export default input;
