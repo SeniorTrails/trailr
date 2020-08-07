@@ -22,7 +22,18 @@
     "express": "^4.17.1",
     "nodemon": "^2.0.4",
     "parcel-bundler": "^1.12.4",
+    "eslint-plugin-jsx-a11y": "^6.3.1",
     "react": "^16.13.1",
-    "react-dom": "^16.13.1"
+    "react-dom": "^16.13.1",
+    "react-google-maps": "^9.4.5",
+    "react-scripts": "^3.4.1"
+  },
+  "devDependencies": {
+    "parcel-bundler": "^1.12.4",
+    "babel-eslint": "^10.1.0",
+    "eslint": "^7.6.0",
+    "eslint-config-airbnb": "^18.2.0",
+    "eslint-plugin-import": "^2.22.0",
+    "eslint-plugin-react": "^7.20.5"
   }
 }
