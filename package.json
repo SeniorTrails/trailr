@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/JamesFThomas/trailr#readme",
   "dependencies": {
+    "body-parser": "^1.19.0",
     "eslint-plugin-jsx-a11y": "^6.3.1",
     "express": "^4.17.1",
     "mariadb": "^2.4.2",
