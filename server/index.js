@@ -25,11 +25,10 @@ app.listen(PORT, () => {
 });
 
 // direct express to certain middleware for requests on certain paths
-app.use('/', router);
+app.use('/', express.static(__dirname + '/../client/dist'));
 
 app.use('/api/trails', router);
 
 app.use('/trails/:id', router);
 
 app.use('/users/:id', router);
-
