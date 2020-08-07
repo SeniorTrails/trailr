@@ -1,3 +1,6 @@
+#compiled code
+client/dist
+
 # Logs
 logs
 *.log
