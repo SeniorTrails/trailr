@@ -11,20 +11,60 @@ const connection = mysql.createConnection(mysqlConfig);
 
 const getUser = (id_google) => new Promise((resolve, reject) => {
   console.log('GET USER INVOKED')
-  const getUserCommand =
-    `SELECT *
-  FROM users
-  WHERE id_google = ?;`
 
-  // const getUserCommand = `SELECT * FROM users WHERE id_google = ?;`
-  connection.query(getUserCommand, [id_google], (error, rows) => {
+
+  // const getUserCommand =
+  //   `SELECT
+  //     *
+  //   FROM
+  //     users
+  //   LEFT JOIN
+  //     photos
+  //   ON
+  //     photos.id_user = (SELECT id FROM users WHERE id_google = ?);`
+
+  const getUserCommand = `SELECT * FROM users WHERE id_google = ?;`
+  const getPhotosCommand = `SELECT * FROM photos WHERE id_user = ?`
+
+  connection.beginTransaction((error) => {
     if (error) {
-      console.error(error);
-      return reject(error);
+      connection.rollback(() => {
+        connection.release();
+        return reject(error);
+      });
     }
-    console.log('ROWS FROM USER QUERY: ', rows);
-    resolve(rows);
+    connection.query(getUserCommand, [id_google], (error, rows) => {
+      if (error) {
+        connection.rollback(() => {
+          connection.release();
+          return reject(error);
+        })
+      }
+      const user = rows[0];
+      const { id } = user;
+      console.log('USER OBJECT: ', user)
+      connection.query(getPhotosCommand, [id], (error, rows) => {
+        if (error) {
+          connection.rollback(() => {
+            connection.release();
+            return reject(error);
+          })
+        }
+        user.photos = rows;
+        connection.commit((error) => {
+          if (error) {
+            connection.rollback(() => {
+              connection.release();
+              return reject(error);
+            });
+          }
+          resolve(user);
+        });
+      });
+      // resolve(rows);
+    });
   });
+
 });
 
 const getTrail = (id_trail) => new Promise((resolve, reject) => {
@@ -35,7 +75,7 @@ const getTrail = (id_trail) => new Promise((resolve, reject) => {
       console.error(error);
       return reject(error);
     }
-    console.log('ROWS FROM TRAIL QUERY: ', rows);
+    // console.log('ROWS FROM TRAIL QUERY: ', rows);
     resolve(rows);
   });
 });
