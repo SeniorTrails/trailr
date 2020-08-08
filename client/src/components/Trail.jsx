@@ -23,14 +23,17 @@ const photos = [
     url: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/Natchez_Trace_Trail.jpg/1280px-Natchez_Trace_Trail.jpg",
     comments: [
       {
+        id: 1,
         text: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Possimus laborum voluptatem nihil ipsam placeat itaque magnam.",
         username: "Daniel Troyano"
       },
       {
+        id: 2,
         text: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Possimus laborum voluptatem nihil ipsam placeat itaque magnam.",
         username: "Daniel Troyano"
       },
       {
+        id: 3,
         text: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Possimus laborum voluptatem nihil ipsam placeat itaque magnam.",
         username: "Daniel Troyano"
       },
