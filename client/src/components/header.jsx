@@ -24,7 +24,7 @@ const header = () => (
         <Link to="/signout" className="nav-item nav-link">Signout</Link>
       </div>
     </div>
-    <SearchBox />
+    {/* <SearchBox /> */}
   </nav>
 );
 
