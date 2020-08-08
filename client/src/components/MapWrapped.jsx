@@ -1,8 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import * as trailData from '../data/trail-data.json';
 
-// const { FaAnchor } = require('react-icons/');
-const { FaAnchor } = require('react-icons/fa');
+trailData.data.forEach((trail) => {
+  if (trail.isOpen === undefined) {
+    trail.isOpen = 'false';
+  }
+});
+
+// const { FaAnchor } = require('react-icons/fa');
 const _ = require('lodash');
 const {
   compose,
@@ -20,7 +25,6 @@ const {
 const {
   SearchBox,
 } = require('react-google-maps/lib/components/places/SearchBox');
-// const { MarkerWithLabel } = require('react-google-maps/lib/components/addons/MarkerWithLabel');
 
 const MapWithASearchBox = compose(
   withStateHandlers(
@@ -31,7 +35,7 @@ const MapWithASearchBox = compose(
       onToggleOpen: ({ isOpen }) => () => ({
         isOpen: !isOpen,
       }),
-    }
+    },
   ),
   withProps({
     googleMapURL: `https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=geometry,drawing,places&key=${process.env.GOOGLE_MAPS_API_KEY}`,
@@ -100,7 +104,7 @@ const MapWithASearchBox = compose(
 )((props) => (
   <GoogleMap
     ref={props.onMapMounted}
-    defaultZoom={12}
+    defaultZoom={10}
     center={props.center}
     onBoundsChanged={props.onBoundsChanged}
   >
@@ -117,12 +121,12 @@ const MapWithASearchBox = compose(
           boxSizing: 'border-box',
           border: '1px solid transparent',
           width: '240px',
-          height: '32px',
-          marginTop: '27px',
+          height: '40px',
+          marginTop: '10px',
           padding: '0 12px',
           borderRadius: '3px',
           boxShadow: '0 2px 6px rgba(0, 0, 0, 0.3)',
-          fontSize: '14px',
+          fontSize: '15px',
           outline: 'none',
           textOverflow: 'ellipses',
         }}
