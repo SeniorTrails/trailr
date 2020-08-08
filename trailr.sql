@@ -37,8 +37,8 @@ CREATE TABLE photos (
   id_trail int,
   id_user int,
   PRIMARY KEY (id),
-  FOREIGN KEY (id_trail) REFERENCES trails(id),
-  FOREIGN KEY (id_user) REFERENCES users(id)
+  FOREIGN KEY (id_user) REFERENCES users(id),
+  FOREIGN KEY (id_trail) REFERENCES trails(id)
 );
 
 CREATE TABLE rating_difficulty (
@@ -79,6 +79,12 @@ CREATE TABLE favorites (
   PRIMARY KEY (id)
 );
 
+INSERT into users (id_google, name, photo_url) VALUES ("100320448870922542711", "Daniel", "https://lh3.googleusercontent.com/a-/AOh14GgCnlLMDczQTYGKy6XfF5EeNsrbDXh4y8j3hLdNvw");
+INSERT into users (id_google, name, photo_url) VALUES ("100876014081435780413", "Grant", "https://i.pinimg.com/originals/5c/66/c6/5c66c624f16feab720c601f832b2235e.jpg");
+INSERT into users (id_google, name, photo_url) VALUES ("100235682659824703476", "James", "https://avatars1.githubusercontent.com/u/57680469?s=400&u=58ab864ffb55ce45866c75fb05e1f6a8e8c6dfb1&v=4");
+INSERT into users (id_google, name, photo_url) VALUES ("100173654872631765438", "Peter", "https://avatars3.githubusercontent.com/u/60944077?s=400&u=d25afe3d4ebcac749237f03a766dc567c4c9d6f0&v=4");
+-- INSERT into users (id_google, name, photo_url) VALUES ("", "", "");
+
 INSERT into trails (id, name, url, description, city, region, country, latitude, longitude, thumbnail) VALUES ("276986", "City Park Trail", "https://www.singletracks.com/bike-trails/city-park-trail/", "A short off road trail in what once was the south golf course in City Park.", "New Orleans", "Louisiana", "United States", "29.99931", "90.08722", "https://images.singletracks.com/blog/wp-content/uploads/2016/12/IMG_20161117_111618485-orig.jpg");
 INSERT into trails (id, name, url, description, city, region, country, latitude, longitude, thumbnail) VALUES ("375191", "Parc des Familles Trail by NOMAMBO", "https://www.singletracks.com/bike-trails/parc-des-familles-trail-by-nomambo/", "&nbsp;The Estelle Trail is newly cut XC trial located in the old growth swamp of the &nbsp;Parc&nbsp;<em>des Famille</em>&nbsp;property owned by Jefferson Parish. The trail is young and growing, offering beautiful views of untouched cypress swamps on long family-friendly single and doubletrack trails. The trail suits all variety of mountain bikers and hikers of any experience level, from beginners looking for a scenic ride through the woods, to seasoned bikers looking for an aerobic and technical challenge to beat standing best times.\n\nType of Ride:\nThis is a tight and twisty singletrack over dirt that opens to long runs along groomed canals. &nbsp;\n\nLength:\nOne complete loop is approximately 3 miles, with new trail sections being added all the time.\n\nAmenities:\n\nJefferson Parish has created a multifaceted complex. The park includes a sport quadplex comprised of four baseball fields with one field converting into a soccer/football field along with an 18-hole Disc Golf Course. There are batting cages, concessions and press box. The facility includes a boardwalk, nature trails, a pavilion, restrooms and picnic area. &nbsp;\n\nContacts\n\nLocal Club:&nbsp;<a href=\"https://www.mtbproject.com/club/7000169/new-orleans-metro-area-mountain-bike-association\" rel=\"\">New Orleans Metro Area Mountain Bike Association</a>", "Marrero", "Louisiana", "United States", "29.80264", "-90.09063", "https://images.singletracks.com/blog/wp-content/uploads/2020/05/Slide1-375x250.png");
 INSERT into trails (id, name, url, description, city, region, country, latitude, longitude, thumbnail) VALUES ("287665", "The Tammany Trace", "https://www.singletracks.com/bike-trails/the-tammany-trace/", "This 31-mile asphalted trail and parallel equestrian trail connects five communities--Covington, Abita Springs, Mandeville, Lacombe, and Slidell.\r\nThe Trace also serves as a wildlife conservation corridor, linking isolated parks, creating greenways, and preserving historic landmarks and wetlands. You can observe the natural habitat, bayous, streams and rivers from the vantage point of 31 bridges built on the original railroad trestles.\r\nThis is a truly beautiful trail.\r\n\r\n\r\n", "Mandeville", "Louisiana", "United States", "30.30120", "-89.82637", "https://images.singletracks.com/blog/wp-content/uploads/2018/08/IMG_2498-orig-scaled.jpg");
@@ -87,5 +93,23 @@ INSERT into trails (id, name, url, description, city, region, country, latitude,
 INSERT into trails (id, name, url, description, city, region, country, latitude, longitude, thumbnail) VALUES ("279988", "Eagle Trail", "https://www.singletracks.com/bike-trails/eagle-trail-8663/", "Nice easy trail.  Smaller in width than South or North Loop. South side of trail borders the Beaver Pond.", "Mandeville", "Louisiana", "United States", "30.35324", "-90.02715", "https://images.singletracks.com/blog/wp-content/uploads/2014/06/et3-orig.jpg");
 -- INSERT into trails (id, name, url, description, city, region, country, latitude, longitude, thumbnail) VALUES ("", "", "", "", "", "", "", "", "", "");
 
+INSERT into photos (url, description, latitude, longitude, id_user, id_trail) VALUES ("https://external-preview.redd.it/MyHXS2zOV9DKDHQ62XGTpECpeeeMCEsV3DLwA6YFlEc.png?format=pjpg&auto=webp&s=190f13f9138872e4314183098ee170b1a0426815", "Sacrificial altar for humans who don't wear masks during pandemics", "30.0044257", "-90.0939056", "2", "276986");
+INSERT into photos (url, description, latitude, longitude, id_user, id_trail) VALUES ("https://www.conteches.com/Portals/0/Images/CaseStudies/CityPark_Main.JPG", "Bridge leading into Couterie Forest", "30.0036709", "-90.09498", "4", "276986");
+INSERT into photos (url, description, latitude, longitude, id_user, id_trail) VALUES ("https://countryroadsmagazine.com/downloads/3368/download/Tammany-trace-biking.jpg?cb=37106a08236d4173b34d309804c9b56c&w=640", "Why did the sql--squirrel, rather--cross the trail?", "30.4789468", "-90.039199", "4", "287665");
+INSERT into photos (url, description, latitude, longitude, id_user, id_trail) VALUES ("https://bridgehunter.com/photos/23/82/238295-M.jpg", "Bayou Lacombe Bridge", "30.3051928", "-89.9255997", "3", "287665");
+INSERT into photos (url, description, latitude, longitude, id_user, id_trail) VALUES ("https://3.bp.blogspot.com/_8pLXF3eWByQ/S6wROMdIofI/AAAAAAAAAlk/vXKlFvFWJ4k/s1600/LASlidell2_002TammanyTraceTrail_BayouLaCombeBridge_TraceRangers.jpg", "Bayou Lacome Bridge", "30.3052827", "-89.925844", "3", "287665");
+-- INSERT into photos (url, description, latitude, longitude, id_user, id_trail) VALUES ("", "", "", "", "", "");
+
+INSERT into comments (text, id_user, id_photo) VALUES ("To get to the Abita Springs Trailhead Museum", "4", "3");
+INSERT into comments (text, id_user, id_photo) VALUES ("Like a bridge over tainted water", "3", "2");
+INSERT into comments (text, id_user, id_photo) VALUES ("IN!", "1", "1");
+INSERT into comments (text, id_user, id_photo) VALUES ("I'll bring the incense", "4", "1");
+INSERT into comments (text, id_user, id_photo) VALUES ("BYOS: Bring Your Own Sacrifice", "2", "1");
+INSERT into comments (text, id_user, id_photo) VALUES ("Maybe we should add a way to report comments/photos", "3", "1");
+INSERT into comments (text, id_user, id_photo) VALUES ("Looks like good fishing", "1", "5");
+INSERT into comments (text, id_user, id_photo) VALUES ("So if they open a drawbridge, is the bridge open, or is the bridge closed?", "2", "5");
+-- INSERT into comments (text, id_user, id_photo) VALUES ("", "", "");
+
 
 -- mysql -u <USER> < trailr.sql
+-- mysql -u root < trailr.sql

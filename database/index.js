@@ -9,8 +9,22 @@ const mysqlConfig = {
 
 const connection = mysql.createConnection(mysqlConfig);
 
-const getUser = () => new Promise((resolve, reject) => {
-  resolve(console.log('GET USER INVOKED'));
+const getUser = (id_google) => new Promise((resolve, reject) => {
+  console.log('GET USER INVOKED')
+  const getUserCommand =
+    `SELECT *
+  FROM users
+  WHERE id_google = ?;`
+
+  // const getUserCommand = `SELECT * FROM users WHERE id_google = ?;`
+  connection.query(getUserCommand, [id_google], (error, rows) => {
+    if (error) {
+      console.error(error);
+      return reject(error);
+    }
+    console.log('ROWS FROM USER QUERY: ', rows);
+    resolve(rows);
+  });
 });
 
 const getTrail = (id_trail) => new Promise((resolve, reject) => {
@@ -21,6 +35,7 @@ const getTrail = (id_trail) => new Promise((resolve, reject) => {
       console.error(error);
       return reject(error);
     }
+    console.log('ROWS FROM TRAIL QUERY: ', rows);
     resolve(rows);
   });
 });
@@ -47,3 +62,4 @@ module.exports = {
 };
 
 // mysql.server start
+// mysql -uroot < server/index.js
