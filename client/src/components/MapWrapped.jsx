@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import * as trailData from '../data/trail-data.json';
 
-// const { FaAnchor } = require('react-icons/');
-const { FaAnchor } = require('react-icons/fa');
 const _ = require('lodash');
 const {
   compose,
   withProps,
   lifecycle,
+  withHandlers,
+  withState,
   withStateHandlers,
 } = require('recompose');
 const {
@@ -20,19 +20,10 @@ const {
 const {
   SearchBox,
 } = require('react-google-maps/lib/components/places/SearchBox');
-// const { MarkerWithLabel } = require('react-google-maps/lib/components/addons/MarkerWithLabel');
 
 const MapWithASearchBox = compose(
-  withStateHandlers(
-    () => ({
-      isOpen: false,
-    }),
-    {
-      onToggleOpen: ({ isOpen }) => () => ({
-        isOpen: !isOpen,
-      }),
-    }
-  ),
+  withState('places', 'updatePlaces', ''),
+  withState('selectedPlace', 'updateSelectedPlace', null),
   withProps({
     googleMapURL: `https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=geometry,drawing,places&key=${process.env.GOOGLE_MAPS_API_KEY}`,
     loadingElement: <div style={{ height: '100%' }} />,
@@ -54,7 +45,7 @@ const MapWithASearchBox = compose(
         bounds: null,
         selectedTrail: null,
         center: { lat: 30.33735, lng: -90.03733 },
-        markers: [],
+        markers: trailData.data,
         onMapMounted: (ref) => {
           refs.map = ref;
         },
@@ -95,12 +86,19 @@ const MapWithASearchBox = compose(
       });
     },
   }),
+  withHandlers(() => {
+    return {
+      onToggleOpen: ({ updateSelectedPlace }) => (key) => {
+        updateSelectedPlace(key);
+      },
+    };
+  }),
   withScriptjs,
   withGoogleMap
 )((props) => (
   <GoogleMap
     ref={props.onMapMounted}
-    defaultZoom={12}
+    defaultZoom={10}
     center={props.center}
     onBoundsChanged={props.onBoundsChanged}
   >
@@ -117,116 +115,39 @@ const MapWithASearchBox = compose(
           boxSizing: 'border-box',
           border: '1px solid transparent',
           width: '240px',
-          height: '32px',
-          marginTop: '27px',
+          height: '40px',
+          marginTop: '10px',
           padding: '0 12px',
           borderRadius: '3px',
           boxShadow: '0 2px 6px rgba(0, 0, 0, 0.3)',
-          fontSize: '14px',
+          fontSize: '15px',
           outline: 'none',
           textOverflow: 'ellipses',
         }}
       />
     </SearchBox>
-    {trailData.data.map((trail) => (
-      <Marker
-        key={trail.id}
-        position={{
-          lat: +trail.lat,
-          lng: +trail.lon,
-        }}
-        onClick={props.onToggleOpen}
-      >
-        {props.isOpen && (
-          <InfoWindow
-            onCloseClick={props.onToggleOpen}
-            position={{
-              lat: +trail.lat,
-              lng: +trail.lon,
-            }}
-          >
-            <div>
-              <h2>{trail.name}</h2>
-              <p>{trail.description}</p>
-            </div>
-          </InfoWindow>
-        )}
-      </Marker>
-    ))}
+    {props.markers &&
+      props.markers.map((trail, i) => (
+        <Marker
+          onClick={() => props.onToggleOpen(i)}
+          key={trail.id}
+          position={{
+            lat: +trail.lat,
+            lng: +trail.lon,
+          }}
+        >
+          {props.selectedPlace === i && (
+            <InfoWindow onCloseClick={props.onToggleOpen}>
+              <div>
+                <h6>{trail.name}</h6>
+                <p>{trail.length} miles</p>
+                <p>{trail.description}</p>
+              </div>
+            </InfoWindow>
+          )}
+        </Marker>
+      ))}
   </GoogleMap>
 ));
 
 export default MapWithASearchBox;
-
-// const MapWrapped = withScriptjs(withGoogleMap(MapWithASearchBox));
-// export default MapWrapped;
-
-// import React, { useState, useEffect } from 'react';
-// import {
-//   GoogleMap,
-//   withGoogleMap,
-//   withScriptjs,
-//   Marker,
-//   InfoWindow,
-// } from 'react-google-maps';
-
-// import * as trailData from '../data/trail-data.json';
-
-// function Map() {
-//   const [selectedTrail, setSelectedTrail] = useState(null);
-//   const [userLocation, setUserLocation] = useState({ lat: 30.33735, lng: -90.03733 })
-
-//   useEffect(() => {
-//     const listener = (e) => {
-//       if (e.key === 'Escape') {
-//         setSelectedTrail(null);
-//       }
-//     };
-//     window.addEventListener('keydown', listener);
-//     navigator.geolocation.getCurrentPosition((position) => {
-//       const { latitude, longitude } = position.coords;
-//       setUserLocation({ lat: latitude, lng: longitude });
-//     });
-//     return () => {
-//       window.removeEventListener('keydown', listener);
-//     };
-//   }, []);
-
-//   return (
-//     <GoogleMap defaultZoom={12} defaultCenter={userLocation} center={userLocation}>
-//       {trailData.data.map((trail) => (
-//         <Marker
-//           key={trail.id}
-//           position={{
-//             lat: +trail.lat,
-//             lng: +trail.lon,
-//           }}
-//           onClick={() => {
-//             setSelectedTrail(trail);
-//           }}
-//         />
-//       ))}
-
-//       {selectedTrail && (
-//         <InfoWindow
-//           onCloseClick={() => {
-//             setSelectedTrail(null);
-//           }}
-//           position={{
-//             lat: +selectedTrail.lat,
-//             lng: +selectedTrail.lon,
-//           }}
-//         >
-//           <div>
-//             <h2>{selectedTrail.name}</h2>
-//             <p>{selectedTrail.description}</p>
-//           </div>
-//         </InfoWindow>
-//       )}
-//     </GoogleMap>
-//   );
-// }
-
-// const MapWrapped = withScriptjs(withGoogleMap(Map));
-
-// export default MapWrapped;
