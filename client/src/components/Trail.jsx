@@ -56,6 +56,54 @@ const photos = [
       },
     ],
   },
+  {
+    id: 5,
+    url: "https://vbwsjdqd1l-flywheel.netdna-ssl.com/wp-content/uploads/2014/04/Santos-Trails-1.jpg",
+    comments: [
+      {
+        id: 4,
+        text: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Possimus laborum voluptatem nihil ipsam placeat itaque magnam.",
+        username: "Caylie Sadin"
+      },
+      {
+        id: 5,
+        text: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Possimus laborum voluptatem nihil ipsam placeat itaque magnam.",
+        username: "Daniel Troyano"
+      },
+    ],
+  },
+  {
+    id: 3,
+    url: "https://www.pittsburghmagazine.com/content/uploads/2020/03/cb-cook-forest-trail1.jpg",
+    comments: [
+      {
+        id: 4,
+        text: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Possimus laborum voluptatem nihil ipsam placeat itaque magnam.",
+        username: "Caylie Sadin"
+      },
+      {
+        id: 5,
+        text: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Possimus laborum voluptatem nihil ipsam placeat itaque magnam.",
+        username: "Daniel Troyano"
+      },
+    ],
+  },
+  {
+    id: 4,
+    url: "https://www.cliftonpark.com/images/100acretrail.jpg",
+    comments: [
+      {
+        id: 4,
+        text: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Possimus laborum voluptatem nihil ipsam placeat itaque magnam.",
+        username: "Caylie Sadin"
+      },
+      {
+        id: 5,
+        text: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Possimus laborum voluptatem nihil ipsam placeat itaque magnam.",
+        username: "Daniel Troyano"
+      },
+    ],
+  },
 ];
 
 const trail = () => {
