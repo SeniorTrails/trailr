@@ -8,7 +8,7 @@ CREATE TABLE users (
   id int AUTO_INCREMENT,
   id_google varchar(255),
   name varchar(255),
-  photo_url varchar(255),
+  profile_photo_url varchar(255),
   PRIMARY KEY (id)
 );
 
@@ -43,7 +43,7 @@ CREATE TABLE photos (
 
 CREATE TABLE rating_difficulty (
   id int AUTO_INCREMENT,
-  value float(2, 1),
+  value int,
   id_user int,
   id_trail int,
   PRIMARY KEY (id),
@@ -53,7 +53,7 @@ CREATE TABLE rating_difficulty (
 
 CREATE TABLE rating_likeability (
   id int AUTO_INCREMENT,
-  value float(2, 1),
+  value int,
   id_user int,
   id_trail int,
   PRIMARY KEY (id),
@@ -79,10 +79,10 @@ CREATE TABLE favorites (
   PRIMARY KEY (id)
 );
 
-INSERT into users (id_google, name, photo_url) VALUES ("100320448870922542711", "Daniel", "https://lh3.googleusercontent.com/a-/AOh14GgCnlLMDczQTYGKy6XfF5EeNsrbDXh4y8j3hLdNvw");
-INSERT into users (id_google, name, photo_url) VALUES ("100876014081435780413", "Grant", "https://i.pinimg.com/originals/5c/66/c6/5c66c624f16feab720c601f832b2235e.jpg");
-INSERT into users (id_google, name, photo_url) VALUES ("100235682659824703476", "James", "https://avatars1.githubusercontent.com/u/57680469?s=400&u=58ab864ffb55ce45866c75fb05e1f6a8e8c6dfb1&v=4");
-INSERT into users (id_google, name, photo_url) VALUES ("100173654872631765438", "Peter", "https://avatars3.githubusercontent.com/u/60944077?s=400&u=d25afe3d4ebcac749237f03a766dc567c4c9d6f0&v=4");
+INSERT into users (id_google, name, profile_photo_url) VALUES ("100320448870922542711", "Daniel", "https://lh3.googleusercontent.com/a-/AOh14GgCnlLMDczQTYGKy6XfF5EeNsrbDXh4y8j3hLdNvw");
+INSERT into users (id_google, name, profile_photo_url) VALUES ("100876014081435780413", "Grant", "https://i.pinimg.com/originals/5c/66/c6/5c66c624f16feab720c601f832b2235e.jpg");
+INSERT into users (id_google, name, profile_photo_url) VALUES ("100235682659824703476", "James", "https://avatars1.githubusercontent.com/u/57680469?s=400&u=58ab864ffb55ce45866c75fb05e1f6a8e8c6dfb1&v=4");
+INSERT into users (id_google, name, profile_photo_url) VALUES ("100173654872631765438", "Peter", "https://avatars3.githubusercontent.com/u/60944077?s=400&u=d25afe3d4ebcac749237f03a766dc567c4c9d6f0&v=4");
 -- INSERT into users (id_google, name, photo_url) VALUES ("", "", "");
 
 INSERT into trails (id, name, url, description, city, region, country, latitude, longitude, thumbnail) VALUES ("276986", "City Park Trail", "https://www.singletracks.com/bike-trails/city-park-trail/", "A short off road trail in what once was the south golf course in City Park.", "New Orleans", "Louisiana", "United States", "29.99931", "90.08722", "https://images.singletracks.com/blog/wp-content/uploads/2016/12/IMG_20161117_111618485-orig.jpg");
@@ -97,7 +97,7 @@ INSERT into photos (url, description, latitude, longitude, id_user, id_trail) VA
 INSERT into photos (url, description, latitude, longitude, id_user, id_trail) VALUES ("https://www.conteches.com/Portals/0/Images/CaseStudies/CityPark_Main.JPG", "Bridge leading into Couterie Forest", "30.0036709", "-90.09498", "4", "276986");
 INSERT into photos (url, description, latitude, longitude, id_user, id_trail) VALUES ("https://countryroadsmagazine.com/downloads/3368/download/Tammany-trace-biking.jpg?cb=37106a08236d4173b34d309804c9b56c&w=640", "Why did the sql--squirrel, rather--cross the trail?", "30.4789468", "-90.039199", "4", "287665");
 INSERT into photos (url, description, latitude, longitude, id_user, id_trail) VALUES ("https://bridgehunter.com/photos/23/82/238295-M.jpg", "Bayou Lacombe Bridge", "30.3051928", "-89.9255997", "3", "287665");
-INSERT into photos (url, description, latitude, longitude, id_user, id_trail) VALUES ("https://3.bp.blogspot.com/_8pLXF3eWByQ/S6wROMdIofI/AAAAAAAAAlk/vXKlFvFWJ4k/s1600/LASlidell2_002TammanyTraceTrail_BayouLaCombeBridge_TraceRangers.jpg", "Bayou Lacome Bridge", "30.3052827", "-89.925844", "3", "287665");
+INSERT into photos (url, description, latitude, longitude, id_user, id_trail) VALUES ("https://3.bp.blogspot.com/_8pLXF3eWByQ/S6wROMdIofI/AAAAAAAAAlk/vXKlFvFWJ4k/s1600/LASlidell2_002TammanyTraceTrail_BayouLaCombeBridge_TraceRangers.jpg", "Lacombie Homies", "30.3052827", "-89.925844", "3", "287665");
 -- INSERT into photos (url, description, latitude, longitude, id_user, id_trail) VALUES ("", "", "", "", "", "");
 
 INSERT into comments (text, id_user, id_photo) VALUES ("To get to the Abita Springs Trailhead Museum", "4", "3");
@@ -109,6 +109,30 @@ INSERT into comments (text, id_user, id_photo) VALUES ("Maybe we should add a wa
 INSERT into comments (text, id_user, id_photo) VALUES ("Looks like good fishing", "1", "5");
 INSERT into comments (text, id_user, id_photo) VALUES ("So if they open a drawbridge, is the bridge open, or is the bridge closed?", "2", "5");
 -- INSERT into comments (text, id_user, id_photo) VALUES ("", "", "");
+
+INSERT into rating_difficulty (value, id_user, id_trail) VALUES ("3", "2", "276986");
+INSERT into rating_difficulty (value, id_user, id_trail) VALUES ("2", "1", "276986");
+INSERT into rating_difficulty (value, id_user, id_trail) VALUES ("5", "3", "276986");
+
+INSERT into rating_difficulty (value, id_user, id_trail) VALUES ("3", "2", "375191");
+
+INSERT into rating_difficulty (value, id_user, id_trail) VALUES ("4", "1", "287665");
+INSERT into rating_difficulty (value, id_user, id_trail) VALUES ("5", "2", "287665");
+INSERT into rating_difficulty (value, id_user, id_trail) VALUES ("5", "3", "287665");
+INSERT into rating_difficulty (value, id_user, id_trail) VALUES ("5", "4", "287665");
+-- INSERT into rating_difficulty (value, id_user, id_trail) VALUES ("", "", "");
+
+INSERT into rating_likeability (value, id_user, id_trail) VALUES ("5", "1", "276986");
+INSERT into rating_likeability (value, id_user, id_trail) VALUES ("5", "2", "276986");
+INSERT into rating_likeability (value, id_user, id_trail) VALUES ("5", "3", "276986");
+INSERT into rating_likeability (value, id_user, id_trail) VALUES ("4", "4", "276986");
+
+INSERT into rating_likeability (value, id_user, id_trail) VALUES ("2", "2", "375191");
+
+INSERT into rating_likeability (value, id_user, id_trail) VALUES ("3", "2", "287665");
+INSERT into rating_likeability (value, id_user, id_trail) VALUES ("2", "1", "287665");
+INSERT into rating_likeability (value, id_user, id_trail) VALUES ("5", "3", "287665");
+-- INSERT into rating_likeability (value, id_user, id_trail) VALUES ("", "", "");
 
 
 -- mysql -u <USER> < trailr.sql
