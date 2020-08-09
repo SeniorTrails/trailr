@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import Map from './TrailMap.jsx';
-import Photo from './Photo.jsx';
+import Carousel from './Carousel.jsx';
 
 const data = {
   id: 279988,
@@ -20,6 +20,7 @@ const data = {
 
 const photos = [
   {
+    id: 1,
     url: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/Natchez_Trace_Trail.jpg/1280px-Natchez_Trace_Trail.jpg",
     comments: [
       {
@@ -34,6 +35,22 @@ const photos = [
       },
       {
         id: 3,
+        text: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Possimus laborum voluptatem nihil ipsam placeat itaque magnam.",
+        username: "Daniel Troyano"
+      },
+    ],
+  },
+  {
+    id: 2,
+    url: "https://upload.wikimedia.org/wikipedia/commons/c/ce/North_Country_Trail_Manistee_Forest.jpg",
+    comments: [
+      {
+        id: 4,
+        text: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Possimus laborum voluptatem nihil ipsam placeat itaque magnam.",
+        username: "Caylie Sadin"
+      },
+      {
+        id: 5,
         text: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Possimus laborum voluptatem nihil ipsam placeat itaque magnam.",
         username: "Daniel Troyano"
       },
@@ -79,7 +96,7 @@ const trail = () => {
       <div className="col-6">
         {!photoInfo.length
           ? null
-          : <Photo info={photoInfo[0]} />}
+          : <Carousel photos={photoInfo} />}
       </div>
     </>
   );

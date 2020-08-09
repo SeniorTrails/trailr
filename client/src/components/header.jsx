@@ -20,11 +20,12 @@ const header = () => (
       <div className="navbar-nav">
         <Link to="/user/0" className="nav-item nav-link active">User</Link>
         <Link to="/trail/1" className="nav-item nav-link active">Trail</Link>
-        <Link to="/login" className="nav-item nav-link">Login</Link>
-        <Link to="/signout" className="nav-item nav-link">Signout</Link>
+        <a href="/auth/login" className="nav-item nav-link">Login</a>
+        <a href="/auth/logout" className="nav-item nav-link">Signout</a>
+        <a href="/auth/google" className="nav-item nav-link">Google</a>
       </div>
     </div>
-    <SearchBox />
+    {/* <SearchBox /> */}
   </nav>
 );
 
