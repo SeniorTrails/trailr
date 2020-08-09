@@ -7,9 +7,8 @@ import {
   InfoWindow,
 } from 'react-google-maps';
 
-const Map = ({location, id}) => {
+const Map = ({ location, id, photoInfo }) => {
   const [selectedTrail, setSelectedTrail] = useState(null);
-  const [trailPhotos, setTrailsPhotos] = useState({});
 
   useEffect(() => {
     const listener = (e) => {
@@ -17,7 +16,6 @@ const Map = ({location, id}) => {
         setSelectedTrail(null);
       }
     };
-    // setTrailsPhotos(fakeData);
     window.addEventListener('keydown', listener);
     return () => {
       window.removeEventListener('keydown', listener);
@@ -25,8 +23,15 @@ const Map = ({location, id}) => {
   }, []);
 
   return (
-    <GoogleMap defaultZoom={12} defaultCenter={location}>
+    <GoogleMap defaultZoom={15} defaultCenter={location}>
       <Marker key={id} position={location} />
+      {photoInfo.map((item) => (
+        <Marker
+          onClick={()=>{console.log(item.id)}}
+          key={item.id}
+          position={{ lat: item.lat, lng: item.lng }}
+        />
+      ))}
 
       {selectedTrail && (
         <InfoWindow
@@ -46,7 +51,7 @@ const Map = ({location, id}) => {
       )}
     </GoogleMap>
   );
-}
+};
 
 const MapWrapped = withScriptjs(withGoogleMap(Map));
 

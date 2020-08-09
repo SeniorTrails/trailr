@@ -28,6 +28,8 @@ const photos = [
   {
     id: 1,
     url: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/Natchez_Trace_Trail.jpg/1280px-Natchez_Trace_Trail.jpg",
+    lat: 30.35121,
+    lng: -90.026479,
     comments: [
       {
         id: 1,
@@ -49,6 +51,8 @@ const photos = [
   {
     id: 2,
     url: "https://upload.wikimedia.org/wikipedia/commons/c/ce/North_Country_Trail_Manistee_Forest.jpg",
+    lat: 30.350458,
+    lng: -90.026045,
     comments: [
       {
         id: 4,
@@ -65,6 +69,8 @@ const photos = [
   {
     id: 5,
     url: "https://vbwsjdqd1l-flywheel.netdna-ssl.com/wp-content/uploads/2014/04/Santos-Trails-1.jpg",
+    lat: 30.352326,
+    lng: -90.027110,
     comments: [
       {
         id: 4,
@@ -81,6 +87,8 @@ const photos = [
   {
     id: 3,
     url: "https://www.pittsburghmagazine.com/content/uploads/2020/03/cb-cook-forest-trail1.jpg",
+    lat: 30.353260,
+    lng: -90.027236,
     comments: [
       {
         id: 4,
@@ -97,6 +105,8 @@ const photos = [
   {
     id: 4,
     url: "https://www.cliftonpark.com/images/100acretrail.jpg",
+    lat: 30.348433,
+    lng: -90.026569,
     comments: [
       {
         id: 4,
@@ -168,6 +178,7 @@ const trail = () => {
             loadingElement={<div style={{ height: '100%' }} />}
             location={{ lat: trailInfo.lat, lng: trailInfo.lon }}
             id={trailInfo.id}
+            photoInfo={photoInfo}
           />
         </div>
         <div>
