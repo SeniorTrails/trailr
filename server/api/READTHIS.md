@@ -40,7 +40,7 @@ logout route
 callback route
 find specific user route
 
-post new trail route
+
 
 
 

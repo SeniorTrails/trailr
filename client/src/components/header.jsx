@@ -1,25 +1,32 @@
 import React from 'react';
-import { Link } from 'react-router-dom'
+import { Link } from 'react-router-dom';
+import SearchBox from './SearchBox.jsx';
 
-const header = () => {
-
-  return (
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-  <Link to="/"><a class="navbar-brand" href="#">Trailr</a></Link>
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
-  </button>
-  <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-        <div class="navbar-nav">
-        <Link to="user/0"><a class="nav-item nav-link active" href="#">User <span class="sr-only">(current)</span></a></Link>
-        <Link to="mytrails"><a class="nav-item nav-link active" href="#">My Trails <span class="sr-only">(current)</span></a></Link>
-        <Link to="login"><a class="nav-item nav-link" href="#">Login</a></Link>
-        <Link to="signout"><a class="nav-item nav-link" href="#">Signout</a></Link>
+const header = () => (
+  <nav className="navbar navbar-expand-lg navbar-light bg-light">
+    <Link to="/" className="navbar-brand">Trailr</Link>
+    <button
+      className="navbar-toggler"
+      type="button"
+      data-toggle="collapse"
+      data-target="#navbarNavAltMarkup"
+      aria-controls="navbarNavAltMarkup"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+    >
+      <span className="navbar-toggler-icon" />
+    </button>
+    <div className="collapse navbar-collapse" id="navbarNavAltMarkup">
+      <div className="navbar-nav">
+        <Link to="/user/0" className="nav-item nav-link active">User</Link>
+        <Link to="/trail/1" className="nav-item nav-link active">Trail</Link>
+        <a href="/auth/login" className="nav-item nav-link">Login</a>
+        <a href="/auth/logout" className="nav-item nav-link">Signout</a>
+        <a href="/auth/google" className="nav-item nav-link">Google</a>
+      </div>
     </div>
-  </div>
-</nav>
-
-  );
-};
+    {/* <SearchBox /> */}
+  </nav>
+);
 
 export default header;

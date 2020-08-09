@@ -1,6 +1,9 @@
 #compiled code
 client/dist
 
+#yaml
+app.yaml
+
 # Logs
 logs
 *.log

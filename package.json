@@ -4,6 +4,7 @@
   "description": "Giving users a social-media-style community to share their experiences while engaging in an outdoor (and socially distant) activity",
   "main": "index.js",
   "scripts": {
+    "start": "node server/index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "build-react": "parcel client/index.html -d client/dist",
     "start:dev": "nodemon server/index.js"
@@ -19,8 +20,10 @@
   },
   "homepage": "https://github.com/JamesFThomas/trailr#readme",
   "dependencies": {
+    "body-parser": "^1.19.0",
     "eslint-plugin-jsx-a11y": "^6.3.1",
     "express": "^4.17.1",
+    "lodash": "^4.17.19",
     "mariadb": "^2.4.2",
     "mysql": "^2.18.1",
     "nodemon": "^2.0.4",
@@ -28,8 +31,10 @@
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-google-maps": "^9.4.5",
+    "react-icons": "^3.10.0",
     "react-router-dom": "^5.2.0",
-    "react-scripts": "^3.4.1"
+    "react-scripts": "^3.4.1",
+    "recompose": "^0.30.0"
   },
   "devDependencies": {
     "parcel-bundler": "^1.12.4",
