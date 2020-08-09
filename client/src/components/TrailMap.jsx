@@ -7,7 +7,10 @@ import {
   InfoWindow,
 } from 'react-google-maps';
 
-const Map = ({ location, id, photoInfo }) => {
+const selectedDot = {url: "http://maps.google.com/mapfiles/ms/icons/green-dot.png" };
+const dot = { url: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png" };
+
+const Map = ({ location, id, photoInfo, changeCurrentPhoto, currentPhoto }) => {
   const [selectedTrail, setSelectedTrail] = useState(null);
 
   useEffect(() => {
@@ -25,9 +28,10 @@ const Map = ({ location, id, photoInfo }) => {
   return (
     <GoogleMap defaultZoom={15} defaultCenter={location}>
       <Marker key={id} position={location} />
-      {photoInfo.map((item) => (
+      {photoInfo.map((item, i) => (
         <Marker
-          onClick={()=>{console.log(item.id)}}
+          icon={i === currentPhoto ? selectedDot : dot}
+          onClick={()=> changeCurrentPhoto(i)}
           key={item.id}
           position={{ lat: item.lat, lng: item.lng }}
         />

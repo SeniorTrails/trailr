@@ -135,6 +135,7 @@ const trail = () => {
   const [trailInfo, setTrailInfo] = useState({});
   const [photoInfo, setPhotoInfo] = useState([]);
   const [userRatings, setUserRatings] = useState({});
+  const [currentPhoto, setCurrentPhoto] = useState(0);
 
   useEffect(() => {
     setTrailInfo(data);
@@ -166,6 +167,10 @@ const trail = () => {
     setUserRatings((prev) => ({ ...prev, [target.name]: updatedElement }));
   };
 
+  const changeCurrentPhoto = (photoId) => {
+    setCurrentPhoto(photoId);
+  };
+
   return (
     <>
       <div className="col-6">
@@ -179,6 +184,8 @@ const trail = () => {
             location={{ lat: trailInfo.lat, lng: trailInfo.lon }}
             id={trailInfo.id}
             photoInfo={photoInfo}
+            changeCurrentPhoto={changeCurrentPhoto}
+            currentPhoto={currentPhoto}
           />
         </div>
         <div>
@@ -218,7 +225,7 @@ const trail = () => {
       <div className="col-6">
         {!photoInfo.length
           ? null
-          : <Carousel photos={photoInfo} />}
+          : <Carousel photos={photoInfo} currentPhoto={currentPhoto} changeCurrentPhoto={changeCurrentPhoto} />}
       </div>
     </>
   );

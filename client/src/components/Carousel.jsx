@@ -4,8 +4,7 @@ import '@brainhubeu/react-carousel/lib/style.css';
 import Photo from './Photo.jsx';
 import Comment from './Comment.jsx';
 
-const carousel = ({ photos }) => {
-  const [currentPhoto, setCurrentPhoto] = useState(0);
+const carousel = ({ photos, currentPhoto, changeCurrentPhoto }) => {
   const [photo, setPhoto] = useState({});
   const [comments, setComments] = useState([]);
 
@@ -14,9 +13,6 @@ const carousel = ({ photos }) => {
     setPhoto({ url: photos[currentPhoto].url });
   }, [currentPhoto]);
 
-  const changeCurrentPhoto = (id) => {
-    setCurrentPhoto(id);
-  };
 
   return (
     <div>
