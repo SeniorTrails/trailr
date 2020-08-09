@@ -36,6 +36,14 @@ const MapWithASearchBox = compose(
         isOpen: !isOpen,
       }),
     },
+    () => ({
+      selectedPlace: null,
+    }),
+    {
+      onToggleOpen: (i) => () => ({
+        selectedPlace: i,
+      }),
+    },
   ),
   withProps({
     googleMapURL: `https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=geometry,drawing,places&key=${process.env.GOOGLE_MAPS_API_KEY}`,
@@ -58,7 +66,7 @@ const MapWithASearchBox = compose(
         bounds: null,
         selectedTrail: null,
         center: { lat: 30.33735, lng: -90.03733 },
-        markers: [],
+        markers: trailData.data,
         onMapMounted: (ref) => {
           refs.map = ref;
         },
@@ -88,7 +96,7 @@ const MapWithASearchBox = compose(
           const nextCenter = _.get(
             nextMarkers,
             '0.position',
-            this.state.center
+            this.state.center,
           );
 
           this.setState({
@@ -132,14 +140,14 @@ const MapWithASearchBox = compose(
         }}
       />
     </SearchBox>
-    {trailData.data.map((trail) => (
+    {props.markers.map((trail, i) => (
       <Marker
         key={trail.id}
         position={{
           lat: +trail.lat,
           lng: +trail.lon,
         }}
-        onClick={props.onToggleOpen}
+        onClick={props.onToggleOpen.bind(i)}
       >
         {props.isOpen && (
           <InfoWindow
