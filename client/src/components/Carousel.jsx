@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import Carousel from '@brainhubeu/react-carousel';
+import '@brainhubeu/react-carousel/lib/style.css';
 import Photo from './Photo.jsx';
 import Comment from './Comment.jsx';
 
@@ -16,10 +18,25 @@ const carousel = ({ photos }) => {
     setCurrentPhoto(id);
   };
 
+  // const list = photos.map((item, i) => (
+  //   <div onClick={() => changeCurrentPhoto(i)} key={item.id}>
+  //     <img
+  //       className="img-thumbnail m-3"
+  //       src={item.url}
+  //       alt="trail"
+  //       style={{ width: '100px' }}
+  //     />
+  //   </div>
+  // ));
+
   return (
     <div>
       <Photo info={photo} />
-      <div style={{ display: 'flex', flexWrap: 'wrap', }}>
+      <Carousel
+        arrows
+        infinite
+        slidesPerPage={5}
+      >
         {photos.map((item, i) => (
           <div onClick={() => changeCurrentPhoto(i)} key={item.id}>
             <img
@@ -30,7 +47,7 @@ const carousel = ({ photos }) => {
             />
           </div>
         ))}
-      </div>
+      </Carousel>
       {!comments
         ? null
         : comments.map((i) => <Comment key={i.id} text={i.text} username={i.username} />)}
