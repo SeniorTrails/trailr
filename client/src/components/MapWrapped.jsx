@@ -1,18 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import * as trailData from '../data/trail-data.json';
 
-trailData.data.forEach((trail) => {
-  if (trail.isOpen === undefined) {
-    trail.isOpen = 'false';
-  }
-});
-
-// const { FaAnchor } = require('react-icons/fa');
 const _ = require('lodash');
 const {
   compose,
   withProps,
   lifecycle,
+  withHandlers,
+  withState,
   withStateHandlers,
 } = require('recompose');
 const {
@@ -27,16 +22,8 @@ const {
 } = require('react-google-maps/lib/components/places/SearchBox');
 
 const MapWithASearchBox = compose(
-  withStateHandlers(
-    () => ({
-      isOpen: false,
-    }),
-    {
-      onToggleOpen: ({ isOpen }) => () => ({
-        isOpen: !isOpen,
-      }),
-    },
-  ),
+  withState('places', 'updatePlaces', ''),
+  withState('selectedPlace', 'updateSelectedPlace', null),
   withProps({
     googleMapURL: `https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=geometry,drawing,places&key=${process.env.GOOGLE_MAPS_API_KEY}`,
     loadingElement: <div style={{ height: '100%' }} />,
@@ -44,12 +31,6 @@ const MapWithASearchBox = compose(
     mapElement: <div style={{ height: '100%' }} />,
   }),
   lifecycle({
-    selectPlace(i) {
-      console.log(i);
-      this.setState({
-        selectedPlace: i,
-      });
-    },
     componentWillMount() {
       const refs = {};
 
@@ -94,7 +75,7 @@ const MapWithASearchBox = compose(
           const nextCenter = _.get(
             nextMarkers,
             '0.position',
-            this.state.center,
+            this.state.center
           );
 
           this.setState({
@@ -104,6 +85,13 @@ const MapWithASearchBox = compose(
         },
       });
     },
+  }),
+  withHandlers(() => {
+    return {
+      onToggleOpen: ({ updateSelectedPlace }) => (key) => {
+        updateSelectedPlace(key);
+      },
+    };
   }),
   withScriptjs,
   withGoogleMap
@@ -138,32 +126,27 @@ const MapWithASearchBox = compose(
         }}
       />
     </SearchBox>
-    {props.markers.map((trail, i) => (
-      <Marker
-        key={trail.id}
-        position={{
-          lat: +trail.lat,
-          lng: +trail.lon,
-        }}
-        onClick={props.onToggleOpen}
-        // onClick={props.selectPlace.bind(i)}
-      >
-        {props.isOpen && (
-          <InfoWindow
-            onCloseClick={props.onToggleOpen}
-            position={{
-              lat: +trail.lat,
-              lng: +trail.lon,
-            }}
-          >
-            <div>
-              <h6>{trail.name}</h6>
-              <p>{trail.length} miles</p>
-            </div>
-          </InfoWindow>
-        )}
-      </Marker>
-    ))}
+    {props.markers &&
+      props.markers.map((trail, i) => (
+        <Marker
+          onClick={() => props.onToggleOpen(i)}
+          key={trail.id}
+          position={{
+            lat: +trail.lat,
+            lng: +trail.lon,
+          }}
+        >
+          {props.selectedPlace === i && (
+            <InfoWindow onCloseClick={props.onToggleOpen}>
+              <div>
+                <h6>{trail.name}</h6>
+                <p>{trail.length} miles</p>
+                <p>{trail.description}</p>
+              </div>
+            </InfoWindow>
+          )}
+        </Marker>
+      ))}
   </GoogleMap>
 ));
 
