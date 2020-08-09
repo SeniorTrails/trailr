@@ -2,17 +2,32 @@ import React from 'react';
 
 /**
  * input: An input component that displays a label and an input field
- * @param {Object} props value, changeHandler, name, label
+ *  type will default to 'text' but if it is 'select' you must provide
+ *  an options array that is made of objects with a value and a label
+ * @param {Object} props value, changeHandler, name, label, type, options
  * @returns {JSX} label and input
  */
-const input = ({ value, changeHandler, name, label }) => {
-  value = value || '';
+const input = ({ value = '', changeHandler, name, label, type = 'text', options }) => {
+  let component = null;
+
+  switch (type) {
+    case 'select':
+      component = (
+        <select>
+          {options.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}
+        </select>
+      );
+      break;
+    case 'text':
+    default:
+      component = <input name={name} type="text" value={value} onChange={changeHandler} />;
+  }
 
   return (
     <div>
       <label>
         {label}
-        <input name={name} type="text" value={value} onChange={changeHandler} />
+        {component}
       </label>
     </div>
   );
