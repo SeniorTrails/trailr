@@ -14,8 +14,16 @@ const connection = mysql.createConnection(mysqlConfig);
 const getUser = (idGoogle) => new Promise((resolve, reject) => {
   console.log('GET USER INVOKED');
 
-  const getUserCommand = 'SELECT * FROM users WHERE id_google = ?;';
-  const getPhotosCommand = 'SELECT * FROM photos WHERE id_user = ?';
+  const getUserCommand = `
+  SELECT *
+  FROM users
+  WHERE id_google = ?
+  `;
+  const getPhotosCommand = `
+  SELECT *
+  FROM photos
+  WHERE id_user = ?
+  `;
 
   connection.beginTransaction((error) => {
     if (error) {
@@ -55,33 +63,51 @@ const getUser = (idGoogle) => new Promise((resolve, reject) => {
   });
 });
 
-const getTrail = (idTrail) => new Promise((resolve, reject) => {
+const getTrail = (idTrail, idUser) => new Promise((resolve, reject) => {
   console.log('GET TRAIL INVOKED');
 
-  const getTrailCommand = `SELECT *,
+  const getTrailCommand = `
+    SELECT *,
     (
-    SELECT SUM(value) / COUNT(id_trail)
-    FROM rating_difficulty
-    WHERE id_trail = ?
-    ) AS difficulty,
+      SELECT SUM(value) / COUNT(id_trail)
+      FROM rating_difficulty
+      WHERE id_trail = ?
+    ) AS averageDifficulty,
     (
-    SELECT SUM(value) / COUNT(id_trail)
-    FROM rating_likeability
-    WHERE id_trail = ?
-    ) AS likeability
+      SELECT SUM(value) / COUNT(id_trail)
+      FROM rating_likeability
+      WHERE id_trail = ?
+    ) AS averageLikeability,
+    (
+      SELECT value
+      FROM rating_difficulty
+      WHERE id_user = ?
+      AND id_trail = ?
+    ) as userDifficultyRating,
+    (
+      SELECT value
+      FROM rating_likeability
+      WHERE id_user = ?
+      AND id_trail = ?
+    ) as userLikeabilityRating
     FROM trails
-    WHERE id = ?`;
+    WHERE id = ?
+    `;
 
-  const getPhotosCommand = `SELECT users.*, photos.*
+  const getPhotosCommand = `
+    SELECT users.*, photos.*
     FROM photos
     LEFT JOIN users ON photos.id_user = users.id
     LEFT JOIN trails ON photos.id_trail = trails.id
-    WHERE trails.id = ?`;
+    WHERE trails.id = ?
+    `;
 
-  const getCommentsCommand = `SELECT comments.*, users.*
+  const getCommentsCommand = `
+    SELECT comments.*, users.*
     FROM comments
     LEFT JOIN users ON comments.id_user = users.id
-    WHERE id_photo = ?`;
+    WHERE id_photo = ?
+    `;
 
   connection.beginTransaction((error) => {
     if (error) {
@@ -90,60 +116,61 @@ const getTrail = (idTrail) => new Promise((resolve, reject) => {
         return reject(error);
       });
     }
-    connection.query(getTrailCommand, [idTrail, idTrail, idTrail], (error, trailData) => {
-      if (error) {
-        connection.rollback(() => {
-          connection.release();
-          return reject(error);
-        });
-      }
-      console.log('TRAIL LINE 101: ', trailData);
-      const trail = trailData[0];
-      const { id } = trail;
-      connection.query(getPhotosCommand, [id], (error, photoData) => {
+    connection.query(getTrailCommand,
+      [idTrail, idTrail, idUser, idTrail, idUser, idTrail, idTrail],
+      (error, trailData) => {
         if (error) {
           connection.rollback(() => {
             connection.release();
             return reject(error);
           });
         }
-        if (!photoData.length) {
-          connection.commit((error) => {
-            if (error) {
-              connection.rollback(() => {
-                connection.release();
-                return reject(error);
-              });
-            }
-            resolve(trail);
-          });
-        }
-        trail.photos = photoData;
-        trail.photos.forEach((photo, i) => {
-          const { id } = photo;
-          connection.query(getCommentsCommand, [id], (error, commentData) => {
-            if (error) {
-              connection.rollback(() => {
-                connection.release();
-                return reject(error);
-              });
-            }
-            trail.photos[i].comments = commentData;
-            if (i === trail.photos.length - 1) {
-              connection.commit((error) => {
-                if (error) {
-                  connection.rollback(() => {
-                    connection.release();
-                    return reject(error);
-                  });
-                }
-                resolve(trail);
-              });
-            }
+        const trail = trailData[0];
+        const { id } = trail;
+        connection.query(getPhotosCommand, [id], (error, photoData) => {
+          if (error) {
+            connection.rollback(() => {
+              connection.release();
+              return reject(error);
+            });
+          }
+          if (!photoData.length) {
+            connection.commit((error) => {
+              if (error) {
+                connection.rollback(() => {
+                  connection.release();
+                  return reject(error);
+                });
+              }
+              resolve(trail);
+            });
+          }
+          trail.photos = photoData;
+          trail.photos.forEach((photo, i) => {
+            const { id } = photo;
+            connection.query(getCommentsCommand, [id], (error, commentData) => {
+              if (error) {
+                connection.rollback(() => {
+                  connection.release();
+                  return reject(error);
+                });
+              }
+              trail.photos[i].comments = commentData;
+              if (i === trail.photos.length - 1) {
+                connection.commit((error) => {
+                  if (error) {
+                    connection.rollback(() => {
+                      connection.release();
+                      return reject(error);
+                    });
+                  }
+                  resolve(trail);
+                });
+              }
+            });
           });
         });
       });
-    });
   });
 });
 
