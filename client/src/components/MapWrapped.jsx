@@ -8,7 +8,6 @@ const {
   lifecycle,
   withHandlers,
   withState,
-  withStateHandlers,
 } = require('recompose');
 const {
   withScriptjs,
@@ -97,6 +96,7 @@ const MapWithASearchBox = compose(
   withGoogleMap
 )((props) => (
   <GoogleMap
+    draggable
     ref={props.onMapMounted}
     defaultZoom={10}
     center={props.center}
@@ -119,7 +119,7 @@ const MapWithASearchBox = compose(
           marginTop: '10px',
           padding: '0 12px',
           borderRadius: '3px',
-          boxShadow: '0 2px 6px rgba(0, 0, 0, 0.3)',
+          boxShadow: '0 2px 2px rgba(0, 0, 0, 0.1)',
           fontSize: '15px',
           outline: 'none',
           textOverflow: 'ellipses',
