@@ -13,7 +13,7 @@ const input = ({ value = '', changeHandler, name, label, type = 'text', options 
   switch (type) {
     case 'select':
       component = (
-        <select>
+        <select onChange={changeHandler} name={name} value={value}>
           {options.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}
         </select>
       );
