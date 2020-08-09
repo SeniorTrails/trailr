@@ -45,6 +45,7 @@ const MapWithASearchBox = compose(
   }),
   lifecycle({
     selectPlace(i) {
+      console.log(i);
       this.setState({
         selectedPlace: i,
       });
@@ -144,7 +145,8 @@ const MapWithASearchBox = compose(
           lat: +trail.lat,
           lng: +trail.lon,
         }}
-        onClick={props.onToggleOpen.bind(i)}
+        onClick={props.onToggleOpen}
+        // onClick={props.selectPlace.bind(i)}
       >
         {props.isOpen && (
           <InfoWindow
@@ -155,8 +157,8 @@ const MapWithASearchBox = compose(
             }}
           >
             <div>
-              <h2>{trail.name}</h2>
-              <p>{trail.description}</p>
+              <h6>{trail.name}</h6>
+              <p>{trail.length} miles</p>
             </div>
           </InfoWindow>
         )}
