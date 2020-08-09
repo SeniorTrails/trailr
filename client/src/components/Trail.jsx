@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
+import Input from './input.jsx';
 import Map from './TrailMap.jsx';
 import Carousel from './Carousel.jsx';
 
@@ -16,6 +17,11 @@ const data = {
   difficulty: 3,
   likeability: 4,
   thumbnail: 'https://images.singletracks.com/blog/wp-content/uploads/2014/06/et3-orig.jpg',
+};
+
+const userData = {
+  diff: 2,
+  like: 1,
 };
 
 const photos = [
@@ -106,21 +112,55 @@ const photos = [
   },
 ];
 
+const ratingOptions = [
+  { value: 1, label: '1' },
+  { value: 2, label: '2' },
+  { value: 3, label: '3' },
+  { value: 4, label: '4' },
+  { value: 5, label: '5' },
+];
+
 const trail = () => {
   const { id } = useParams();
   const [trailInfo, setTrailInfo] = useState({});
   const [photoInfo, setPhotoInfo] = useState([]);
+  const [userRatings, setUserRatings] = useState({});
 
   useEffect(() => {
     setTrailInfo(data);
     setPhotoInfo(photos);
+    setUserRatings({
+      userLoaded: true,
+      like: {
+        value: userData.like,
+        edit: false,
+      },
+      diff: {
+        value: userData.diff,
+        edit: false,
+      },
+    });
   }, []);
+
+  const editable = (target) => {
+    const newValue = { ...userRatings[target] };
+    newValue.edit = true;
+    setUserRatings((prev) => ({ ...prev, [target]: newValue }));
+  };
+
+  const changeHandler = ({ target }) => {
+    // THIS IS WHERE WE CHANGE THE RATING IN THE DB
+    const updatedElement = { ...userRatings[target.name] };
+    updatedElement.value = target.value;
+    updatedElement.edit = false;
+    setUserRatings((prev) => ({ ...prev, [target.name]: updatedElement }));
+  };
+
   return (
     <>
       <div className="col-6">
         <h2>{trailInfo.name}</h2>
         <div style={{ width: '100%', height: '300px' }}>
-          {/*MAKE A NEW MAP COMPONENT*/}
           <Map
             googleMapURL={`https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=geometry,drawing,places&key=${process.env.GOOGLE_MAPS_API_KEY}`}
             containerElement={<div style={{ height: '100%' }} />}
@@ -133,12 +173,35 @@ const trail = () => {
         <div>
           <p>{trailInfo.description}</p>
           <img className="img-thumbnail w-50" src={trailInfo.thumbnail} />
-          <h3>Difficulty -
-            <small className="text-muted"> {trailInfo.difficulty}</small>
-          </h3>
-          <h3>Likeability -
-            <small className="text-muted"> {trailInfo.likeability}</small>
-          </h3>
+          <div className="row">
+            <div className="col">
+              <h3>Difficulty -
+                <small className="text-muted"> {trailInfo.difficulty}</small>
+              </h3>
+              <h3>Likeability -
+                <small className="text-muted"> {trailInfo.likeability}</small>
+              </h3>
+            </div>
+            {!userRatings.userLoaded
+              ? null
+              : (
+                <div className="col">
+                  <div onClick={() => editable('diff')}>
+                    <h3>My Difficulty -
+                      {userRatings.diff.edit
+                        ? <Input value={userRatings.diff.value} changeHandler={changeHandler} name="diff" type="select" options={ratingOptions} />
+                        : <small className="text-muted"> {userRatings.diff.value}</small>
+                      }
+                    </h3>
+                  </div>
+                  <div onClick={() => editable('like')}>
+                    <h3>My Likeability -
+                      <small className="text-muted"> {userRatings.like.value}</small>
+                    </h3>
+                  </div>
+                </div>
+              )}
+          </div>
         </div>
       </div>
       <div className="col-6">

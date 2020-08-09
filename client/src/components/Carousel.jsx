@@ -18,17 +18,6 @@ const carousel = ({ photos }) => {
     setCurrentPhoto(id);
   };
 
-  // const list = photos.map((item, i) => (
-  //   <div onClick={() => changeCurrentPhoto(i)} key={item.id}>
-  //     <img
-  //       className="img-thumbnail m-3"
-  //       src={item.url}
-  //       alt="trail"
-  //       style={{ width: '100px' }}
-  //     />
-  //   </div>
-  // ));
-
   return (
     <div>
       <Photo info={photo} />
