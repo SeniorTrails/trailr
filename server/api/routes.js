@@ -3,8 +3,7 @@ const { Router } = require('express');
 
 // importing DB query functions
 const {
-  getUser, getTrail, addTrail, updateTrail, deleteTrail,
-} = require('../../database/index.js');
+  getUser, getTrail, addTrail, updateTrail, deleteTrail, addUser, updateLikeability, updateDifficulty} = require('../../database/index.js');
 
 // set local variable to  a new instance of express router
 const router = Router();
@@ -52,6 +51,19 @@ router.post('/trails/:id', (req, res) => {
       throw error;
     });
 });
+
+// // testing addUser function
+// router.post('/user/', (req, res) => {
+//   const userObject = req.body;
+//   addUser(userObject)
+//     .then((success) => {
+//       res.send(success);
+//     })
+//     .catch((error) => {
+//       res.sendStatus(500);
+//       throw error;
+//     });
+// });
 
 /* --------------------------------- PUT Requests -----------------------------------------------*/
 // tested - must be written '/trails/id'
