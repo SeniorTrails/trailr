@@ -10,8 +10,8 @@ const { router } = require('./api/routes');
 // import "authRouter" from auth-routes.js file
 const { authRouter } = require('../routes/auth-routes');
 
-// //set local variable to  a new instance of express router
-// const router = require('./api/routes');
+// require passport-setup file, to enable passport middleware
+const passportSetup = require('../config/passport-setup');
 
 // create new instance of express frame work saved to local variable
 const app = express();
