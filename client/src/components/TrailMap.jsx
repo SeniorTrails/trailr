@@ -1,63 +1,28 @@
-import React, {useState, useEffect} from 'react';
-import {
-  GoogleMap,
-  withGoogleMap,
-  withScriptjs,
-  Marker,
-  InfoWindow,
-} from 'react-google-maps';
+import React from 'react';
+import GoogleMapReact from 'google-map-react';
+import Marker from './Marker.jsx';
 
-const selectedDot = {url: "http://maps.google.com/mapfiles/ms/icons/green-dot.png" };
-const dot = { url: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png" };
-
-const Map = ({ location, id, photoInfo, changeCurrentPhoto, currentPhoto }) => {
-  const [selectedTrail, setSelectedTrail] = useState(null);
+const Map = ({ location, photoInfo, changeCurrentPhoto, currentPhoto }) => {
   const photoList = photoInfo || [];
 
-  useEffect(() => {
-    const listener = (e) => {
-      if (e.key === 'Escape') {
-        setSelectedTrail(null);
-      }
-    };
-    window.addEventListener('keydown', listener);
-    return () => {
-      window.removeEventListener('keydown', listener);
-    };
-  }, []);
-
   return (
-    <GoogleMap defaultZoom={15} defaultCenter={location}>
-      <Marker key={id} position={location} />
+    <GoogleMapReact
+      bootstrapURLKeys={{ key: process.env.GOOGLE_MAPS_API_KEY }}
+      defaultCenter={location}
+      defaultZoom={15}
+    >
+      <Marker lat={location.lat} lng={location.lng} clickHandler={()=>{}} />
       {photoList.map((item, i) => (
         <Marker
-          icon={i === currentPhoto ? selectedDot : dot}
-          onClick={()=> changeCurrentPhoto(i)}
+          color={i === currentPhoto ? 'green' : 'blue'}
+          clickHandler={()=> changeCurrentPhoto(i)}
           key={item.id}
-          position={{ lat: item.lat, lng: item.lng }}
+          lat={item.lat}
+          lng={item.lng}
         />
       ))}
-
-      {selectedTrail && (
-        <InfoWindow
-          onCloseClick={() => {
-            setSelectedTrail(null);
-          }}
-          position={{
-            lat: +selectedTrail.lat,
-            lng: +selectedTrail.lon,
-          }}
-        >
-          <div>
-            <h2>{selectedTrail.name}</h2>
-            <p>{selectedTrail.description}</p>
-          </div>
-        </InfoWindow>
-      )}
-    </GoogleMap>
+    </GoogleMapReact>
   );
 };
 
-const MapWrapped = withScriptjs(withGoogleMap(Map));
-
-export default MapWrapped;
+export default Map;
