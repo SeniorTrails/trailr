@@ -85,9 +85,8 @@ const getUser = (idGoogle) => new Promise((resolve, reject) => {
 
 const addUser = (userObject) => new Promise((resolve, reject) => {
   console.log('ADD USER INVOKED');
-
-  const { idGoogle, name, profilePhotoUrl } = userObject;
-
+  // Probably don't destructure because will error if undefined
+  // const { idGoogle, name, profilePhotoUrl } = userObject;
   const checkUserCommand = `
     SELECT *
     FROM users
@@ -105,7 +104,7 @@ const addUser = (userObject) => new Promise((resolve, reject) => {
         return reject(error);
       });
     }
-    connection.query(checkUserCommand, [idGoogle], (error, userResult) => {
+    connection.query(checkUserCommand, [userObject.idGoogle], (error, userResult) => {
       if (error) {
         connection.rollback(() => {
           connection.release();
@@ -114,7 +113,7 @@ const addUser = (userObject) => new Promise((resolve, reject) => {
       }
       if (userResult.length === 0) {
         connection.query(addUserCommand,
-          [idGoogle, name, profilePhotoUrl],
+          [userObject.idGoogle, userObject.name, userObject.profilePhotoUrl],
           (error, addedUser) => {
             if (error) {
               connection.rollback(() => {
@@ -259,8 +258,21 @@ const getTrail = (/* idTrail, idUser */trailObject) => new Promise((resolve, rej
 });
 
 const addTrail = (trailObject) => new Promise((resolve, reject) => {
-  const { idTrail } = trailObject;
-  const addTrailCommand = '';
+  console.log('ADD TRAIL INVOKED');
+  // probably don't descructure because will error if undefined
+  // const { id, name, city, region, country, latitude,
+  // longitude, url, thumbnail, description } = trailObject;
+
+  const checkTrailCommand = `
+    SELECT *
+    FROM trails
+    WHERE api_id = ?
+  `;
+  const addTrailCommand = `
+    INSERT INTO trails (api_id, name, city, region, country, latitude, longitude, url, thumbnail, description)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `;
+
   connection.beginTransaction((error) => {
     if (error) {
       connection.rollback(() => {
@@ -268,22 +280,46 @@ const addTrail = (trailObject) => new Promise((resolve, reject) => {
         return reject(error);
       });
     }
-    connection.query(addTrailCommand, [idTrail], (error, rows) => {
+    connection.query(checkTrailCommand, [trailObject.id], (error, trailResult) => {
       if (error) {
         connection.rollback(() => {
           connection.release();
           return reject(error);
         });
       }
-      connection.commit((error) => {
+      if (trailResult.length === 0) {
+        connection.query(addTrailCommand,
+          // [id, name, city, region, country, latitude, longitude, url, thumbnail, description],
+          // ***ID HERE IS API-ID until trail has been added
+          [trailObject.id, trailObject.name, trailObject.city, trailObject.region,
+            trailObject.country, trailObject.latitude, trailObject.longitude,
+            trailObject.url, trailObject.thumbnail, trailObject.description],
+          (error, addedTrail) => {
+            if (error) {
+              connection.rollback(() => {
+                connection.release();
+                return reject(error);
+              });
+            }
+            connection.commit((error) => {
+              if (error) {
+                connection.rollback(() => {
+                  connection.release();
+                  return reject(error);
+                });
+              }
+              resolve(addedTrail, console.log('TRAIL SUCCESSFULLY ADDED'));
+            });
+          });
+      } else if (trailResult.length > 0) {
         if (error) {
           connection.rollback(() => {
             connection.release();
             return reject(error);
           });
         }
-        resolve(console.log('ADD TRAIL INVOKED', rows));
-      });
+        resolve('Trail already exists.');
+      }
     });
   });
 });
