@@ -24,7 +24,7 @@ const input = ({ value = '', changeHandler, name, label, type = 'text', options 
   }
 
   return (
-    <div>
+    <div style={{ display: 'inline' }}>
       <label>
         {label}
         {component}
