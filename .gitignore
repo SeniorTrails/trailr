@@ -108,3 +108,7 @@ dist
 
 # TernJS port file
 .tern-port
+
+# Google user information
+config/keys.js
+
