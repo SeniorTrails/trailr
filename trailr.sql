@@ -32,8 +32,8 @@ CREATE TABLE photos (
   id int AUTO_INCREMENT,
   url varchar(255),
   description varchar(255),
-  latitude decimal(10, 8),
-  longitude decimal(11, 8),
+  lat decimal(10, 8),
+  lng decimal(11, 8),
   created_at timestamp,
   id_trail int,
   id_user int,
@@ -94,11 +94,11 @@ INSERT into trails (api_id, name, url, description, city, region, country, latit
 INSERT into trails (api_id, name, url, description, city, region, country, latitude, longitude, thumbnail) VALUES ("279988", "Eagle Trail", "https://www.singletracks.com/bike-trails/eagle-trail-8663/", "Nice easy trail.  Smaller in width than South or North Loop. South side of trail borders the Beaver Pond.", "Mandeville", "Louisiana", "United States", "30.35324", "-90.02715", "https://images.singletracks.com/blog/wp-content/uploads/2014/06/et3-orig.jpg");
 -- INSERT into trails (id, name, url, description, city, region, country, latitude, longitude, thumbnail) VALUES ("", "", "", "", "", "", "", "", "", "");
 
-INSERT into photos (url, description, latitude, longitude, id_user, id_trail) VALUES ("https://external-preview.redd.it/MyHXS2zOV9DKDHQ62XGTpECpeeeMCEsV3DLwA6YFlEc.png?format=pjpg&auto=webp&s=190f13f9138872e4314183098ee170b1a0426815", "Sacrificial altar for humans who don't wear masks during pandemics", "30.0044257", "-90.0939056", "2", "1");
-INSERT into photos (url, description, latitude, longitude, id_user, id_trail) VALUES ("https://www.conteches.com/Portals/0/Images/CaseStudies/CityPark_Main.JPG", "Bridge leading into Couterie Forest", "30.0036709", "-90.09498", "4", "1");
-INSERT into photos (url, description, latitude, longitude, id_user, id_trail) VALUES ("https://countryroadsmagazine.com/downloads/3368/download/Tammany-trace-biking.jpg?cb=37106a08236d4173b34d309804c9b56c&w=640", "Why did the sql--squirrel, rather--cross the trail?", "30.4789468", "-90.039199", "4", "3");
-INSERT into photos (url, description, latitude, longitude, id_user, id_trail) VALUES ("https://bridgehunter.com/photos/23/82/238295-M.jpg", "Bayou Lacombe Bridge", "30.3051928", "-89.9255997", "3", "3");
-INSERT into photos (url, description, latitude, longitude, id_user, id_trail) VALUES ("https://3.bp.blogspot.com/_8pLXF3eWByQ/S6wROMdIofI/AAAAAAAAAlk/vXKlFvFWJ4k/s1600/LASlidell2_002TammanyTraceTrail_BayouLaCombeBridge_TraceRangers.jpg", "Lacombie Homies", "30.3052827", "-89.925844", "3", "3");
+INSERT into photos (url, description, lat, lng, id_user, id_trail) VALUES ("https://external-preview.redd.it/MyHXS2zOV9DKDHQ62XGTpECpeeeMCEsV3DLwA6YFlEc.png?format=pjpg&auto=webp&s=190f13f9138872e4314183098ee170b1a0426815", "Sacrificial altar for humans who don't wear masks during pandemics", "30.0044257", "-90.0939056", "2", "1");
+INSERT into photos (url, description, lat, lng, id_user, id_trail) VALUES ("https://www.conteches.com/Portals/0/Images/CaseStudies/CityPark_Main.JPG", "Bridge leading into Couterie Forest", "30.0036709", "-90.09498", "4", "1");
+INSERT into photos (url, description, lat, lng, id_user, id_trail) VALUES ("https://countryroadsmagazine.com/downloads/3368/download/Tammany-trace-biking.jpg?cb=37106a08236d4173b34d309804c9b56c&w=640", "Why did the sql--squirrel, rather--cross the trail?", "30.4789468", "-90.039199", "4", "3");
+INSERT into photos (url, description, lat, lng, id_user, id_trail) VALUES ("https://bridgehunter.com/photos/23/82/238295-M.jpg", "Bayou Lacombe Bridge", "30.3051928", "-89.9255997", "3", "3");
+INSERT into photos (url, description, lat, lng, id_user, id_trail) VALUES ("https://3.bp.blogspot.com/_8pLXF3eWByQ/S6wROMdIofI/AAAAAAAAAlk/vXKlFvFWJ4k/s1600/LASlidell2_002TammanyTraceTrail_BayouLaCombeBridge_TraceRangers.jpg", "Lacombie Homies", "30.3052827", "-89.925844", "3", "3");
 -- INSERT into photos (url, description, latitude, longitude, id_user, id_trail) VALUES ("", "", "", "", "", "");
 
 INSERT into comments (text, id_user, id_photo) VALUES ("To get to the Abita Springs Trailhead Museum", "4", "3");

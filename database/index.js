@@ -11,6 +11,11 @@ const mysqlConfig = {
 
 const connection = mysql.createConnection(mysqlConfig);
 
+connection.connect((error) => {
+  if (error) throw error;
+  console.log('Connected to mysql database.');
+});
+
 const getUser = (idGoogle) => new Promise((resolve, reject) => {
   console.log('GET USER INVOKED');
 
@@ -162,16 +167,16 @@ const getTrail = (/* idTrail, idUser */trailObject) => new Promise((resolve, rej
       WHERE id_trail = ?
     ) AS averageLikeability,
     (
-      SELECT value
-      FROM rating_difficulty
-      WHERE id_user = ?
-      AND id_trail = ?
+      SELECT IFNULL((SELECT value
+        FROM rating_difficulty
+        WHERE id_user = ?
+        AND id_trail = ?), 'Rate this trail:')
     ) as userDifficulty,
     (
-      SELECT value
-      FROM rating_likeability
-      WHERE id_user = ?
-      AND id_trail = ?
+      SELECT IFNULL((SELECT value
+        FROM rating_likeability
+        WHERE id_user = ?
+        AND id_trail = ?), 'Rate this trail:')
     ) as userLikeability
     FROM trails
     WHERE id = ?
@@ -562,3 +567,10 @@ module.exports = {
 
 // mysql -uroot < server/index.js
 // mysql.server start
+
+// SELECT IFNULL((SELECT value
+//   FROM rating_difficulty
+//   WHERE id_user = 2
+//   AND id_trail = 5), 'Rate this trail:') \G
+
+// SELECT IFNULL((SELECT value FROM rating_difficulty WHERE id_user = 2 AND id_trail = 5), 'Rate this trail:') \G
