@@ -7,7 +7,7 @@ import React from 'react';
  * @param {Object} props value, changeHandler, name, label, type, options
  * @returns {JSX} label and input
  */
-const input = ({ value = '', changeHandler, name, label, type = 'text', options }) => {
+const input = ({ value = '', changeHandler, name, label, type = 'text', options, style }) => {
   let component = null;
 
   switch (type) {
@@ -18,13 +18,16 @@ const input = ({ value = '', changeHandler, name, label, type = 'text', options 
         </select>
       );
       break;
+    case 'textarea':
+      component = <textarea name={name} value={value} onChange={changeHandler} rows="4" cols="30" />;
+      break;
     case 'text':
     default:
       component = <input name={name} type="text" value={value} onChange={changeHandler} />;
   }
 
   return (
-    <div>
+    <div style={style}>
       <label>
         {label}
         {component}
