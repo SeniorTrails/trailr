@@ -19,18 +19,16 @@ const getUser = (idGoogle) => new Promise((resolve, reject) => {
     FROM users
     WHERE id_google = ?
   `;
-
   const getPhotosCommand = `
     SELECT *
     FROM photos
     WHERE id_user = ?
   `;
-
   const getCommentsCommand = `
-      SELECT comments.*, users.*
-      FROM comments
-      LEFT JOIN users ON comments.id_user = users.id
-      WHERE id_photo = ?
+    SELECT comments.*, users.*
+    FROM comments
+    LEFT JOIN users ON comments.id_user = users.id
+    WHERE id_photo = ?
   `;
 
   connection.beginTransaction((error) => {
@@ -40,33 +38,33 @@ const getUser = (idGoogle) => new Promise((resolve, reject) => {
         return reject(error);
       });
     }
-    connection.query(getUserCommand, [idGoogle], (error, userData) => {
+    connection.query(getUserCommand, [idGoogle], (error, gottenUser) => {
       if (error) { // maybe || rows.length > 1 OR separate error to handle more than one result?
         connection.rollback(() => {
           connection.release();
           return reject(error);
         });
       }
-      const user = userData[0];
+      const user = gottenUser[0];
       const { id } = user;
-      connection.query(getPhotosCommand, [id], (error, photoData) => {
+      connection.query(getPhotosCommand, [id], (error, gottenPhotos) => {
         if (error) {
           connection.rollback(() => {
             connection.release();
             return reject(error);
           });
         }
-        user.photos = photoData;
+        user.photos = gottenPhotos;
         user.photos.forEach((photo, i) => {
           const { id } = photo;
-          connection.query(getCommentsCommand, [id], (error, commentData) => {
+          connection.query(getCommentsCommand, [id], (error, gottenComments) => {
             if (error) {
               connection.rollback(() => {
                 connection.release();
                 return reject(error);
               });
             }
-            user.photos[i].comments = commentData;
+            user.photos[i].comments = gottenComments;
             if (i === user.photos.length - 1) {
               connection.commit((error) => {
                 if (error) {
@@ -89,6 +87,7 @@ const addUser = (userObject) => new Promise((resolve, reject) => {
   console.log('ADD USER INVOKED');
 
   const { idGoogle, name, profilePhotoUrl } = userObject;
+
   const checkUserCommand = `
     SELECT *
     FROM users
@@ -98,6 +97,7 @@ const addUser = (userObject) => new Promise((resolve, reject) => {
     INSERT INTO users (id_google, name, profile_photo_url)
     VALUES (?, ?, ?)
   `;
+
   connection.beginTransaction((error) => {
     if (error) {
       connection.rollback(() => {
@@ -145,18 +145,20 @@ const addUser = (userObject) => new Promise((resolve, reject) => {
   });
 });
 
-const getTrail = (idTrail, idUser) => new Promise((resolve, reject) => {
+const getTrail = (/* idTrail, idUser */trailObject) => new Promise((resolve, reject) => {
   console.log('GET TRAIL INVOKED');
+
+  const { idTrail, idUser } = trailObject; // TO CHANGE TO OBJ PARAMETERS
 
   const getTrailCommand = `
     SELECT *,
     (
-      SELECT SUM(value) / COUNT(id_trail)
+      SELECT ROUND(AVG(value), 1)
       FROM rating_difficulty
       WHERE id_trail = ?
     ) AS averageDifficulty,
     (
-      SELECT SUM(value) / COUNT(id_trail)
+      SELECT ROUND(AVG(value), 1)
       FROM rating_likeability
       WHERE id_trail = ?
     ) AS averageLikeability,
@@ -165,13 +167,13 @@ const getTrail = (idTrail, idUser) => new Promise((resolve, reject) => {
       FROM rating_difficulty
       WHERE id_user = ?
       AND id_trail = ?
-    ) as userDifficultyRating,
+    ) as userDifficulty,
     (
       SELECT value
       FROM rating_likeability
       WHERE id_user = ?
       AND id_trail = ?
-    ) as userLikeabilityRating
+    ) as userLikeability
     FROM trails
     WHERE id = ?
   `;
@@ -200,23 +202,23 @@ const getTrail = (idTrail, idUser) => new Promise((resolve, reject) => {
     }
     connection.query(getTrailCommand,
       [idTrail, idTrail, idUser, idTrail, idUser, idTrail, idTrail],
-      (error, trailData) => {
+      (error, gottenTrail) => {
         if (error) {
           connection.rollback(() => {
             connection.release();
             return reject(error);
           });
         }
-        const trail = trailData[0];
+        const trail = gottenTrail[0];
         const { id } = trail;
-        connection.query(getPhotosCommand, [id], (error, photoData) => {
+        connection.query(getPhotosCommand, [id], (error, gottenPhotos) => {
           if (error) {
             connection.rollback(() => {
               connection.release();
               return reject(error);
             });
           }
-          if (!photoData.length) {
+          if (!gottenPhotos.length) {
             connection.commit((error) => {
               if (error) {
                 connection.rollback(() => {
@@ -227,17 +229,17 @@ const getTrail = (idTrail, idUser) => new Promise((resolve, reject) => {
               resolve(trail);
             });
           }
-          trail.photos = photoData;
+          trail.photos = gottenPhotos;
           trail.photos.forEach((photo, i) => {
             const { id } = photo;
-            connection.query(getCommentsCommand, [id], (error, commentData) => {
+            connection.query(getCommentsCommand, [id], (error, gottenComments) => {
               if (error) {
                 connection.rollback(() => {
                   connection.release();
                   return reject(error);
                 });
               }
-              trail.photos[i].comments = commentData;
+              trail.photos[i].comments = gottenComments;
               if (i === trail.photos.length - 1) {
                 connection.commit((error) => {
                   if (error) {
@@ -257,7 +259,7 @@ const getTrail = (idTrail, idUser) => new Promise((resolve, reject) => {
 });
 
 const addTrail = (trailObject) => new Promise((resolve, reject) => {
-  const { trailId } = trailObject;
+  const { idTrail } = trailObject;
   const addTrailCommand = '';
   connection.beginTransaction((error) => {
     if (error) {
@@ -266,7 +268,7 @@ const addTrail = (trailObject) => new Promise((resolve, reject) => {
         return reject(error);
       });
     }
-    connection.query(addTrailCommand, [trailId], (error, rows) => {
+    connection.query(addTrailCommand, [idTrail], (error, rows) => {
       if (error) {
         connection.rollback(() => {
           connection.release();
@@ -287,7 +289,8 @@ const addTrail = (trailObject) => new Promise((resolve, reject) => {
 });
 
 const updateTrail = (trailObject) => new Promise((resolve, reject) => {
-  const { trailId } = trailObject;
+  console.log('UPDATE TRAIL INVOKED');
+  const { idTrail } = trailObject;
   const updateTrailCommand = '';
   connection.beginTransaction((error) => {
     if (error) {
@@ -296,7 +299,7 @@ const updateTrail = (trailObject) => new Promise((resolve, reject) => {
         return reject(error);
       });
     }
-    connection.query(updateTrailCommand, [trailId], (error, rows) => {
+    connection.query(updateTrailCommand, [idTrail], (error, rows) => {
       if (error) {
         connection.rollback(() => {
           connection.release();
@@ -317,7 +320,7 @@ const updateTrail = (trailObject) => new Promise((resolve, reject) => {
 });
 
 const deleteTrail = (trailObject) => new Promise((resolve, reject) => {
-  const { trailId } = trailObject;
+  const { idTrail } = trailObject;
   const deleteTrailCommand = '';
   connection.beginTransaction((error) => {
     if (error) {
@@ -326,7 +329,7 @@ const deleteTrail = (trailObject) => new Promise((resolve, reject) => {
         return reject(error);
       });
     }
-    connection.query(deleteTrailCommand, [trailId], (error, rows) => {
+    connection.query(deleteTrailCommand, [idTrail], (error, rows) => {
       if (error) {
         connection.rollback(() => {
           connection.release();
@@ -346,65 +349,169 @@ const deleteTrail = (trailObject) => new Promise((resolve, reject) => {
   });
 });
 
-// const updateDifficulty = (trailObject) => new Promise((resolve, reject) => {
-//   const { userId, trailId, value } = trailObject;
-//   const updateDifficultyCommand = '';
-//   connection.beginTransaction((error) => {
-//     if (error) {
-//       connection.rollback(() => {
-//         connection.release();
-//         return reject(error);
-//       });
-//     }
-//     connection.query(updateDifficultyCommand, [userId, trailId, value], (error, rows) => {
-//       if (error) {
-//         connection.rollback(() => {
-//           connection.release();
-//           return reject(error);
-//         });
-//       }
-//       connection.commit((error) => {
-//         if (error) {
-//           connection.rollback(() => {
-//             connection.release();
-//             return reject(error);
-//           });
-//         }
-//         resolve(console.log('UPDATE DIFFICULTY INVOKED', rows));
-//       });
-//     });
-//   });
-// });
+const updateDifficulty = (difficultyObject) => new Promise((resolve, reject) => {
+  console.log('UPDATE DIFFICULTY INVOKED');
 
-// const updateLikeability = (trailObject) => new Promise((resolve, reject) => {
-//   const { userId, trailId, value } = trailObject;
-//   const updateLikeabilityCommand = '';
-//   connection.beginTransaction((error) => {
-//     if (error) {
-//       connection.rollback(() => {
-//         connection.release();
-//         return reject(error);
-//       });
-//     }
-//     connection.query(updateLikeabilityCommand, [userId, trailId, value], (error, rows) => {
-//       if (error) {
-//         connection.rollback(() => {
-//           connection.release();
-//           return reject(error);
-//         });
-//       }
-//       connection.commit((error) => {
-//         if (error) {
-//           connection.rollback(() => {
-//             connection.release();
-//             return reject(error);
-//           });
-//         }
-//         resolve(console.log('UPDATE LIKEABILITY INVOKED', rows));
-//       });
-//     });
-//   });
-// });
+  const { idUser, idTrail, value } = difficultyObject;
+
+  const checkDifficultyCommand = `
+    SELECT *
+    FROM rating_difficulty
+    WHERE id_user = ? AND id_trail = ?
+  `;
+
+  const addDifficultyCommand = `
+    INSERT INTO rating_difficulty (id_user, id_trail, value)
+    VALUES (?, ?, ?)
+  `;
+
+  const updateDifficultyCommand = `
+    UPDATE rating_difficulty
+    SET value = ?
+    WHERE id_user = ? AND id_trail = ?
+  `;
+
+  connection.beginTransaction((error) => {
+    if (error) {
+      connection.rollback(() => {
+        connection.release();
+        return reject(error);
+      });
+    }
+    connection.query(checkDifficultyCommand,
+      [idUser, idTrail, value],
+      (error, difficultyResult) => {
+        if (error) {
+          connection.rollback(() => {
+            connection.release();
+            return reject(error);
+          });
+        }
+        if (difficultyResult.length === 0) {
+          connection.query(addDifficultyCommand,
+            [idUser, idTrail, value], (error, addedDifficulty) => {
+              if (error) {
+                connection.rollback(() => {
+                  connection.release();
+                  return reject(error);
+                });
+              }
+              connection.commit((error) => {
+                if (error) {
+                  connection.rollback(() => {
+                    connection.release();
+                    return reject(error);
+                  });
+                }
+                resolve(addedDifficulty, console.log('DIFFICULTY ADDED'));
+              });
+            });
+        } else if (difficultyResult.length > 0) {
+          connection.query(updateDifficultyCommand,
+            [value, idUser, idTrail],
+            (error, updatedDifficulty) => {
+              if (error) {
+                connection.rollback(() => {
+                  connection.release();
+                  return reject(error);
+                });
+              }
+              connection.commit((error) => {
+                if (error) {
+                  connection.rollback(() => {
+                    connection.release();
+                    return reject(error);
+                  });
+                }
+                resolve(updatedDifficulty, console.log('DIFFICULTY UPDATED'));
+              });
+            });
+        }
+      });
+  });
+});
+
+const updateLikeability = (likeabilityObject) => new Promise((resolve, reject) => {
+  console.log('UPDATE LIKEABILITY INVOKED');
+
+  const { idUser, idTrail, value } = likeabilityObject;
+
+  const checkLikeabilityCommand = `
+    SELECT *
+    FROM rating_likeability
+    WHERE id_user = ? AND id_trail = ?
+  `;
+
+  const addLikeabilityCommand = `
+    INSERT INTO rating_likeability (id_user, id_trail, value)
+    VALUES (?, ?, ?)
+  `;
+
+  const updateLikeabilityCommand = `
+    UPDATE rating_likeability
+    SET value = ?
+    WHERE id_user = ? AND id_trail = ?
+  `;
+
+  connection.beginTransaction((error) => {
+    if (error) {
+      connection.rollback(() => {
+        connection.release();
+        return reject(error);
+      });
+    }
+    connection.query(checkLikeabilityCommand,
+      [idUser, idTrail, value],
+      (error, likeabilityResult) => {
+        if (error) {
+          connection.rollback(() => {
+            connection.release();
+            return reject(error);
+          });
+        }
+        if (likeabilityResult.length === 0) {
+          connection.query(addLikeabilityCommand,
+            [idUser, idTrail, value], (error, addedLikeability) => {
+              if (error) {
+                connection.rollback(() => {
+                  connection.release();
+                  return reject(error);
+                });
+              }
+              connection.commit((error) => {
+                if (error) {
+                  connection.rollback(() => {
+                    connection.release();
+                    return reject(error);
+                  });
+                }
+                resolve(addedLikeability, console.log('LIKEABILITY ADDED'));
+              });
+            });
+        } else if (likeabilityResult.length > 0) {
+          connection.query(updateLikeabilityCommand,
+            [value, idUser, idTrail],
+            (error, updatedLikeability) => {
+              if (error) {
+                connection.rollback(() => {
+                  connection.release();
+                  return reject(error);
+                });
+              }
+              connection.commit((error) => {
+                if (error) {
+                  connection.rollback(() => {
+                    connection.release();
+                    return reject(error);
+                  });
+                }
+                resolve(updatedLikeability, console.log('LIKEABILITY UPDATED'));
+              });
+            });
+        }
+      });
+  });
+});
 
 module.exports = {
   getUser,
@@ -413,8 +520,8 @@ module.exports = {
   addTrail,
   updateTrail,
   deleteTrail,
-  // updateDifficulty,
-  // updateLikeability,
+  updateDifficulty,
+  updateLikeability,
 };
 
 // mysql -uroot < server/index.js
