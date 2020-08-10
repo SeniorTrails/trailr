@@ -12,8 +12,8 @@ const addComment = ({ appendComments }) => {
 
   return (
     <div>
-      <Input value={values.text} changeHandler={changeHandler} label="New Comment" name="text" type="textarea" />
-      <button onClick={submitHandler}>Add New Comment</button>
+      <Input value={values.text} changeHandler={changeHandler} label="" name="text" type="textarea" />
+      <button type="button" className="btn btn-primary" onClick={submitHandler}>Add New Comment</button>
     </div>
   );
 };
