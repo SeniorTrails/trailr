@@ -25,7 +25,7 @@ const header = () => (
         <a href="/auth/google" className="nav-item nav-link">Google</a>
       </div>
     </div>
-    <SearchBox />
+    {/* <SearchBox /> */}
   </nav>
 );
 
