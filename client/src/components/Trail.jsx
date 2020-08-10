@@ -3,6 +3,8 @@ import { useParams } from 'react-router-dom';
 import Input from './input.jsx';
 import Map from './TrailMap.jsx';
 import Carousel from './Carousel.jsx';
+import AddComment from './AddComment.jsx';
+
 
 const data = {
   id: 279988,
@@ -123,6 +125,7 @@ const photos = [
 ];
 
 const ratingOptions = [
+  { value: '', label: '' },
   { value: 1, label: '1' },
   { value: 2, label: '2' },
   { value: 3, label: '3' },
@@ -153,9 +156,14 @@ const trail = () => {
     });
   }, []);
 
-  const editable = (target) => {
+  const editable = (e, target) => {
     const newValue = { ...userRatings[target] };
-    newValue.edit = true;
+    // If you don't click the select turn it off and on
+    if (e.target.tagName !== 'SELECT') {
+      newValue.edit = !newValue.edit;
+    } else {
+      newValue.edit = true;
+    }
     setUserRatings((prev) => ({ ...prev, [target]: newValue }));
   };
 
@@ -169,6 +177,14 @@ const trail = () => {
 
   const changeCurrentPhoto = (photoId) => {
     setCurrentPhoto(photoId);
+  };
+
+  const appendComments = (newComment) => {
+    const updatedInfo = [...photoInfo];
+    const updatedPhoto = { ...updatedInfo[currentPhoto] };
+    updatedPhoto.comments.push({ ...newComment });
+    updatedInfo[currentPhoto] = updatedPhoto;
+    setPhotoInfo(updatedInfo);
   };
 
   return (
@@ -192,7 +208,7 @@ const trail = () => {
           <p>{trailInfo.description}</p>
           <img className="img-thumbnail w-50" src={trailInfo.thumbnail} />
           <div className="row">
-            <div className="col">
+            <div className="col-4">
               <h3>Difficulty -
                 <small className="text-muted"> {trailInfo.difficulty}</small>
               </h3>
@@ -203,18 +219,19 @@ const trail = () => {
             {!userRatings.userLoaded
               ? null
               : (
-                <div className="col">
-                  <div onClick={() => editable('diff')}>
-                    <h3>My Difficulty -
+                <div className="col-8">
+                  <div onClick={(e) => editable(e, 'diff')}>
+                    <h3 style={{ display: 'inline' }}>My Difficulty -
                       {userRatings.diff.edit
-                        ? <Input value={userRatings.diff.value} changeHandler={changeHandler} name="diff" type="select" options={ratingOptions} />
-                        : <small className="text-muted"> {userRatings.diff.value}</small>
-                      }
+                        ? <Input value={userRatings.diff.value} changeHandler={changeHandler} name="diff" type="select" options={ratingOptions} style={{ display: 'inline' }} />
+                        : <small className="text-muted"> {userRatings.diff.value}</small>}
                     </h3>
                   </div>
-                  <div onClick={() => editable('like')}>
+                  <div onClick={(e) => editable(e, 'like')}>
                     <h3>My Likeability -
-                      <small className="text-muted"> {userRatings.like.value}</small>
+                      {userRatings.like.edit
+                        ? <Input value={userRatings.like.value} changeHandler={changeHandler} name="like" type="select" options={ratingOptions} style={{ display: 'inline' }} />
+                        : <small className="text-muted"> {userRatings.like.value}</small>}
                     </h3>
                   </div>
                 </div>
@@ -225,7 +242,16 @@ const trail = () => {
       <div className="col-6">
         {!photoInfo.length
           ? null
-          : <Carousel photos={photoInfo} currentPhoto={currentPhoto} changeCurrentPhoto={changeCurrentPhoto} />}
+          : (
+            <>
+              <Carousel
+                photos={photoInfo}
+                currentPhoto={currentPhoto}
+                changeCurrentPhoto={changeCurrentPhoto}
+              />
+              <AddComment appendComments={appendComments} />
+            </>
+          )}
       </div>
     </>
   );
