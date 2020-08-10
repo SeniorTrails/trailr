@@ -11,8 +11,7 @@ const carousel = ({ photos, currentPhoto, changeCurrentPhoto }) => {
   useEffect(() => {
     setComments([...photos[currentPhoto].comments]);
     setPhoto({ url: photos[currentPhoto].url });
-  }, [currentPhoto]);
-
+  }, [currentPhoto, photos]);
 
   return (
     <div>
