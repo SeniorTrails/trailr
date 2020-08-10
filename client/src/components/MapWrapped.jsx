@@ -1,7 +1,6 @@
 import React, { useState, setState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import * as trailData from '../data/trail-data.json';
-
-const _ = require('lodash');
 
 const {
   withScriptjs,
@@ -26,7 +25,7 @@ function Map() {
   const [markers, setMarkers] = useState(trailData.data);
 
   const onMarkerClustererClick = () => (markerClusterer) => {
-    const clickedMarkers = markerClusterer.getMarkers();
+    markerClusterer.getMarkers();
   };
 
   useEffect(() => {
@@ -80,7 +79,10 @@ function Map() {
             }}
           >
             <div>
-              <h2>{selectedTrail.name}</h2>
+              <Link to={`/trail/${selectedTrail.id}`} activeClassName="active">
+                <h2>{selectedTrail.name}</h2>
+              </Link>
+              <p>{selectedTrail.length} miles</p>
               <p>{selectedTrail.description}</p>
             </div>
           </InfoWindow>
