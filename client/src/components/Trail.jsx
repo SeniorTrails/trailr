@@ -179,6 +179,12 @@ const trail = () => {
     setCurrentPhoto(photoId);
   };
 
+  const appendComments = (newComment) => {
+    const updatedPhoto = { ...photoInfo[currentPhoto] };
+    updatedPhoto.comments.push({ newComment });
+    setPhotoInfo((prev) => ({ ...prev, updatedPhoto }));
+  };
+
   return (
     <>
       <div className="col-6">
@@ -241,7 +247,7 @@ const trail = () => {
                 currentPhoto={currentPhoto}
                 changeCurrentPhoto={changeCurrentPhoto}
               />
-              <AddComment />
+              <AddComment appendComments={appendComments} />
             </>
           )}
       </div>
