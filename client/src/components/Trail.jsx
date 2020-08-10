@@ -184,8 +184,6 @@ const trail = () => {
     const updatedPhoto = { ...updatedInfo[currentPhoto] };
     updatedPhoto.comments.push({ ...newComment });
     updatedInfo[currentPhoto] = updatedPhoto;
-    console.log(updatedInfo);
-    console.log(currentPhoto)
     setPhotoInfo(updatedInfo);
   };
 
