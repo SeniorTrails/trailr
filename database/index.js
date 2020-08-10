@@ -412,6 +412,12 @@ const updateDifficulty = (difficultyObject) => new Promise((resolve, reject) => 
     WHERE id_user = ? AND id_trail = ?
   `;
 
+  const getAvgDiffCommand = `
+      SELECT ROUND(AVG(value), 1) AS averageDifficulty
+      FROM rating_difficulty
+      WHERE id_trail = ?
+  `;
+
   connection.beginTransaction((error) => {
     if (error) {
       connection.rollback(() => {
@@ -457,15 +463,26 @@ const updateDifficulty = (difficultyObject) => new Promise((resolve, reject) => 
                   return reject(error);
                 });
               }
-              connection.commit((error) => {
-                if (error) {
-                  connection.rollback(() => {
-                    connection.release();
-                    return reject(error);
+              console.log('DIFFICULTY UPDATED');
+              connection.query(getAvgDiffCommand,
+                [idTrail],
+                (error, newAvgDiff) => {
+                  if (error) {
+                    connection.rollback(() => {
+                      connection.release();
+                      return reject(error);
+                    });
+                  }
+                  connection.commit((error) => {
+                    if (error) {
+                      connection.rollback(() => {
+                        connection.release();
+                        return reject(error);
+                      });
+                    }
+                    resolve(newAvgDiff);
                   });
-                }
-                resolve(updatedDifficulty, console.log('DIFFICULTY UPDATED'));
-              });
+                });
             });
         }
       });
