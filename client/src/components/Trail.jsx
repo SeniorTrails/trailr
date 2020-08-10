@@ -4,7 +4,7 @@ import Input from './input.jsx';
 import Map from './TrailMap.jsx';
 import Carousel from './Carousel.jsx';
 import AddComment from './AddComment.jsx';
-
+import AddPicture from './AddPicture.jsx';
 
 const data = {
   id: 279988,
@@ -190,7 +190,14 @@ const trail = () => {
   return (
     <>
       <div className="col-6">
-        <h2>{trailInfo.name}</h2>
+        <div className="row">
+          <div className="col-9">
+            <h2>{trailInfo.name}</h2>
+          </div>
+          <div className="col-3">
+            <AddPicture />
+          </div>
+        </div>
         <div style={{ width: '100%', height: '300px' }}>
           <Map
             googleMapURL={`https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=geometry,drawing,places&key=${process.env.GOOGLE_MAPS_API_KEY}`}
