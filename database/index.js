@@ -85,6 +85,66 @@ const getUser = (idGoogle) => new Promise((resolve, reject) => {
   });
 });
 
+const addUser = (userObject) => new Promise((resolve, reject) => {
+  console.log('ADD USER INVOKED');
+
+  const { idGoogle, name, profilePhotoUrl } = userObject;
+  const checkUserCommand = `
+    SELECT *
+    FROM users
+    WHERE id_google = ?
+  `;
+  const addUserCommand = `
+    INSERT INTO users (id_google, name, profile_photo_url)
+    VALUES (?, ?, ?)
+  `;
+  connection.beginTransaction((error) => {
+    if (error) {
+      connection.rollback(() => {
+        connection.release();
+        return reject(error);
+      });
+    }
+    connection.query(checkUserCommand, [idGoogle], (error, userResult) => {
+      if (error) {
+        connection.rollback(() => {
+          connection.release();
+          return reject(error);
+        });
+      }
+      if (userResult.length === 0) {
+        connection.query(addUserCommand,
+          [idGoogle, name, profilePhotoUrl],
+          (error, addedUser) => {
+            if (error) {
+              connection.rollback(() => {
+                connection.release();
+                return reject(error);
+              });
+            }
+            connection.commit((error) => {
+              if (error) {
+                connection.rollback(() => {
+                  connection.release();
+                  return reject(error);
+                });
+              }
+              resolve(addedUser, console.log('USER SUCCESSFULLY ADDED'));
+            });
+          });
+      } else if (userResult.length > 0) {
+        if (error) {
+          connection.rollback(() => {
+            connection.release();
+            return reject(error);
+          });
+        }
+        resolve('User already exists.');
+      }
+    });
+  });
+});
+
 const getTrail = (idTrail, idUser) => new Promise((resolve, reject) => {
   console.log('GET TRAIL INVOKED');
 
@@ -197,7 +257,7 @@ const getTrail = (idTrail, idUser) => new Promise((resolve, reject) => {
 });
 
 const addTrail = (trailObject) => new Promise((resolve, reject) => {
-  const trailData = { trailObject };
+  const { trailId } = trailObject;
   const addTrailCommand = '';
   connection.beginTransaction((error) => {
     if (error) {
@@ -206,7 +266,7 @@ const addTrail = (trailObject) => new Promise((resolve, reject) => {
         return reject(error);
       });
     }
-    connection.query(addTrailCommand, [trailData], (error, rows) => {
+    connection.query(addTrailCommand, [trailId], (error, rows) => {
       if (error) {
         connection.rollback(() => {
           connection.release();
@@ -227,7 +287,7 @@ const addTrail = (trailObject) => new Promise((resolve, reject) => {
 });
 
 const updateTrail = (trailObject) => new Promise((resolve, reject) => {
-  const trailData = { trailObject };
+  const { trailId } = trailObject;
   const updateTrailCommand = '';
   connection.beginTransaction((error) => {
     if (error) {
@@ -236,7 +296,7 @@ const updateTrail = (trailObject) => new Promise((resolve, reject) => {
         return reject(error);
       });
     }
-    connection.query(updateTrailCommand, [trailData], (error, rows) => {
+    connection.query(updateTrailCommand, [trailId], (error, rows) => {
       if (error) {
         connection.rollback(() => {
           connection.release();
@@ -257,7 +317,7 @@ const updateTrail = (trailObject) => new Promise((resolve, reject) => {
 });
 
 const deleteTrail = (trailObject) => new Promise((resolve, reject) => {
-  const trailData = { trailObject };
+  const { trailId } = trailObject;
   const deleteTrailCommand = '';
   connection.beginTransaction((error) => {
     if (error) {
@@ -266,7 +326,7 @@ const deleteTrail = (trailObject) => new Promise((resolve, reject) => {
         return reject(error);
       });
     }
-    connection.query(deleteTrailCommand, [trailData], (error, rows) => {
+    connection.query(deleteTrailCommand, [trailId], (error, rows) => {
       if (error) {
         connection.rollback(() => {
           connection.release();
@@ -348,6 +408,7 @@ const deleteTrail = (trailObject) => new Promise((resolve, reject) => {
 
 module.exports = {
   getUser,
+  addUser,
   getTrail,
   addTrail,
   updateTrail,
