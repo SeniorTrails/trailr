@@ -1,6 +1,5 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import SearchBox from './SearchBox.jsx';
 
 const header = () => (
   <nav className="navbar navbar-expand-lg navbar-light bg-light">
@@ -25,7 +24,6 @@ const header = () => (
         <a href="/auth/google" className="nav-item nav-link">Google</a>
       </div>
     </div>
-    {/* <SearchBox /> */}
   </nav>
 );
 
