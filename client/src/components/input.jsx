@@ -7,7 +7,7 @@ import React from 'react';
  * @param {Object} props value, changeHandler, name, label, type, options
  * @returns {JSX} label and input
  */
-const input = ({ value = '', changeHandler, name, label, type = 'text', options }) => {
+const input = ({ value = '', changeHandler, name, label, type = 'text', options, style }) => {
   let component = null;
 
   switch (type) {
@@ -24,7 +24,7 @@ const input = ({ value = '', changeHandler, name, label, type = 'text', options 
   }
 
   return (
-    <div>
+    <div style={style}>
       <label>
         {label}
         {component}
