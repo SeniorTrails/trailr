@@ -1,161 +1,92 @@
-import React, { useState, setState, useEffect } from 'react';
+import React, { Component, useEffect, useState } from 'react';
+import isEmpty from 'lodash.isempty';
+import Marker from './Marker.jsx';
+import GoogleMap from './GoogleMap.jsx';
+import SearchBox from './SearchBox.jsx';
 import { Link } from 'react-router-dom';
 import * as trailData from '../data/trail-data.json';
 
-const _ = require('lodash');
-const {
-  withScriptjs,
-  withGoogleMap,
-  GoogleMap,
-  InfoWindow,
-  Marker,
-} = require('react-google-maps');
-const {
-  SearchBox,
-} = require('react-google-maps/lib/components/places/SearchBox');
-const {
-  MarkerClusterer,
-} = require('react-google-maps/lib/components/addons/MarkerClusterer');
+class MapWithASearchBox extends Component {
+  constructor(props) {
+    super(props);
 
-function Map() {
-  const refs = {};
-  const [selectedTrail, setSelectedTrail] = useState(null);
-  const [userLocation, setUserLocation] = useState({
-    lat: 30.33735,
-    lng: -90.03733,
-  });
-  const [markers, setMarkers] = useState(trailData.data);
-  const [bounds, setBounds] = useState();
-  const [center, setCenter] = useState({});
-
-  const onMarkerClustererClick = () => (markerClusterer) => {
-    markerClusterer.getMarkers();
-  };
-
-  // SEARCH BAR
-  const onMapMounted = (ref) => {
-    refs.map = ref;
-  };
-  const onSearchBoxMounted = (ref) => {
-    refs.searchBox = ref;
-  };
-
-  const onBoundsChanged = () => {
-    setBounds(refs.map.getBounds());
-    if (refs.map === null) {
-      setCenter(userLocation);
-    } else {
-      setCenter(refs.map.getCenter());
-    }
-  };
-  const onPlacesChanged = () => {
-    const places = refs.searchBox.getPlaces();
-    const bounds = new google.maps.LatLngBounds();
-    places.forEach((place) => {
-      if (place.geometry.viewport) {
-        bounds.union(place.geometry.viewport);
-      } else {
-        bounds.extend(place.geometry.location);
-      }
-    });
-    const nextMarkers = places.map((place) => ({
-      position: place.geometry.location,
-    }));
-    const nextCenter = _.get(nextMarkers, '0.position', center);
-    setMarkers(nextMarkers);
-    setCenter(nextCenter);
-  };
-
-  useEffect(() => {
-    const listener = (e) => {
-      if (e.key === 'Escape') {
-        setSelectedTrail(null);
-      }
+    this.state = {
+      mapApiLoaded: false,
+      mapInstance: null,
+      mapApi: null,
+      places: trailData.data,
+      selectedTrail: null,
+      selectedTrailIndex: null,
+      userLocation: {
+        lat: 30.33735,
+        lng: -90.03733,
+      },
     };
-    window.addEventListener('keydown', listener);
+  }
+
+  apiHasLoaded = (map, maps) => {
+    this.setState({
+      mapApiLoaded: true,
+      mapInstance: map,
+      mapApi: maps,
+    });
+  };
+
+  addPlace = (place) => {
+    this.setState({ places: place });
+  };
+
+  render() {
+    const { places, mapApiLoaded, mapInstance, mapApi } = this.state;
+
     navigator.geolocation.getCurrentPosition((position) => {
       const { latitude, longitude } = position.coords;
-      setUserLocation({ lat: latitude, lng: longitude });
+      this.setState({ userLocation: { lat: latitude, lng: longitude } });
     });
-    return () => {
-      window.removeEventListener('keydown', listener);
-    };
-  }, []);
 
-  return (
-    <GoogleMap
-      ref={onMapMounted}
-      onBoundsChanged={onBoundsChanged}
-      defaultZoom={10}
-      defaultCenter={userLocation}
-      center={userLocation}
-    >
-      <SearchBox
-        ref={onSearchBoxMounted}
-        onPlacesChanged={onPlacesChanged}
-        bounds={bounds}
-        controlPosition={google.maps.ControlPosition.TOP_LEFT}
-      >
-        <input
-          type="text"
-          placeholder="Search"
-          style={{
-            boxSizing: 'border-box',
-            border: '1px solid transparent',
-            width: '240px',
-            height: '40px',
-            marginTop: '10px',
-            padding: '0 12px',
-            borderRadius: '3px',
-            boxShadow: '0 2px 2px rgba(0, 0, 0, 0.1)',
-            fontSize: '15px',
-            outline: 'none',
-            textOverflow: 'ellipses',
-          }}
-        />
-      </SearchBox>
-      <MarkerClusterer
-        onClick={onMarkerClustererClick}
-        averageCenter
-        enableRetinaIcons
-        gridSize={60}
-      >
-        {markers.map((trail) => (
-          <Marker
-            key={trail.id}
-            position={{
-              lat: +trail.lat,
-              lng: +trail.lon,
-            }}
-            onClick={() => {
-              setSelectedTrail(trail);
-            }}
+    return (
+      <>
+        {mapApiLoaded && (
+          <SearchBox
+            map={mapInstance}
+            mapApi={mapApi}
+            addplace={this.addPlace}
           />
-        ))}
-        {selectedTrail && (
-          <InfoWindow
-            onCloseClick={() => {
-              setSelectedTrail(null);
-            }}
-            position={{
-              lat: +selectedTrail.lat,
-              lng: +selectedTrail.lon,
-            }}
-          >
-            <div>
-              <Link to={`/trail/${selectedTrail.id}`} activeclassname="active">
-                <h2>{selectedTrail.name}</h2>
-              </Link>
-              <p>{selectedTrail.length} miles</p>
-              <p>{selectedTrail.description}</p>
-            </div>
-          </InfoWindow>
         )}
-      </MarkerClusterer>
-    </GoogleMap>
-  );
+        <GoogleMap
+          defaultZoom={10}
+          defaultCenter={{
+            lat: 30.33735,
+            lng: -90.03733,
+          }}
+          center={this.state.userLocation}
+          bootstrapURLKeys={{
+            key: process.env.GOOGLE_MAPS_API_KEY,
+            libraries: ['places', 'geometry'],
+          }}
+          yesIWantToUseGoogleMapApiInternals
+          onGoogleApiLoaded={({ map, maps }) => this.apiHasLoaded(map, maps)}
+        >
+          {!isEmpty(places) &&
+            places.map((place, i) => (
+              <Marker
+                color={i === this.state.selectedTrailIndex ? 'green' : 'blue'}
+                key={place.id}
+                text={place.name}
+                lng={place.lon}
+                lat={place.lat}
+                clickHandler={() => {
+                  this.setState({ selectedTrail: place });
+                  this.setState({ selectedTrailIndex: i });
+                }}
+                // lat={place.geometry.location.lat()}
+                // lng={place.geometry.location.lng()}
+              />
+            ))}
+        </GoogleMap>
+      </>
+    );
+  }
 }
-
-const MapWithASearchBox = withScriptjs(withGoogleMap(Map));
 
 export default MapWithASearchBox;
