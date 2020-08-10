@@ -28,6 +28,7 @@ const marker = ({clickHandler, color, size = 40, $hover }) => {
     position: 'absolute',
     transform: 'translate(-50%, -60%)',
     cursor: 'pointer',
+    zIndex: '100000',
   };
 
   return (
