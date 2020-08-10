@@ -4,9 +4,6 @@ const passport = require('passport');
 // import googleStrategy from passport library
 const GoogleStrategy = require('passport-google-oauth20');
 
-// import clientID and clientSecret in this file to use hidden auth credentials
-const keys = require('./keys');
-
 // import db query functions from database/index.js
 const { addUser } = require('../database/index');
 
@@ -15,12 +12,12 @@ passport.use(
   new GoogleStrategy({
   // options for the strategy, input clientID && clientSecret
     callbackURL: '/auth/google/redirect',
-    clientID: keys.google.clientID,
-    clientSecret: keys.google.clientSecret,
+    clientID: process.env.GOOGLE_CLIENT_ID,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
   }, (accessToken, refreshToken, profile, done) => {
     // passport callback function
-    console.log('passport callback fired');
-    console.log(profile);
+    // console.log('passport callback fired'); // indication that function fired
+    // console.log(profile); // shows returned profile information
     const { displayName, id, photos } = profile;
     addUser({
       idGoogle: id,
@@ -29,9 +26,10 @@ passport.use(
     })
       .then((newUser) => {
         console.log(`Created New User: ${newUser}`);
+        done(null, newUser);
       })
       .catch((error) => {
-        throw error;
+        done(error);
       });
   }),
 );

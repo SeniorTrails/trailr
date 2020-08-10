@@ -52,19 +52,6 @@ router.post('/trails/:id', (req, res) => {
     });
 });
 
-// // testing addUser function
-// router.post('/user/', (req, res) => {
-//   const userObject = req.body;
-//   addUser(userObject)
-//     .then((success) => {
-//       res.send(success);
-//     })
-//     .catch((error) => {
-//       res.sendStatus(500);
-//       throw error;
-//     });
-// });
-
 /* --------------------------------- PUT Requests -----------------------------------------------*/
 // tested - must be written '/trails/id'
 router.put('/trails/:id', (req, res) => {

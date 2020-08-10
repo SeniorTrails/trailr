@@ -1,8 +1,23 @@
+// require .env package
+require('dotenv').config();
+
 // import express framework
 const express = require('express');
 
+// import passport framework
+const passport = require('passport');
+
 // import body parser for response information
 const bodyParser = require('body-parser');
+
+// import cookie parser from express framework
+const cookieParser = require('cookie-parser');
+
+// import express-session middleware from express framework
+const session = require('express-session');
+
+// require passport-setup file, to enable passport middleware
+const passportSetup = require('../config/passport-setup');
 
 // import "router" variable from routes.js file
 const { router } = require('./api/routes');
@@ -10,20 +25,42 @@ const { router } = require('./api/routes');
 // import "authRouter" from auth-routes.js file
 const { authRouter } = require('../routes/auth-routes');
 
-// require passport-setup file, to enable passport middleware
-const passportSetup = require('../config/passport-setup');
-
 // create new instance of express frame work saved to local variable
 const app = express();
+
+// direct express to certain middleware for requests on certain paths
+app.use('/', express.static(`${__dirname}/../client/dist`));
+
+// utilize cookie-parser middleware from express framework
+app.use(cookieParser());
 
 // utilize body parser on incoming requests to server
 app.use(bodyParser.json());
 
+// utilize the urlencoder from express framework
+app.use(bodyParser.urlencoded({ extended: false }));
+
+// utilize express-session middleware to read session cookies
+app.use(session({
+  secret: process.env.SECRET, // not sure if this is right
+  resave: false,
+  saveUninitialized: true,
+  // cookie: { secure: true }, //don't know if we need this
+}));
+
+// utilize passport middleware initialize && session authentication functionality
+app.use(passport.initialize());
+app.use(passport.session());
+passport.serializeUser((user, done) => {
+  done(null, user);
+});
+
+passport.deserializeUser((user, done) => {
+  done(null, user);
+});
+
 // configure the PORT server will listen for calls on
 const PORT = 8080;
-
-// direct express to certain middleware for requests on certain paths
-app.use('/', express.static(`${__dirname}/../client/dist`));
 
 app.use('/api', router);
 
