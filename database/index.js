@@ -572,6 +572,91 @@ const updateLikeability = (likeabilityObject) => new Promise((resolve, reject) =
   });
 });
 
+const addComment = (commentObject) => new Promise((resolve, reject) => {
+  console.log('ADD TRAIL INVOKED');
+
+  const { text, idUser, idPhoto } = commentObject;
+
+  const addCommentCommand = `
+    INSERT INTO comments (text, id_user, id_photo)
+    VALUES (?, ?, ?)
+  `;
+
+  connection.beginTransaction((error) => {
+    if (error) {
+      connection.rollback(() => {
+        connection.release();
+        return reject(error);
+      });
+    }
+    connection.query(addCommentCommand,
+      [text, idUser, idPhoto],
+      (error, addedComment) => {
+        if (error) {
+          connection.rollback(() => {
+            connection.release();
+            return reject(error);
+          });
+        }
+        connection.commit((error) => {
+          if (error) {
+            connection.rollback(() => {
+              connection.release();
+              return reject(error);
+            });
+          }
+          console.log('COMMENT SUCCESSFULLY ADDED');
+          // const idComment = { id_comment: `${addedComment.insertId}` };
+          // console.log(addedComment.insertId);
+          // const idComment = addedComment.insertId;
+          resolve({ id_comment: `${addedComment.insertId}` });
+        });
+      });
+  });
+});
+
+const addPhoto = (photoObject) => new Promise((resolve, reject) => {
+  console.log('ADD TRAIL INVOKED');
+
+  const addPhotoCommand = `
+    INSERT INTO photos (url, description, lat, lng, id_user, id_trail)
+    VALUES (?, ?, ?, ?, ?, ?)
+  `;
+
+  connection.beginTransaction((error) => {
+    if (error) {
+      connection.rollback(() => {
+        connection.release();
+        return reject(error);
+      });
+    }
+    connection.query(addPhotoCommand,
+      [photoObject.url, photoObject.description, photoObject.lat,
+        photoObject.lng, photoObject.idUser, photoObject.idTrail],
+      (error, addedPhoto) => {
+        if (error) {
+          connection.rollback(() => {
+            connection.release();
+            return reject(error);
+          });
+        }
+        connection.commit((error) => {
+          if (error) {
+            connection.rollback(() => {
+              connection.release();
+              return reject(error);
+            });
+          }
+          console.log('PHOTO SUCCESSFULLY ADDED');
+          // const idComment = { id_comment: `${addedComment.insertId}` };
+          // console.log(addedComment.insertId);
+          // const idComment = addedComment.insertId;
+          resolve({ id_photo: `${addedPhoto.insertId}` });
+        });
+      });
+  });
+});
+
 module.exports = {
   getUser,
   addUser,
@@ -581,6 +666,8 @@ module.exports = {
   deleteTrail,
   updateDifficulty,
   updateLikeability,
+  addComment,
+  addPhoto,
 };
 
 // mysql -uroot < server/index.js
