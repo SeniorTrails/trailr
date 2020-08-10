@@ -1,76 +1,67 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
+import styled from 'styled-components';
+
+const Wrapper = styled.div`
+  position: relative;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 20px;
+`;
 
 class SearchBox extends Component {
-  static propTypes = {
-    mapsapi: PropTypes.shape({
-      places: PropTypes.shape({
-        SearchBox: PropTypes.func,
-      }),
-      event: PropTypes.shape({
-        clearInstanceListeners: PropTypes.func,
-      }),
-    }).isRequired,
-    placeholder: PropTypes.string,
-    onPlacesChanged: PropTypes.func,
-  };
-
-  static defaultProps = {
-    placeholder: 'Search...',
-    onPlacesChanged: null,
-  };
-
   constructor(props) {
     super(props);
-
-    this.searchInput = React.createRef();
+    this.clearSearchBox = this.clearSearchBox.bind(this);
   }
 
-  componentDidMount() {
-    const {
-      mapsapi: { places },
-    } = this.props;
-
-    this.searchBox = new places.SearchBox(this.searchInput.current);
+  componentDidMount({ map, mapApi } = this.props) {
+    this.searchBox = new mapApi.places.SearchBox(this.searchInput);
     this.searchBox.addListener('places_changed', this.onPlacesChanged);
+    this.searchBox.bindTo('bounds', map);
   }
 
-  componentWillUnmount() {
-    const {
-      mapsapi: { event },
-    } = this.props;
-
-    event.clearInstanceListeners(this.searchBox);
+  componentWillUnmount({ mapApi } = this.props) {
+    mapApi.event.clearInstanceListeners(this.searchInput);
   }
 
-  onPlacesChanged = () => {
-    const { onPlacesChanged } = this.props;
-
-    if (onPlacesChanged) {
-      onPlacesChanged(this.searchBox.getPlaces());
+  onPlacesChanged = ({ map, addplace } = this.props) => {
+    const selected = this.searchBox.getPlaces();
+    const { 0: place } = selected;
+    if (!place.geometry) return;
+    if (place.geometry.viewport) {
+      map.fitBounds(place.geometry.viewport);
+    } else {
+      map.setCenter(place.geometry.location);
+      map.setZoom(17);
     }
+
+    addplace(selected);
+    this.searchInput.blur();
   };
 
-  render() {
-    const { placeholder } = this.props;
+  clearSearchBox() {
+    this.searchInput.value = '';
+  }
 
+  render() {
     return (
-      <input
-        ref={this.searchInput}
-        placeholder={placeholder}
-        type="text"
-        style={{
-          width: '392px',
-          height: '48px',
-          fontSize: '20px',
-          padding: '12px 104px 11px 64px',
-        }}
-      />
+      <Wrapper>
+        <input
+          ref={(ref) => {
+            this.searchInput = ref;
+          }}
+          type="text"
+          onFocus={this.clearSearchBox}
+          placeholder="Enter a location"
+        />
+      </Wrapper>
     );
   }
 }
 
 export default SearchBox;
+
 
 // import React from 'react';
 // import Input from './input.jsx';

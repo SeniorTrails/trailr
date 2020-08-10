@@ -30,6 +30,7 @@
     "google-map-react": "^2.0.8",
     "jquery": "^3.5.1",
     "lodash": "^4.17.19",
+    "lodash.isempty": "^4.4.0",
     "mariadb": "^2.4.2",
     "mysql": "^2.18.1",
     "nodemon": "^2.0.4",
@@ -45,6 +46,7 @@
     "react-router-dom": "^5.2.0",
     "react-scripts": "^3.4.1",
     "recompose": "^0.30.0",
+    "styled-components": "^5.1.1",
     "use-supercluster": "^0.2.8"
   },
   "devDependencies": {
