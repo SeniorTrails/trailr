@@ -157,12 +157,12 @@ const getTrail = (/* idTrail, idUser */trailObject) => new Promise((resolve, rej
   const getTrailCommand = `
     SELECT *,
     (
-      SELECT ROUND(AVG(value), 1)
+      SELECT CAST(CAST(ROUND(AVG(value), 1) AS DECIMAL(2,1)) AS CHAR)
       FROM rating_difficulty
       WHERE id_trail = ?
     ) AS averageDifficulty,
     (
-      SELECT ROUND(AVG(value), 1)
+      SELECT CAST(CAST(ROUND(AVG(value), 1) AS DECIMAL(2,1)) AS CHAR)
       FROM rating_likeability
       WHERE id_trail = ?
     ) AS averageLikeability,
@@ -413,7 +413,7 @@ const updateDifficulty = (difficultyObject) => new Promise((resolve, reject) => 
   `;
 
   const getAvgDiffCommand = `
-      SELECT ROUND(AVG(value), 1) AS averageDifficulty
+      SELECT CAST(CAST(ROUND(AVG(value), 1) AS DECIMAL(2,1)) AS CHAR) AS averageDifficulty
       FROM rating_difficulty
       WHERE id_trail = ?
   `;
@@ -443,15 +443,7 @@ const updateDifficulty = (difficultyObject) => new Promise((resolve, reject) => 
                   return reject(error);
                 });
               }
-              connection.commit((error) => {
-                if (error) {
-                  connection.rollback(() => {
-                    connection.release();
-                    return reject(error);
-                  });
-                }
-                resolve(addedDifficulty, console.log('DIFFICULTY ADDED'));
-              });
+              console.log('DIFFICULTY RATING ADDED: ', addedDifficulty);
             });
         } else if (difficultyResult.length > 0) {
           connection.query(updateDifficultyCommand,
@@ -463,28 +455,28 @@ const updateDifficulty = (difficultyObject) => new Promise((resolve, reject) => 
                   return reject(error);
                 });
               }
-              console.log('DIFFICULTY UPDATED');
-              connection.query(getAvgDiffCommand,
-                [idTrail],
-                (error, newAvgDiff) => {
-                  if (error) {
-                    connection.rollback(() => {
-                      connection.release();
-                      return reject(error);
-                    });
-                  }
-                  connection.commit((error) => {
-                    if (error) {
-                      connection.rollback(() => {
-                        connection.release();
-                        return reject(error);
-                      });
-                    }
-                    resolve(newAvgDiff);
-                  });
-                });
+              console.log('DIFFICULTY RATING UPDATED: ', updatedDifficulty);
             });
         }
+        connection.query(getAvgDiffCommand,
+          [idTrail],
+          (error, newAvgDiff) => {
+            if (error) {
+              connection.rollback(() => {
+                connection.release();
+                return reject(error);
+              });
+            }
+            connection.commit((error) => {
+              if (error) {
+                connection.rollback(() => {
+                  connection.release();
+                  return reject(error);
+                });
+              }
+              resolve(newAvgDiff);
+            });
+          });
       });
   });
 });
@@ -511,6 +503,12 @@ const updateLikeability = (likeabilityObject) => new Promise((resolve, reject) =
     WHERE id_user = ? AND id_trail = ?
   `;
 
+  const getAvgLikeCommand = `
+  SELECT CAST(CAST(ROUND(AVG(value), 1) AS DECIMAL(2,1)) AS CHAR) AS averageLikeability
+  FROM rating_likeability
+  WHERE id_trail = ?
+`;
+
   connection.beginTransaction((error) => {
     if (error) {
       connection.rollback(() => {
@@ -536,15 +534,7 @@ const updateLikeability = (likeabilityObject) => new Promise((resolve, reject) =
                   return reject(error);
                 });
               }
-              connection.commit((error) => {
-                if (error) {
-                  connection.rollback(() => {
-                    connection.release();
-                    return reject(error);
-                  });
-                }
-                resolve(addedLikeability, console.log('LIKEABILITY ADDED'));
-              });
+              console.log('LIKEABILITY RATING ADDED: ', addedLikeability);
             });
         } else if (likeabilityResult.length > 0) {
           connection.query(updateLikeabilityCommand,
@@ -556,17 +546,28 @@ const updateLikeability = (likeabilityObject) => new Promise((resolve, reject) =
                   return reject(error);
                 });
               }
-              connection.commit((error) => {
-                if (error) {
-                  connection.rollback(() => {
-                    connection.release();
-                    return reject(error);
-                  });
-                }
-                resolve(updatedLikeability, console.log('LIKEABILITY UPDATED'));
-              });
+              console.log('LIKEABILITY RATING UPDATED: ', updatedLikeability);
             });
         }
+        connection.query(getAvgLikeCommand,
+          [idTrail],
+          (error, newAvgLike) => {
+            if (error) {
+              connection.rollback(() => {
+                connection.release();
+                return reject(error);
+              });
+            }
+            connection.commit((error) => {
+              if (error) {
+                connection.rollback(() => {
+                  connection.release();
+                  return reject(error);
+                });
+              }
+              resolve(newAvgLike);
+            });
+          });
       });
   });
 });
