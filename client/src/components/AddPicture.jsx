@@ -5,11 +5,12 @@ import Image from 'react-bootstrap/Image';
 import Input from './input.jsx';
 import useForm from '../helpers';
 
-const addPicture = () => {
+const addPicture = ({ appendPhoto }) => {
   const [show, setShow] = useState(false);
   const toggleModal = () => setShow(!show);
   const submitPicture = (data) => {
     toggleModal();
+    appendPhoto({ ...data, id: 92 });
     console.log(data);
   };
   const { values, changeHandler, submitHandler } = useForm(submitPicture);

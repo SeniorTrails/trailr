@@ -187,6 +187,12 @@ const trail = () => {
     setPhotoInfo(updatedInfo);
   };
 
+  const appendPhoto = (newPhoto) => {
+    const updatedInfo = [...photoInfo];
+    updatedInfo.push({ ...newPhoto, comments: [] });
+    setPhotoInfo(updatedInfo);
+  };
+
   return (
     <>
       <div className="col-6">
@@ -195,7 +201,7 @@ const trail = () => {
             <h2>{trailInfo.name}</h2>
           </div>
           <div className="col-3">
-            <AddPicture />
+            <AddPicture appendPhoto={appendPhoto} />
           </div>
         </div>
         <div style={{ width: '100%', height: '300px' }}>
