@@ -213,17 +213,15 @@ const trail = () => {
                   <div onClick={(e) => editable(e, 'diff')}>
                     <h3 style={{ display: 'inline' }}>My Difficulty -
                       {userRatings.diff.edit
-                        ? <Input value={userRatings.diff.value} changeHandler={changeHandler} name="diff" type="select" options={ratingOptions} />
-                        : <small className="text-muted"> {userRatings.diff.value}</small>
-                      }
+                        ? <Input value={userRatings.diff.value} changeHandler={changeHandler} name="diff" type="select" options={ratingOptions} style={{ display: 'inline' }} />
+                        : <small className="text-muted"> {userRatings.diff.value}</small>}
                     </h3>
                   </div>
                   <div onClick={(e) => editable(e, 'like')}>
                     <h3>My Likeability -
                       {userRatings.like.edit
-                        ? <Input value={userRatings.like.value} changeHandler={changeHandler} name="like" type="select" options={ratingOptions} />
-                        : <small className="text-muted"> {userRatings.like.value}</small>
-                      }
+                        ? <Input value={userRatings.like.value} changeHandler={changeHandler} name="like" type="select" options={ratingOptions} style={{ display: 'inline' }} />
+                        : <small className="text-muted"> {userRatings.like.value}</small>}
                     </h3>
                   </div>
                 </div>
