@@ -180,9 +180,13 @@ const trail = () => {
   };
 
   const appendComments = (newComment) => {
-    const updatedPhoto = { ...photoInfo[currentPhoto] };
-    updatedPhoto.comments.push({ newComment });
-    setPhotoInfo((prev) => ({ ...prev, updatedPhoto }));
+    const updatedInfo = [...photoInfo];
+    const updatedPhoto = { ...updatedInfo[currentPhoto] };
+    updatedPhoto.comments.push({ ...newComment });
+    updatedInfo[currentPhoto] = updatedPhoto;
+    console.log(updatedInfo);
+    console.log(currentPhoto)
+    setPhotoInfo(updatedInfo);
   };
 
   return (
