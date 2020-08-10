@@ -18,6 +18,9 @@ const input = ({ value = '', changeHandler, name, label, type = 'text', options,
         </select>
       );
       break;
+    case 'textarea':
+      component = <textarea name={name} value={value} onChange={changeHandler} rows="4" cols="30" />;
+      break;
     case 'text':
     default:
       component = <input name={name} type="text" value={value} onChange={changeHandler} />;
