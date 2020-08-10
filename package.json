@@ -21,10 +21,13 @@
   "homepage": "https://github.com/JamesFThomas/trailr#readme",
   "dependencies": {
     "@brainhubeu/react-carousel": "^1.19.26",
+    "@types/googlemaps": "^3.39.11",
+    "@types/markerclustererplus": "^2.1.33",
     "body-parser": "^1.19.0",
     "bootstrap": "^4.5.2",
     "eslint-plugin-jsx-a11y": "^6.3.1",
     "express": "^4.17.1",
+    "google-map-react": "^2.0.8",
     "jquery": "^3.5.1",
     "lodash": "^4.17.19",
     "mariadb": "^2.4.2",
