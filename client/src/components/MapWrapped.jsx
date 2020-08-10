@@ -77,19 +77,16 @@ function MapWithASearchBox() {
           enableRetinaIcons
           gridSize={60}
         > */}
-        {markers.map((trail) => (
+        {markers.map((item, i) => (
           <Marker
-            key={trail.id}
-            position={{
-              lat: +trail.lat,
-              lng: +trail.lon,
-            }}
-            onClick={() => {
-              setSelectedTrail(trail);
-            }}
+            color={i === selectedTrail ? 'green' : 'blue'}
+            clickHandler={() => setSelectedTrail(i)}
+            key={item.id}
+            lng={item.lon}
+            lat={item.lat}
           />
         ))}
-        {selectedTrail && (
+        {/* {selectedTrail && (
           <InfoWindow
             onCloseClick={() => {
               setSelectedTrail(null);
@@ -107,7 +104,7 @@ function MapWithASearchBox() {
               <p>{selectedTrail.description}</p>
             </div>
           </InfoWindow>
-        )}
+        )} */}
         {/* </MarkerClusterer> */}
       </GoogleMapReact>
     </div>
