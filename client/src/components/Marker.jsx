@@ -3,6 +3,12 @@ import redMarker from '../../assets/imgs/redMarker.png';
 import greenMarker from '../../assets/imgs/greenMarker.png';
 import blueMarker from '../../assets/imgs/blueMarker.png';
 
+/** Marker Component for Google Map, don't worry about the $hover
+ *   it is automatically handled. Only needs a lat, lng, and a clickHandler
+ * @param {Function} clickHandler function that runs on click
+ * @param {String} color of marker defaults to red
+ * @param {Number} size number for size defaults to 40
+ */
 const marker = ({clickHandler, color, size = 40, $hover }) => {
   let icon;
   switch (color){

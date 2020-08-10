@@ -5,6 +5,7 @@ import Modal from 'react-bootstrap/Modal';
 import Image from 'react-bootstrap/Image';
 import Input from './input.jsx';
 import useForm from '../helpers';
+import Marker from './Marker.jsx';
 
 const addPicture = ({ appendPhoto, center }) => {
   const [show, setShow] = useState(false);
@@ -32,7 +33,7 @@ const addPicture = ({ appendPhoto, center }) => {
               defaultCenter={center}
               defaultZoom={15}
             >
-
+              <Marker lat={center.lat} lng={center.lng} />
             </GoogleMapReact>
           </div>
         </Modal.Body>
