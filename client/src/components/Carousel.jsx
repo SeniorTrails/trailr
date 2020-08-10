@@ -13,7 +13,6 @@ const carousel = ({ photos, currentPhoto, changeCurrentPhoto }) => {
     setPhoto({ url: photos[currentPhoto].url });
   }, [currentPhoto]);
 
-
   return (
     <div>
       <Photo info={photo} />

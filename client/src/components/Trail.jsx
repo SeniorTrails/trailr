@@ -3,6 +3,8 @@ import { useParams } from 'react-router-dom';
 import Input from './input.jsx';
 import Map from './TrailMap.jsx';
 import Carousel from './Carousel.jsx';
+import AddComment from './AddComment.jsx';
+
 
 const data = {
   id: 279988,
@@ -233,11 +235,14 @@ const trail = () => {
         {!photoInfo.length
           ? null
           : (
-            <Carousel
-              photos={photoInfo}
-              currentPhoto={currentPhoto}
-              changeCurrentPhoto={changeCurrentPhoto}
-            />
+            <>
+              <Carousel
+                photos={photoInfo}
+                currentPhoto={currentPhoto}
+                changeCurrentPhoto={changeCurrentPhoto}
+              />
+              <AddComment />
+            </>
           )}
       </div>
     </>

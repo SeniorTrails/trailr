@@ -12,6 +12,7 @@ const dot = { url: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png" };
 
 const Map = ({ location, id, photoInfo, changeCurrentPhoto, currentPhoto }) => {
   const [selectedTrail, setSelectedTrail] = useState(null);
+  const photoList = photoInfo || [];
 
   useEffect(() => {
     const listener = (e) => {
@@ -28,7 +29,7 @@ const Map = ({ location, id, photoInfo, changeCurrentPhoto, currentPhoto }) => {
   return (
     <GoogleMap defaultZoom={15} defaultCenter={location}>
       <Marker key={id} position={location} />
-      {photoInfo.map((item, i) => (
+      {photoList.map((item, i) => (
         <Marker
           icon={i === currentPhoto ? selectedDot : dot}
           onClick={()=> changeCurrentPhoto(i)}
