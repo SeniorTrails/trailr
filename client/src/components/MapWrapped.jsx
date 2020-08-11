@@ -1,10 +1,10 @@
 import React, { Component, useEffect, useState } from 'react';
 import isEmpty from 'lodash.isempty';
+import { Link } from 'react-router-dom';
 import Marker from './Marker.jsx';
 import InfoWindow from './MarkerInfoWindow.jsx';
 import GoogleMap from './GoogleMap.jsx';
 import SearchBox from './SearchBox.jsx';
-import { Link } from 'react-router-dom';
 import * as trailData from '../data/trail-data.json';
 
 class MapWithASearchBox extends Component {
@@ -23,11 +23,26 @@ class MapWithASearchBox extends Component {
         lng: -90.03733,
       },
     };
+
+    this.escHandler = this.escHandler.bind(this);
   }
 
-  // onMarkerClustererClick = () => (markerClusterer) => {
-  //   markerClusterer.getMarkers();
-  // };
+  componentDidMount() {
+    window.addEventListener('keydown', this.escHandler);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('keydown', this.escHandler);
+  }
+
+  addPlace = (place) => {
+    this.setState({ places: place });
+  };
+
+  clearSelectedTrail = () => {
+    this.setState({ selectedTrail: null });
+    this.setState({ selectedTrailIndex: null });
+  };
 
   apiHasLoaded = (map, maps) => {
     this.setState({
@@ -37,9 +52,11 @@ class MapWithASearchBox extends Component {
     });
   };
 
-  addPlace = (place) => {
-    this.setState({ places: place });
-  };
+  escHandler(event) {
+    if (event.key === 'Escape') {
+      this.clearSelectedTrail();
+    }
+  }
 
   render() {
     const { places, mapApiLoaded, mapInstance, mapApi } = this.state;
@@ -78,19 +95,16 @@ class MapWithASearchBox extends Component {
                 color={i === this.state.selectedTrailIndex ? 'green' : 'blue'}
                 key={place.id}
                 text={place.name}
-                lng={place.lon}
-                lat={place.lat}
+                lat={place.lat || place.geometry.location.lat()}
+                lng={place.lon || place.geometry.location.lng()}
                 clickHandler={() => {
                   if (this.state.selectedTrailIndex === i) {
-                    this.setState({ selectedTrail: null });
-                    this.setState({ selectedTrailIndex: null });
+                    this.clearSelectedTrail();
                   } else {
                     this.setState({ selectedTrail: place });
                     this.setState({ selectedTrailIndex: i });
                   }
                 }}
-                // lat={place.geometry.location.lat()}
-                // lng={place.geometry.location.lng()}
               />
             ))}
           {this.state.selectedTrail && (
