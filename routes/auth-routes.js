@@ -26,16 +26,33 @@ authRouter.get('/logout', (req, res) => {
 authRouter.get('/google',
 // redirect users to google authenticate screen
   passport.authenticate('google', {
+    // retrieve the users profile information
     scope: ['profile'],
   }));
 
-// callback route for google to redirect to
+// callback route for google to redirect to homepage "/"
 authRouter.get('/google/redirect', passport.authenticate('google'), (req, res) => {
-  res.send('You reached the callback URI'); // this works
-  // res.redirect('/'); // this works sending back to home screen
+  console.log("USER", req.user);
+  console.log("COOKIES", req.cookies);
+  console.log("SIGNED COOKIES", req.signedCookies);
+  res.redirect('/'); // this works sending back to home screen
+  // res.send('You reached the callback URI'); // this works
 });
 
 // export "authRouter" variable to be used in other project files
 module.exports = {
   authRouter,
 };
+
+// // testing addUser function
+// authRouter.post('/user/', (req, res) => {
+//   const userObject = req.body;
+//   addUser(userObject)
+//     .then((success) => {
+//       res.send(success);
+//     })
+//     .catch((error) => {
+//       res.sendStatus(500);
+//       throw error;
+//     });
+// });
