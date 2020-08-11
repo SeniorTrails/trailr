@@ -22,7 +22,7 @@ const getUser = (id) => new Promise((resolve, reject) => {
   console.log('GET USER INVOKED');
 
   const getUserCommand = `
-    SELECT *,
+    SELECT *
     FROM users
     WHERE id = ?
   `;
