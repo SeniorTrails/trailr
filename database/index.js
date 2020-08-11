@@ -62,6 +62,17 @@ const getUser = (id) => new Promise((resolve, reject) => {
           });
         }
         user.photos = gottenPhotos;
+        if (!gottenPhotos.length) {
+          connection.commit((error) => {
+            if (error) {
+              connection.rollback(() => {
+                connection.release();
+                return reject(error);
+              });
+            }
+            resolve(user);
+          });
+        }
         user.photos.forEach((photo, i) => {
           const { id } = photo;
           connection.query(getCommentsCommand, [id], (error, gottenComments) => {
@@ -339,18 +350,20 @@ const updateTrail = (trailObject) => new Promise((resolve, reject) => {
   const updateTrailCommand = `
     UPDATE trails
     SET
-      api_id = ?
-      name = ?
-      city = ?
-      region = ?
-      country = ?
-      latitude = ?
-      longitude = ?
-      url = ?
-      thumbnail = ?
-      description = ?
-    WHERE id_trail = ?
+      api_id = ?,
+      name = ?,
+      city = ?,
+      region = ?,
+      country = ?,
+      latitude = ?,
+      longitude = ?,
+      url = ?,
+      thumbnail = ?,
+      description = ?,
+      status = ?
+    WHERE id = ?
   `;
+
   connection.beginTransaction((error) => {
     if (error) {
       connection.rollback(() => {
@@ -360,8 +373,8 @@ const updateTrail = (trailObject) => new Promise((resolve, reject) => {
     }
     connection.query(updateTrailCommand,
       [trailObject.api_id, trailObject.name, trailObject.city, trailObject.region,
-        trailObject.country, trailObject.latitude, trailObject.longitude,
-        trailObject.url, trailObject.thumbnail, trailObject.description, trailObject.id],
+        trailObject.country, trailObject.latitude, trailObject.longitude, trailObject.url,
+        trailObject.thumbnail, trailObject.description, trailObject.status, trailObject.id],
       (error, updatedTrail) => {
         if (error) {
           connection.rollback(() => {
@@ -376,7 +389,7 @@ const updateTrail = (trailObject) => new Promise((resolve, reject) => {
               return reject(error);
             });
           }
-          resolve({ id: updatedTrail.insertId }, console.log('TRAIL UPDATED'));
+          resolve(updatedTrail, console.log('TRAIL UPDATED'));
         });
       });
   });
@@ -451,7 +464,7 @@ const updateDifficulty = (difficultyObject) => new Promise((resolve, reject) => 
       });
     }
     connection.query(checkDifficultyCommand,
-      [id_user, id_trail, value],
+      [id_user, id_trail],
       (error, difficultyResult) => {
         if (error) {
           connection.rollback(() => {
@@ -542,7 +555,7 @@ const updateLikeability = (likeabilityObject) => new Promise((resolve, reject) =
       });
     }
     connection.query(checkLikeabilityCommand,
-      [id_user, id_trail, value],
+      [id_user, id_trail],
       (error, likeabilityResult) => {
         if (error) {
           connection.rollback(() => {
@@ -630,7 +643,7 @@ const addComment = (commentObject) => new Promise((resolve, reject) => {
               return reject(error);
             });
           }
-          console.log('COMMENT SUCCESSFULLY ADDED');
+          console.log('COMMENT ADDED');
           resolve({ id: `${addedComment.insertId}` });
         });
       });
@@ -669,7 +682,7 @@ const addPhoto = (photoObject) => new Promise((resolve, reject) => {
               return reject(error);
             });
           }
-          console.log('PHOTO SUCCESSFULLY ADDED');
+          console.log('PHOTO ADDED');
           resolve({ id: `${addedPhoto.insertId}` });
         });
       });
@@ -704,7 +717,7 @@ const deleteComment = (id) => new Promise((resolve, reject) => {
             return reject(error);
           });
         }
-        resolve(deletedCommentData, console.log('TRAIL DELETED'));
+        resolve(deletedCommentData, console.log('COMMENT DELETED'));
       });
     });
   });
