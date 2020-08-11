@@ -26,10 +26,11 @@ authRouter.get('/logout', (req, res) => {
 authRouter.get('/google',
 // redirect users to google authenticate screen
   passport.authenticate('google', {
+    // retrieve the users profile information
     scope: ['profile'],
   }));
 
-// callback route for google to redirect to
+// callback route for google to redirect to homepage "/"
 authRouter.get('/google/redirect', passport.authenticate('google'), (req, res) => {
   console.log("USER", req.user);
   console.log("COOKIES", req.cookies);

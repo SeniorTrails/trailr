@@ -25,6 +25,9 @@ const { router } = require('./api/routes');
 // import "authRouter" from auth-routes.js file
 const { authRouter } = require('../routes/auth-routes');
 
+// import db query functions from database/index.js
+const { getUser } = require('../database/index');
+
 // create new instance of express frame work saved to local variable
 const app = express();
 
@@ -54,9 +57,15 @@ app.use(passport.session());
 passport.serializeUser((user, done) => {
   done(null, user);
 });
-
 passport.deserializeUser((user, done) => {
-  done(null, user);
+  // use find user by id
+  // getUser(id)
+  //   .then((user) => {
+  //   })
+  //   .catch((error) => {
+  //     throw error;
+  //   });
+    done(null, user);
 });
 
 // configure the PORT server will listen for calls on

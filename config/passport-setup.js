@@ -26,6 +26,7 @@ passport.use(
     })
       .then((newUser) => {
         console.log(`Created New User: ${newUser}`);
+        // completes the http request, and sends information to next function in middleware chain
         done(null, newUser);
       })
       .catch((error) => {
