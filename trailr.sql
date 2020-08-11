@@ -6,7 +6,7 @@ USE trailr;
 
 CREATE TABLE users (
   id int AUTO_INCREMENT,
-  id_google varchar(255),
+  google_id varchar(255),
   name varchar(255),
   profile_photo_url varchar(255),
   PRIMARY KEY (id)
@@ -80,10 +80,10 @@ CREATE TABLE favorites (
   PRIMARY KEY (id)
 );
 
-INSERT into users (id_google, name, profile_photo_url) VALUES ("100320448870922542711", "Daniel", "https://lh3.googleusercontent.com/a-/AOh14GgCnlLMDczQTYGKy6XfF5EeNsrbDXh4y8j3hLdNvw");
-INSERT into users (id_google, name, profile_photo_url) VALUES ("100876014081435780413", "Grant", "https://i.pinimg.com/originals/5c/66/c6/5c66c624f16feab720c601f832b2235e.jpg");
-INSERT into users (id_google, name, profile_photo_url) VALUES ("100235682659824703476", "James", "https://avatars1.githubusercontent.com/u/57680469?s=400&u=58ab864ffb55ce45866c75fb05e1f6a8e8c6dfb1&v=4");
-INSERT into users (id_google, name, profile_photo_url) VALUES ("100173654872631765438", "Peter", "https://avatars3.githubusercontent.com/u/60944077?s=400&u=d25afe3d4ebcac749237f03a766dc567c4c9d6f0&v=4");
+INSERT into users (google_id, name, profile_photo_url) VALUES ("100320448870922542711", "Daniel", "https://lh3.googleusercontent.com/a-/AOh14GgCnlLMDczQTYGKy6XfF5EeNsrbDXh4y8j3hLdNvw");
+INSERT into users (google_id, name, profile_photo_url) VALUES ("100876014081435780413", "Grant", "https://i.pinimg.com/originals/5c/66/c6/5c66c624f16feab720c601f832b2235e.jpg");
+INSERT into users (google_id, name, profile_photo_url) VALUES ("100235682659824703476", "James", "https://avatars1.githubusercontent.com/u/57680469?s=400&u=58ab864ffb55ce45866c75fb05e1f6a8e8c6dfb1&v=4");
+INSERT into users (google_id, name, profile_photo_url) VALUES ("100173654872631765438", "Peter", "https://avatars3.githubusercontent.com/u/60944077?s=400&u=d25afe3d4ebcac749237f03a766dc567c4c9d6f0&v=4");
 -- INSERT into users (id_google, name, photo_url) VALUES ("", "", "");
 
 INSERT into trails (api_id, name, url, description, city, region, country, latitude, longitude, thumbnail) VALUES ("276986", "City Park Trail", "https://www.singletracks.com/bike-trails/city-park-trail/", "A short off road trail in what once was the south golf course in City Park.", "New Orleans", "Louisiana", "United States", "29.99931", "90.08722", "https://images.singletracks.com/blog/wp-content/uploads/2016/12/IMG_20161117_111618485-orig.jpg");
