@@ -7,11 +7,6 @@ import SearchBox from './SearchBox.jsx';
 import { Link } from 'react-router-dom';
 import * as trailData from '../data/trail-data.json';
 
-// const { InfoWindow } = require('react-google-maps');
-// const {
-//   MarkerClusterer,
-// } = require('react-google-maps/lib/components/addons/MarkerClusterer');
-
 class MapWithASearchBox extends Component {
   constructor(props) {
     super(props);
@@ -86,8 +81,13 @@ class MapWithASearchBox extends Component {
                 lng={place.lon}
                 lat={place.lat}
                 clickHandler={() => {
-                  this.setState({ selectedTrail: place });
-                  this.setState({ selectedTrailIndex: i });
+                  if (this.state.selectedTrailIndex === i) {
+                    this.setState({ selectedTrail: null });
+                    this.setState({ selectedTrailIndex: null });
+                  } else {
+                    this.setState({ selectedTrail: place });
+                    this.setState({ selectedTrailIndex: i });
+                  }
                 }}
                 // lat={place.geometry.location.lat()}
                 // lng={place.geometry.location.lng()}
