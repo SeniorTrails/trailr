@@ -1,10 +1,16 @@
 import React, { Component, useEffect, useState } from 'react';
 import isEmpty from 'lodash.isempty';
 import Marker from './Marker.jsx';
+import InfoWindow from './MarkerInfoWindow.jsx';
 import GoogleMap from './GoogleMap.jsx';
 import SearchBox from './SearchBox.jsx';
 import { Link } from 'react-router-dom';
 import * as trailData from '../data/trail-data.json';
+
+// const { InfoWindow } = require('react-google-maps');
+// const {
+//   MarkerClusterer,
+// } = require('react-google-maps/lib/components/addons/MarkerClusterer');
 
 class MapWithASearchBox extends Component {
   constructor(props) {
@@ -23,6 +29,10 @@ class MapWithASearchBox extends Component {
       },
     };
   }
+
+  // onMarkerClustererClick = () => (markerClusterer) => {
+  //   markerClusterer.getMarkers();
+  // };
 
   apiHasLoaded = (map, maps) => {
     this.setState({
@@ -83,6 +93,29 @@ class MapWithASearchBox extends Component {
                 // lng={place.geometry.location.lng()}
               />
             ))}
+          {this.state.selectedTrail && (
+            <InfoWindow
+              props={this.state}
+              onCloseClick={() => {
+                this.setState({ selectedTrail: null });
+              }}
+              position={{
+                lat: +this.state.selectedTrail.lat,
+                lng: +this.state.selectedTrail.lon,
+              }}
+            >
+              <div>
+                <Link
+                  to={`/trail/${this.state.selectedTrail.id}`}
+                  activeclassname="active"
+                >
+                  <h2>{this.state.selectedTrail.name}</h2>
+                </Link>
+                <p>{this.state.selectedTrail.length} miles</p>
+                <p>{this.state.selectedTrail.description}</p>
+              </div>
+            </InfoWindow>
+          )}
         </GoogleMap>
       </>
     );
