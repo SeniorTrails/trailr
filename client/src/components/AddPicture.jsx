@@ -16,7 +16,7 @@ const maxImageSize = 5 * 1024 * 1024; // 5MBs
 
 const addPicture = ({ appendPhoto, center }) => {
   const [show, setShow] = useState(false);
-  const [images, setImages] = useState([]);
+  const [images, setImages] = useState({});
   const toggleModal = () => setShow(!show);
 
   // Handles new file uploads
@@ -42,8 +42,8 @@ const addPicture = ({ appendPhoto, center }) => {
                 .then((result) => {
                   newImage.url = URL.createObjectURL(result);
                   setImages((prev) => {
-                    const updated = [...prev];
-                    updated.push(newImage);
+                    const updated = { ...prev};
+                    updated[newImage.key] = newImage;
                     return updated;
                   });
                 })
@@ -52,14 +52,28 @@ const addPicture = ({ appendPhoto, center }) => {
                 });
             } else {
               setImages((prev) => {
-                const updated = [...prev];
-                updated.push(newImage);
+                const updated = { ...prev};
+                updated[newImage.key] = newImage;
                 return updated;
               });
             }
           });
       }
     }
+  };
+
+  const addMarker = ({ lat, lng }, key) => {
+    setImages((prev) => {
+      const updated = { ...prev };
+      updated[key].lat = lat;
+      updated[key].lng = lng;
+      return updated;
+    });
+  };
+
+  const submitHandler = () => {
+    console.log(images);
+    appendPhoto(images);
   };
 
   return (
@@ -71,10 +85,10 @@ const addPicture = ({ appendPhoto, center }) => {
         </Modal.Header>
         <Modal.Body>
           <input onChange={changeHandler} type='file' id='imageUpload' multiple />
-          {images.map((image) => (
-            <Row key={image.key}>
+          {Object.keys(images).map((key) => (
+            <Row key={images[key].key}>
               <Col>
-                <Image thumbnail src={image.url} />
+                <Image thumbnail src={images[key].url} />
               </Col>
               <Col>
                 <div style={{ height: '300px', width: '100%' }}>
@@ -82,24 +96,18 @@ const addPicture = ({ appendPhoto, center }) => {
                     bootstrapURLKeys={{ key: process.env.GOOGLE_MAPS_API_KEY }}
                     defaultCenter={center}
                     defaultZoom={17}
+                    onClick={(e) => addMarker(e, images[key].key)}
                   >
-                    <Marker lat={image.lat} lng={image.lng} />
+                    <Marker lat={images[key].lat} lng={images[key].lng} />
                   </GoogleMapReact>
                 </div>
               </Col>
             </Row>
           ))}
-          {/*({ imageList, onImageUpload }) => (
-            <>
-              <Row>
-                <Col><Button onClick={onImageUpload}>Upload Image</Button></Col>
-              </Row>
-
-            </>
-              )*/}
         </Modal.Body>
         <Modal.Footer>
           <Button variant="danger" onClick={toggleModal}>Close</Button>
+          <Button variant="success" onClick={submitHandler}>Submit Images</Button>
         </Modal.Footer>
       </Modal>
     </>
