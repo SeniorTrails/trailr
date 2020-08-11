@@ -8,7 +8,8 @@ const Map = ({ location, photoInfo, changeCurrentPhoto, currentPhoto }) => {
   return (
     <GoogleMapReact
       bootstrapURLKeys={{ key: process.env.GOOGLE_MAPS_API_KEY }}
-      defaultCenter={location}
+      defaultCenter={{ lat: 0, lng: 0 }}
+      center={location}
       defaultZoom={15}
     >
       <Marker lat={location.lat} lng={location.lng} clickHandler={()=>{}} />
