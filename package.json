@@ -34,7 +34,6 @@
     "google-map-react": "^2.0.8",
     "heic2any": "0.0.3",
     "jquery": "^3.5.1",
-    "lodash": "^4.17.19",
     "lodash.isempty": "^4.4.0",
     "mariadb": "^2.4.2",
     "mysql": "^2.18.1",
