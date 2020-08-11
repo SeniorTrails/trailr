@@ -201,7 +201,10 @@ const trail = () => {
             <h2>{trailInfo.name}</h2>
           </div>
           <div className="col-3">
-            <AddPicture appendPhoto={appendPhoto} />
+            <AddPicture
+              appendPhoto={appendPhoto}
+              center={{ lat: trailInfo.lat, lng: trailInfo.lon }}
+            />
           </div>
         </div>
         <div style={{ width: '100%', height: '300px' }}>
