@@ -18,14 +18,14 @@ const InfoWindow = ({ props, onCloseClick }) => {
   const thumbnail = place.thumbnail;
   const infoWindowStyle = {
     position: 'relative',
-    bottom: 0,
+    bottom: 200,
     left: '0px',
     width: 0,
     backgroundColor: 'rgba(0, 0, 0, 0)',
     boxShadow: '0 0px 0px 0px rgba(0, 0, 0, 0)',
-    padding: 0,
+    padding: 10,
     fontSize: 14,
-    zIndex: 0,
+    zIndex: 100,
   };
 
   return (
@@ -59,10 +59,9 @@ const InfoWindow = ({ props, onCloseClick }) => {
               <div>
                 <Image
                   src={thumbnail}
-                  fluid
                   thumbnail
                   rounded
-                  style={{ width: '200px' }}
+                  style={{ width: '130px' }}
                 />
               </div>
               <div style={{ fontSize: 14 }}>
@@ -81,7 +80,7 @@ const InfoWindow = ({ props, onCloseClick }) => {
               </div>
               <div
                 className="text-truncate"
-                style={{ fontSize: 14, color: 'black', width: '20rem' }}
+                style={{ fontSize: 14, color: 'black', width: '14rem' }}
               >
                 {place.description}
                 <br />

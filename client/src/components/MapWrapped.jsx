@@ -1,6 +1,7 @@
 import React, { Component, useEffect, useState } from 'react';
 import isEmpty from 'lodash.isempty';
 import { Link } from 'react-router-dom';
+import MarkerClusterer from '@google/markerclusterer';
 import Marker from './Marker.jsx';
 import InfoWindow from './InfoWindow.jsx';
 import GoogleMap from './GoogleMap.jsx';
@@ -29,10 +30,43 @@ class MapWithASearchBox extends Component {
 
   componentDidMount() {
     window.addEventListener('keydown', this.escHandler);
+
+    const script = document.createElement('script');
+    script.src =
+      'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/markerclusterer.js';
+    script.async = true;
+    document.body.appendChild(script);
   }
 
   componentWillUnmount() {
     window.removeEventListener('keydown', this.escHandler);
+  }
+
+  setGoogleMapRef(map, maps) {
+    this.setState({
+      mapApiLoaded: true,
+      mapInstance: map,
+      mapApi: maps,
+    });
+    this.googleMapRef = map;
+    this.googleRef = maps;
+    const { places } = this.state;
+    let locations = places.reduce((coordinates, currentTrail) => {
+      coordinates.push({ lat: +currentTrail.lat, lng: +currentTrail.lon });
+      return coordinates;
+    }, []);
+    let markers =
+      locations &&
+      locations.map((location) => {
+        return new this.googleRef.Marker({ position: location });
+      });
+
+    let markerCluster = new MarkerClusterer(map, markers, {
+      imagePath:
+        'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m',
+      gridSize: 10,
+      minimumClusterSize: 2,
+    });
   }
 
   addPlace = (place) => {
@@ -42,14 +76,6 @@ class MapWithASearchBox extends Component {
   clearSelectedTrail = () => {
     this.setState({ selectedTrail: null });
     this.setState({ selectedTrailIndex: null });
-  };
-
-  apiHasLoaded = (map, maps) => {
-    this.setState({
-      mapApiLoaded: true,
-      mapInstance: map,
-      mapApi: maps,
-    });
   };
 
   escHandler(event) {
@@ -87,7 +113,8 @@ class MapWithASearchBox extends Component {
             libraries: ['places', 'geometry'],
           }}
           yesIWantToUseGoogleMapApiInternals
-          onGoogleApiLoaded={({ map, maps }) => this.apiHasLoaded(map, maps)}
+          onGoogleApiLoaded={({ map, maps }) => this.setGoogleMapRef(map, maps)}
+          options={{ streetViewControl: false }}
         >
           {!isEmpty(places) &&
             places.map((place, i) => (
