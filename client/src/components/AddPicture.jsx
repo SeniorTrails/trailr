@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import GoogleMapReact from 'google-map-react';
 import heic2any from 'heic2any';
+import exifr from 'exifr';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
@@ -18,39 +19,46 @@ const addPicture = ({ appendPhoto, center }) => {
   const [images, setImages] = useState([]);
   const toggleModal = () => setShow(!show);
 
+  // Handles new file uploads
   const changeHandler = (e) => {
     e.persist();
-    console.log(e.target.files);
     if (e.target.files) {
-      const updatedImages = [...images];
       for (let i = 0; i < e.target.files.length; i += 1) {
-        console.log(e.target.files[i]);
-        const newImage = {
-          key: e.target.files[i].name,
-          url: URL.createObjectURL(e.target.files[i]),
-          lat: center.lat,
-          lng: center.lng,
-        };
-        if (newImage.key.match(/.heic$|.HEIC$/)) {
-          const blob = e.target.files[i];
-          heic2any({ blob })
-            .then((result) => {
-              console.log(result)
-              newImage.url = URL.createObjectURL(result);
+        // Parse the metadata off the image,
+        // latitude and longitude
+        exifr.parse(e.target.files[i])
+          .then((metaData) => {
+            console.log(metaData);
+            const newImage = {
+              key: e.target.files[i].name,
+              url: URL.createObjectURL(e.target.files[i]),
+              lat: metaData.latitude,
+              lng: metaData.longitude,
+            };
+            // If the image is a heic convert it
+            if (newImage.key.match(/.heic$|.HEIC$/)) {
+              const blob = e.target.files[i];
+              heic2any({ blob })
+                .then((result) => {
+                  newImage.url = URL.createObjectURL(result);
+                  setImages((prev) => {
+                    const updated = [...prev];
+                    updated.push(newImage);
+                    return updated;
+                  });
+                })
+                .catch((err) => {
+                  console.log(err);
+                });
+            } else {
               setImages((prev) => {
                 const updated = [...prev];
                 updated.push(newImage);
                 return updated;
               });
-            })
-            .catch((err) => {
-              console.log(err);
-            });
-        } else {
-          updatedImages.push(newImage);
-        }
+            }
+          });
       }
-      setImages(updatedImages);
     }
   };
 
@@ -64,7 +72,7 @@ const addPicture = ({ appendPhoto, center }) => {
         <Modal.Body>
           <input onChange={changeHandler} type='file' id='imageUpload' multiple />
           {images.map((image) => (
-            <Row key={image.name}>
+            <Row key={image.key}>
               <Col>
                 <Image thumbnail src={image.url} />
               </Col>
@@ -75,7 +83,7 @@ const addPicture = ({ appendPhoto, center }) => {
                     defaultCenter={center}
                     defaultZoom={17}
                   >
-                    <Marker lat={center.lat} lng={center.lng} />
+                    <Marker lat={image.lat} lng={image.lng} />
                   </GoogleMapReact>
                 </div>
               </Col>
