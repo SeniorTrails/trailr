@@ -3,6 +3,9 @@ import Navbar from 'react-bootstrap/Navbar';
 import Nav from 'react-bootstrap/Nav';
 import { Link } from 'react-router-dom';
 
+/**
+ * Header to the page, contains all our navigation links
+ */
 const header = () => (
   <Navbar expand="lg" bg="light">
     <Link to="/" className="navbar-brand">Trailr</Link>
