@@ -207,16 +207,16 @@ const user = () => {
         <h2>Saved Trails</h2>
         {!myTrails.length
           ? null
-          : (
-            <Accordion>
+          : myTrails.map((trail) => (
+            <Accordion key={trail.id}>
               <Card>
                 <Accordion.Toggle as={Card.Header} eventKey="0">
                   <Row>
                     <Col xs={9}>
-                      {myTrails[0].name}
+                      {trail.name}
                     </Col>
                     <Col xs={3}>
-                      <Link to={`/trail/${myTrails[0].id}`}>See Trail</Link>
+                      <Link to={`/trail/${trail.id}`}>See Trail</Link>
                     </Col>
                   </Row>
                 </Accordion.Toggle>
@@ -224,17 +224,17 @@ const user = () => {
                   <Card.Body>
                     <Row>
                       <Col xs={4}>
-                        <Image thumbnail src={myTrails[0].thumbnail} />
+                        <Image thumbnail src={trail.thumbnail} />
                       </Col>
                       <Col xs={8}>
-                        {myTrails[0].description}
+                        {trail.description}
                       </Col>
                     </Row>
                   </Card.Body>
                 </Accordion.Collapse>
               </Card>
             </Accordion>
-          )}
+          ))}
       </Col>
     </>
   );
