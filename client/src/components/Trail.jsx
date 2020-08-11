@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
+import Image from 'react-bootstrap/Image';
 import Input from './input.jsx';
 import Map from './TrailMap.jsx';
 import Carousel from './Carousel.jsx';
@@ -197,18 +200,18 @@ const trail = () => {
 
   return (
     <>
-      <div className="col-6">
-        <div className="row">
-          <div className="col-9">
+      <Col xs={6}>
+        <Row>
+          <Col xs={9}>
             <h2>{trailInfo.name}</h2>
-          </div>
-          <div className="col-3">
+          </Col>
+          <Col xs={3}>
             <AddPicture
               appendPhoto={appendPhoto}
               center={{ lat: trailInfo.lat, lng: trailInfo.lon }}
             />
-          </div>
-        </div>
+          </Col>
+        </Row>
         <div style={{ width: '100%', height: '300px' }}>
           <Map
             googleMapURL={`https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=geometry,drawing,places&key=${process.env.GOOGLE_MAPS_API_KEY}`}
@@ -224,20 +227,20 @@ const trail = () => {
         </div>
         <div>
           <p>{trailInfo.description}</p>
-          <img className="img-thumbnail w-50" src={trailInfo.thumbnail} />
-          <div className="row">
-            <div className="col-4">
+          <Image className="w-50" src={trailInfo.thumbnail} />
+          <Row>
+            <Col xs={4}>
               <h3>Difficulty -
                 <small className="text-muted"> {trailInfo.difficulty}</small>
               </h3>
               <h3>Likeability -
                 <small className="text-muted"> {trailInfo.likeability}</small>
               </h3>
-            </div>
+            </Col>
             {!userRatings.userLoaded
               ? null
               : (
-                <div className="col-8">
+                <Col xs={8}>
                   <div onClick={(e) => editable(e, 'diff')}>
                     <h3 style={{ display: 'inline' }}>My Difficulty -
                       {userRatings.diff.edit
@@ -252,12 +255,12 @@ const trail = () => {
                         : <small className="text-muted"> {userRatings.like.value}</small>}
                     </h3>
                   </div>
-                </div>
+                </Col>
               )}
-          </div>
+          </Row>
         </div>
-      </div>
-      <div className="col-6">
+      </Col>
+      <Col xs={6}>
         {!photoInfo.length
           ? null
           : (
@@ -270,7 +273,7 @@ const trail = () => {
               <AddComment appendComments={appendComments} />
             </>
           )}
-      </div>
+      </Col>
     </>
   );
 };
