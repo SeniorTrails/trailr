@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 import GoogleMapReact from 'google-map-react';
 import heic2any from 'heic2any';
 import exifr from 'exifr';
@@ -7,19 +8,31 @@ import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import Image from 'react-bootstrap/Image';
-import Input from './input.jsx';
-import useForm from '../helpers';
 import Marker from './Marker.jsx';
 
+// The intention is to implement these at some point to keep people from overloading us
 const maxImages = 10;
 const maxImageSize = 5 * 1024 * 1024; // 5MBs
 
+/**
+ * File picker that pulls metadata off photos or lets users manually select a lat&lng
+ *  for where they took the photo. You can upload multiple files and it adds them to
+ *  the google cloud storage bucket and then calls appendPhoto to avoid another DB call.
+ * @param {Function} appendPhoto function that adds photos to the trail
+ * @param {Object} center contains a lat and lng to center the maps on if no gps data
+ */
 const addPicture = ({ appendPhoto, center }) => {
   const [show, setShow] = useState(false);
   const [images, setImages] = useState({});
   const toggleModal = () => setShow(!show);
 
-  // Handles new file uploads
+  /**
+   * Handles whenever a user adds files from their computer. It parses
+   *  the gps data off the phot. Then uploads it to the browser, but if
+   *  it is a heic file it has to first convert it. Finally it adds them
+   *  to the images state.
+   * @param {Event} e event that we persist and pull the files off
+   */
   const changeHandler = (e) => {
     e.persist();
     if (e.target.files) {
@@ -62,6 +75,11 @@ const addPicture = ({ appendPhoto, center }) => {
     }
   };
 
+  /**
+   * Updates the marker location of the photo
+   * @param {Object} location contains new lat and lng
+   * @param {String} key name of the photo to update
+   */
   const addMarker = ({ lat, lng }, key) => {
     setImages((prev) => {
       const updated = { ...prev };
@@ -71,6 +89,9 @@ const addPicture = ({ appendPhoto, center }) => {
     });
   };
 
+  /**
+   * Uploads the images to the database, and calls appendPhoto
+   */
   const submitHandler = () => {
     console.log(images);
     appendPhoto(images);
@@ -84,7 +105,7 @@ const addPicture = ({ appendPhoto, center }) => {
           <Modal.Title>Add New Picture</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <input onChange={changeHandler} type='file' id='imageUpload' multiple />
+          <input onChange={changeHandler} type="file" id="imageUpload" multiple />
           {Object.keys(images).map((key) => (
             <Row key={images[key].key}>
               <Col>
@@ -115,3 +136,11 @@ const addPicture = ({ appendPhoto, center }) => {
 };
 
 export default addPicture;
+
+addPicture.propTypes = {
+  appendPhot: PropTypes.func.isRequired,
+  center: PropTypes.shape({
+    lat: PropTypes.number.isRequired,
+    lng: PropTypes.number.isRequired,
+  }).isRequired,
+};
