@@ -65,7 +65,7 @@ passport.deserializeUser((user, done) => {
   //   .catch((error) => {
   //     throw error;
   //   });
-    done(null, user);
+  done(null, user);
 });
 
 // configure the PORT server will listen for calls on

@@ -17,12 +17,12 @@ passport.use(
   }, (accessToken, refreshToken, profile, done) => {
     // passport callback function
     // console.log('passport callback fired'); // indication that function fired
-    // console.log(profile); // shows returned profile information
+    console.log('USER PROFILE', profile); // shows returned profile information
     const { displayName, id, photos } = profile;
     addUser({
-      idGoogle: id,
+      google_id: id,
       name: displayName,
-      profilePhotoUrl: photos[0].value,
+      profile_photo_url: photos[0].value,
     })
       .then((newUser) => {
         console.log(`Created New User: ${newUser}`);

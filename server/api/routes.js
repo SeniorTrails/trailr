@@ -3,7 +3,19 @@ const { Router } = require('express');
 
 // importing DB query functions
 const {
-  getUser, getTrail, addTrail, updateTrail, deleteTrail, addUser, updateLikeability, updateDifficulty} = require('../../database/index.js');
+  getUser,
+  addUser,
+  getTrail,
+  addTrail,
+  updateTrail,
+  deleteTrail,
+  updateDifficulty,
+  updateLikeability,
+  addComment,
+  addPhoto,
+  deleteComment,
+  deletePhoto,
+} = require('../../database/index.js');
 
 // set local variable to  a new instance of express router
 const router = Router();
@@ -12,11 +24,12 @@ const router = Router();
 
 /* --------------------------------- Get Requests ------------------------------------------------*/
 
-// tested - must be written '/users/id'
-router.get('/trails/:id', (req, res) => {
-  getTrail()
+// tested - sends back whole trail object, "getTrail"
+router.get('/trails', (req, res) => {
+  const { body } = req;
+  getTrail(body)
     .then((success) => {
-      res.send('******HIT THE THEN in getTrail********');
+      console.log('******HIT THE THEN in getTrail********');
       res.send(success);
     })
     .catch((error) => {
@@ -25,11 +38,14 @@ router.get('/trails/:id', (req, res) => {
     });
 });
 
-// tested - must be written '/users/id'
+// tested - sends back user info object, photos, and photo comments, getUser ************
 router.get('/users/:id', (req, res) => {
-  getUser()
+  const { id } = req.params;
+  // console.log('REQ OBJ', req.params);
+  // console.log('User ID', id);
+  getUser(id)
     .then((success) => {
-      res.send('******HIT THE THEN in getUser********');
+      console.log('******HIT THE THEN in getUser********');
       res.send(success);
     })
     .catch((error) => {
@@ -39,11 +55,54 @@ router.get('/users/:id', (req, res) => {
 });
 
 /* --------------------------------- POST Requests -----------------------------------------------*/
-// tested - must be written '/trails/id'
-router.post('/trails/:id', (req, res) => {
-  addTrail()
+// tested - sends back object with user id, "addUser"
+router.post('/users', (req, res) => {
+  const { body } = req;
+  addUser(body)
     .then((success) => {
-      res.send('******HIT THE THEN of AddTrails********');
+      console.log('******HIT THE THEN of addUser********');
+      res.send(success);
+    })
+    .catch((error) => {
+      res.sendStatus(500);
+      throw error;
+    });
+});
+
+// tested - sends back object with trail id, "addTrail"
+router.post('/trails', (req, res) => {
+  const { body } = req;
+  addTrail(body)
+    .then((success) => {
+      console.log('******HIT THE THEN of AddTrails********');
+      res.send(success);
+    })
+    .catch((error) => {
+      res.sendStatus(500);
+      throw error;
+    });
+});
+
+// tested - sends back object with comment id in it "addComment"
+router.post('/comments', (req, res) => {
+  const { body } = req;
+  addComment(body)
+    .then((success) => {
+      console.log('******HIT THE THEN of addComment********');
+      res.send(success);
+    })
+    .catch((error) => {
+      res.sendStatus(500);
+      throw error;
+    });
+});
+
+// tested - sends back object with photo id in it "addPhoto",
+router.post('/photos', (req, res) => {
+  const { body } = req;
+  addPhoto(body)
+    .then((success) => {
+      console.log('******HIT THE THEN of addPhoto********');
       res.send(success);
     })
     .catch((error) => {
@@ -53,11 +112,40 @@ router.post('/trails/:id', (req, res) => {
 });
 
 /* --------------------------------- PUT Requests -----------------------------------------------*/
-// tested - must be written '/trails/id'
-router.put('/trails/:id', (req, res) => {
-  updateTrail()
+// tested - not working yet
+router.put('/trails', (req, res) => {
+  const { body } = req;
+  updateTrail(body)
     .then((success) => {
-      res.send('******HIT THE THEN of updateTrail********');
+      console.log('******HIT THE THEN of updateTrail********');
+      res.send(success);
+    })
+    .catch((error) => {
+      res.sendStatus(500);
+      throw error;
+    });
+});
+// tested - send back object with new rating, updateDifficulty
+router.put('/difficulty', (req, res) => {
+  console.log('******HIT THE updateDifficulty router********');
+  const { body } = req;
+  updateDifficulty(body)
+    .then((success) => {
+      console.log('******HIT THE THEN of updateDifficulty********');
+      res.send(success);
+    })
+    .catch((error) => {
+      res.sendStatus(500);
+      throw error;
+    });
+});
+
+// tested - send back object with new rating, updateLikeability,
+router.put('/likeability', (req, res) => {
+  const { body } = req;
+  updateLikeability(body)
+    .then((success) => {
+      console.log('******HIT THE THEN of updateLikeability********');
       res.send(success);
     })
     .catch((error) => {
@@ -67,11 +155,41 @@ router.put('/trails/:id', (req, res) => {
 });
 
 /* --------------------------------- DELETE Requests ---------------------------------------------*/
-// tested - must be written '/trails/id'
+
+// tested - must be written '/trails/<id#>', works && sends back table information after delete
 router.delete('/trails/:id', (req, res) => {
-  deleteTrail()
+  const { id } = req.params;
+  deleteTrail(id)
     .then((success) => {
-      res.send('******HIT THE THEN of deleteTrail********');
+      console.log('******HIT THE THEN of deleteTrail********');
+      res.send(success);
+    })
+    .catch((error) => {
+      res.sendStatus(500);
+      throw error;
+    });
+});
+
+// tested => route works, sends back table information for affected rows, "deletePhoto"
+router.delete('/photos/:id', (req, res) => {
+  const { id } = req.params;
+  deletePhoto(id)
+    .then((success) => {
+      console.log('******HIT THE THEN of deletePhoto********');
+      res.send(success);
+    })
+    .catch((error) => {
+      res.sendStatus(500);
+      throw error;
+    });
+});
+
+// tested - works, sends back table information for affected rows, "deleteComment"
+router.delete('/comments/:id', (req, res) => {
+  const { id } = req.params;
+  deleteComment(id)
+    .then((success) => {
+      console.log('******HIT THE THEN of deleteComment********');
       res.send(success);
     })
     .catch((error) => {
