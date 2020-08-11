@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Image from 'react-bootstrap/Image';
+import Badge from 'react-bootstrap/Badge';
 import Input from './input.jsx';
 import Map from './TrailMap.jsx';
 import Carousel from './Carousel.jsx';
@@ -198,6 +199,14 @@ const trail = () => {
     setPhotoInfo(updatedInfo);
   };
 
+  const colorPicker = (num) => {
+    switch (+num) {
+      case 1: case 2: return 'danger';
+      case 4: case 5: return 'success';
+      case 3: default: return 'info';
+    }
+  };
+
   return (
     <>
       <Col xs={6}>
@@ -230,29 +239,37 @@ const trail = () => {
           <Image className="w-50" src={trailInfo.thumbnail} />
           <Row>
             <Col xs={4}>
-              <h3>Difficulty -
-                <small className="text-muted"> {trailInfo.difficulty}</small>
+              <h3>Difficulty
+                <Badge variant={colorPicker(trailInfo.difficulty)}>{trailInfo.difficulty}</Badge>
               </h3>
-              <h3>Likeability -
-                <small className="text-muted"> {trailInfo.likeability}</small>
+              <h3>Likeability
+                <Badge variant={colorPicker(trailInfo.likeability)}>{trailInfo.likeability}</Badge>
               </h3>
             </Col>
             {!userRatings.userLoaded
               ? null
               : (
                 <Col xs={8}>
-                  <div onClick={(e) => editable(e, 'diff')}>
-                    <h3 style={{ display: 'inline' }}>My Difficulty -
+                  <div onClick={(e) => editable(e, 'diff')} style={{ marginBottom: '8px' }}>
+                    <h3 style={{ display: 'inline' }}>My Difficulty
                       {userRatings.diff.edit
                         ? <Input value={userRatings.diff.value} changeHandler={changeHandler} name="diff" type="select" options={ratingOptions} style={{ display: 'inline' }} />
-                        : <small className="text-muted"> {userRatings.diff.value}</small>}
+                        : (
+                          <Badge variant={colorPicker(userRatings.diff.value)}>
+                            {userRatings.diff.value}
+                          </Badge>
+                        )}
                     </h3>
                   </div>
                   <div onClick={(e) => editable(e, 'like')}>
-                    <h3>My Likeability -
+                    <h3>My Likeability
                       {userRatings.like.edit
                         ? <Input value={userRatings.like.value} changeHandler={changeHandler} name="like" type="select" options={ratingOptions} style={{ display: 'inline' }} />
-                        : <small className="text-muted"> {userRatings.like.value}</small>}
+                        : (
+                          <Badge variant={colorPicker(userRatings.like.value)}>
+                            {userRatings.like.value}
+                          </Badge>
+                        )}
                     </h3>
                   </div>
                 </Col>
