@@ -2,7 +2,7 @@ import React, { Component, useEffect, useState } from 'react';
 import isEmpty from 'lodash.isempty';
 import { Link } from 'react-router-dom';
 import Marker from './Marker.jsx';
-import InfoWindow from './MarkerInfoWindow.jsx';
+import InfoWindow from './InfoWindow.jsx';
 import GoogleMap from './GoogleMap.jsx';
 import SearchBox from './SearchBox.jsx';
 import * as trailData from '../data/trail-data.json';
