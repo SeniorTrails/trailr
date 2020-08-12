@@ -115,19 +115,44 @@ router.post('/photos', (req, res) => {
 });
 
 // Google cloud storage route
-router.post('/uploads', async(req, res, next) => {
-  try {
-    const myFile = req.file;
-    const imageUrl = await uploadImage(myFile);
-    res
-      .status(200)
-      .json({
+// router.post('/uploads', async(req, res, next) => {
+//   try {
+//     const myFile = req.file;
+//     const imageUrl = await uploadImage(myFile);
+//     res
+//       .status(200)
+//       .json({
+//         message: 'Upload was successful',
+//         data: `${imageUrl}`,
+//       });
+//   } catch (error) {
+//     next(error);
+//   }
+// });
+
+router.post('/uploads', (req, res) => {
+  const myFile = req.file;
+  uploadImage(myFile)
+    .then((photoUrl) => {
+      // console.log('*****photoUrl*****', photoUrl);
+      addPhoto({
+        url: photoUrl,
+      })
+        .then((success) => {
+          console.log('addPhoto in uploadImage worked', success);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+      res.json({
         message: 'Upload was successful',
-        data: `${imageUrl}`,
+        data: `${photoUrl}`,
       });
-  } catch (error) {
-    next(error);
-  }
+      res.send();
+    })
+    .catch((error) => {
+      throw error;
+    });
 });
 
 /* --------------------------------- PUT Requests -----------------------------------------------*/
