@@ -1,9 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
+import styled from 'styled-components';
 import Carousel from '@brainhubeu/react-carousel';
 import '@brainhubeu/react-carousel/lib/style.css';
+import Image from 'react-bootstrap/Image';
 import Photo from './Photo.jsx';
 import Comment from './Comment.jsx';
+
+const StyledImage = styled(Image)`
+  width: 100px
+`;
 
 /**
  * Carousel is an infinite carousel gallery that displays one large image and the comments
@@ -31,11 +37,10 @@ const carousel = ({ photos, currentPhoto, changeCurrentPhoto }) => {
       >
         {photos.map((item, i) => (
           <div onClick={() => changeCurrentPhoto(i)} key={item.id}>
-            <img
-              className="img-thumbnail m-3"
+            <StyledImage
+              thumbnail
               src={item.url}
               alt="trail"
-              style={{ width: '100px' }}
             />
           </div>
         ))}
