@@ -1,19 +1,13 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import {
-  Overlay,
   OverlayTrigger,
   Popover,
   Button,
-  Images,
   Image,
-  Container,
-  Row,
-  Col,
 } from 'react-bootstrap';
 
 const InfoWindow = React.memo(({ selectedTrail, onCloseClick }) => {
-  // const { selectedTrail } = props;
   const place = selectedTrail;
   const thumbnail = place.thumbnail;
   const infoWindowStyle = {
