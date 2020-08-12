@@ -13,7 +13,6 @@ const bucket = gc.bucket('trailr_photos'); // should be your bucket name
  */
 
 const uploadImage = (file) => new Promise((resolve, reject) => {
-  console.log('******HIT UPLOADIMAGE FUNC******************', file);
   const { originalname, buffer } = file;
 
   const blob = bucket.file(originalname.replace(/ /g, '_'));
@@ -22,7 +21,6 @@ const uploadImage = (file) => new Promise((resolve, reject) => {
   });
 
   blobStream.on('finish', () => {
-    console.log('******HIT blobStream.on******************');
     const publicUrl = `https://storage.googleapis.com/${bucket.name}/${blob.name}`;
     resolve(publicUrl);
   })
