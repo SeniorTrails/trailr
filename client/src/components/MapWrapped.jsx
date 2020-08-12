@@ -45,13 +45,34 @@ class MapWithASearchBox extends Component {
   }
 
   setGoogleMapRef(map, maps) {
-    let currentZoom = 10;
+    let currentZoom;
+    const clustering = () => {
+      const placesClustered = places.reduce((notClustered, currentTrail) => {
+        const { zoom } = this.state;
+        const scaler = zoom; // multiply by current zoom
+        const notInRange = places.reduce((prev, current) => {
+          const threshold = 0.16; // 0.16
+          if (
+            Math.abs(+currentTrail.lat - +current.lat) * scaler < threshold &&
+            Math.abs(+currentTrail.lon - +current.lon) * scaler < threshold
+          ) {
+            prev.push(current);
+          }
+          return prev;
+        }, []);
+        notClustered.push([...notInRange]);
+        return notClustered;
+      }, []);
+      const clustered = placesClustered[placesClustered.length - 1];
+      let notClustered = places.filter((x) => !clustered.includes(x));
+      this.setState({
+        notClusteredPlaces: notClustered,
+      });
+    };
     map.addListener('zoom_changed', () => {
       currentZoom = map.getZoom();
-      // console.log(this);
-      // console.log(currentZoom);
       this.setState({ zoom: currentZoom });
-      console.log(this.state.zoom)
+      clustering();
     });
     this.setState({
       mapApiLoaded: true,
@@ -78,31 +99,7 @@ class MapWithASearchBox extends Component {
       minimumClusterSize: 2,
     });
 
-    // move up higher just above this.setState in this func
-    let placesNotClustered = places.reduce((notClustered, currentTrail) => {
-      const scaler = 1; // multiply by current zoom?
-      const notInRange = places.reduce((prev, current) => {
-        const threshold = 0.02;
-        if (
-          Math.abs(+currentTrail.lat * scaler - +current.lat * scaler) >
-            threshold &&
-          Math.abs(+currentTrail.lat * scaler - +current.lat * scaler) >
-            threshold
-        ) {
-          prev.push(current);
-        }
-        return prev;
-      }, []);
-      if (notInRange) {
-        notClustered.push([...notInRange]);
-      }
-      return notClustered;
-    }, []);
-    const notClustered = placesNotClustered[placesNotClustered.length - 1];
-    this.setState({
-      notClusteredPlaces: notClustered,
-    });
-    console.log(this.state.notClusteredPlaces);
+    clustering();
   }
 
   addPlace = (place) => {
@@ -158,10 +155,12 @@ class MapWithASearchBox extends Component {
           onGoogleApiLoaded={({ map, maps }) => this.setGoogleMapRef(map, maps)}
           options={{ streetViewControl: false }}
         >
-          {!isEmpty(places) && // change/add: notClusteredPlaces
+          {!isEmpty(notClusteredPlaces) &&
+          this.state.zoom < 12 && // zoom threshold switches
             notClusteredPlaces.map((
+              // was places
               place,
-              i // was places
+              i
             ) => (
               <Marker
                 color={i === this.state.selectedTrailIndex ? 'green' : 'blue'}
@@ -176,8 +175,25 @@ class MapWithASearchBox extends Component {
                     this.setState({ selectedTrail: place });
                     this.setState({ selectedTrailIndex: i });
                   }
-                  // e.persist();
-                  // console.log(e);
+                }}
+              />
+            ))}
+          {!isEmpty(places) &&
+          this.state.zoom >= 12 && // zoom threshold switches
+            places.map((place, i) => (
+              <Marker
+                color={i === this.state.selectedTrailIndex ? 'green' : 'blue'}
+                key={place.id}
+                text={place.name}
+                lat={place.lat || place.geometry.location.lat()}
+                lng={place.lon || place.geometry.location.lng()}
+                clickHandler={(e) => {
+                  if (this.state.selectedTrailIndex === i) {
+                    this.clearSelectedTrail();
+                  } else {
+                    this.setState({ selectedTrail: place });
+                    this.setState({ selectedTrailIndex: i });
+                  }
                 }}
               />
             ))}
