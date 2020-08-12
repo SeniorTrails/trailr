@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 /**
  * input: An input component that displays a label and an input field
@@ -37,3 +38,7 @@ const input = ({ value = '', changeHandler, name, label, type = 'text', options,
 };
 
 export default input;
+
+input.propTypes = {
+
+};

@@ -21,6 +21,8 @@
   "homepage": "https://github.com/JamesFThomas/trailr#readme",
   "dependencies": {
     "@brainhubeu/react-carousel": "^1.19.26",
+    "@google/markerclusterer": "^2.0.8",
+    "@google/markerclustererplus": "^5.0.4",
     "@types/googlemaps": "^3.39.11",
     "@types/markerclustererplus": "^2.1.33",
     "body-parser": "^1.19.0",
@@ -39,6 +41,7 @@
     "nodemon": "^2.0.4",
     "passport": "^0.4.1",
     "passport-google-oauth20": "^2.0.0",
+    "points-cluster": "^0.1.4",
     "popper.js": "^1.16.1",
     "prop-types": "^15.7.2",
     "react": "^16.13.1",
@@ -48,8 +51,7 @@
     "react-icons": "^3.10.0",
     "react-router-dom": "^5.2.0",
     "react-scripts": "^3.4.1",
-    "styled-components": "^5.1.1",
-    "use-supercluster": "^0.2.8"
+    "styled-components": "^5.1.1"
   },
   "devDependencies": {
     "babel-eslint": "^10.1.0",
