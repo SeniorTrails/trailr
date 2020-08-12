@@ -132,7 +132,7 @@ const MapWithASearchBox = React.memo(() => {
         options={{ streetViewControl: false }}
       >
         {!isEmpty(notClusteredPlaces) &&
-        zoom < 12 && // zoom threshold switches
+        zoom < 12 &&
           notClusteredPlaces.map((place, i) => (
             <Marker
               color={i === selectedTrailIndex ? 'green' : 'blue'}
@@ -151,7 +151,7 @@ const MapWithASearchBox = React.memo(() => {
             />
           ))}
         {!isEmpty(places) &&
-        zoom >= 12 && // zoom threshold switches
+        zoom >= 12 &&
           places.map((place, i) => (
             <Marker
               color={i === selectedTrailIndex ? 'green' : 'blue'}
@@ -172,7 +172,6 @@ const MapWithASearchBox = React.memo(() => {
         {selectedTrail && (
           <InfoWindow
             selectedTrail={selectedTrail}
-            // props={this.state} // props={this.state}
             onCloseClick={() => {
               clearSelectedTrail();
             }}
