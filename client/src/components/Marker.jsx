@@ -20,13 +20,13 @@ const marker = ({clickHandler, color, size = 43, $hover }) => {
   const style = {
     height: `${size}px`,
     position: 'absolute',
-    transform: 'translate(-50%, -100%)',
+    transform: 'translate(-51%, -100%)',
   };
 
   const hoverStyle = {
     height: `${size * 1.2}px`,
     position: 'absolute',
-    transform: 'translate(-50%, -101%)',
+    transform: 'translate(-51%, -101%)',
     cursor: 'pointer',
     zIndex: '100000',
   };
