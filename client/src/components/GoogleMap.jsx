@@ -11,7 +11,7 @@ const Wrapper = styled.main`
 /**
  * Wraps the Google Map in a 100% size wrapper and returns it
  */
-const GoogleMap = ({ children, ...props }) => (
+const GoogleMap = React.memo(({ children, ...props }) => (
   <Wrapper>
     <GoogleMapReact
       bootstrapURLKeys={{
@@ -23,7 +23,7 @@ const GoogleMap = ({ children, ...props }) => (
       {children}
     </GoogleMapReact>
   </Wrapper>
-);
+));
 
 GoogleMap.defaultProps = {
   children: null,
