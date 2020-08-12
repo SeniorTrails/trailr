@@ -29,7 +29,7 @@ const carousel = ({ photos, currentPhoto, changeCurrentPhoto }) => {
 
   return (
     <div>
-      <Photo info={photo} />
+      {!photo.url ? null : <Photo info={photo} />}
       <Carousel
         arrows
         infinite
