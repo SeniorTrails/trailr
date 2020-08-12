@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import styled from 'styled-components';
 import PropTypes from 'prop-types';
 import GoogleMapReact from 'google-map-react';
 import heic2any from 'heic2any';
@@ -9,6 +10,11 @@ import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import Image from 'react-bootstrap/Image';
 import Marker from './Marker.jsx';
+
+const GoogleMapWrapper = styled.div`
+  height: 300px
+  width: 100%
+`;
 
 // The intention is to implement these at some point to keep people from overloading us
 const maxImages = 10;
@@ -112,7 +118,7 @@ const addPicture = ({ appendPhoto, center }) => {
                 <Image thumbnail src={images[key].url} />
               </Col>
               <Col>
-                <div style={{ height: '300px', width: '100%' }}>
+                <GoogleMapWrapper>
                   <GoogleMapReact
                     bootstrapURLKeys={{ key: process.env.GOOGLE_MAPS_API_KEY }}
                     defaultCenter={center}
@@ -121,7 +127,7 @@ const addPicture = ({ appendPhoto, center }) => {
                   >
                     <Marker lat={images[key].lat} lng={images[key].lng} />
                   </GoogleMapReact>
-                </div>
+                </GoogleMapWrapper>
               </Col>
             </Row>
           ))}
@@ -138,9 +144,9 @@ const addPicture = ({ appendPhoto, center }) => {
 export default addPicture;
 
 addPicture.propTypes = {
-  appendPhot: PropTypes.func.isRequired,
+  appendPhoto: PropTypes.func.isRequired,
   center: PropTypes.shape({
-    lat: PropTypes.number.isRequired,
-    lng: PropTypes.number.isRequired,
+    lat: PropTypes.number,
+    lng: PropTypes.number,
   }).isRequired,
 };

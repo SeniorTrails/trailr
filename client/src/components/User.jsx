@@ -163,18 +163,26 @@ const photos = [
     ],
   },
 ];
-
+/**
+ * Displays the indiviual user page with their saved trails and all their photos
+ */
 const user = () => {
   const { id } = useParams();
   const [photoInfo, setPhotoInfo] = useState([]);
   const [currentPhoto, setCurrentPhoto] = useState(0);
   const [myTrails, setMyTrails] = useState([]);
 
+  // Set all the initial data with DB calls based on id in useParams
   useEffect(() => {
     setPhotoInfo(photos);
     setMyTrails(savedTrails);
   }, []);
 
+  /**
+   * After the DB call this appends the new comment to the photo for the user,
+   *  so that we don't have to make additional DB calls
+   * @param {Object} newComment comment to add to the photo
+   */
   const appendComments = (newComment) => {
     const updatedInfo = [...photoInfo];
     const updatedPhoto = { ...updatedInfo[currentPhoto] };
@@ -183,6 +191,10 @@ const user = () => {
     setPhotoInfo(updatedInfo);
   };
 
+  /**
+   * Updates the photo being shown to the given Id
+   * @param {Number} photoId new photoId
+   */
   const changeCurrentPhoto = (photoId) => {
     setCurrentPhoto(photoId);
   };
