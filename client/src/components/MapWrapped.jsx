@@ -8,7 +8,7 @@ import GoogleMap from './GoogleMap.jsx';
 import SearchBox from './SearchBox.jsx';
 import * as trailData from '../data/trail-data.json';
 
-function MapWithASearchBox() {
+const MapWithASearchBox = React.memo(() => {
   const [mapApiLoaded, setMapApiLoaded] = useState(false);
   const [mapInstance, setMapInstance] = useState(null);
   const [mapApi, setMapApi] = useState(null);
@@ -133,10 +133,7 @@ function MapWithASearchBox() {
       >
         {!isEmpty(notClusteredPlaces) &&
         zoom < 12 && // zoom threshold switches
-          notClusteredPlaces.map((
-            place,
-            i
-          ) => (
+          notClusteredPlaces.map((place, i) => (
             <Marker
               color={i === selectedTrailIndex ? 'green' : 'blue'}
               key={place.id}
@@ -196,6 +193,6 @@ function MapWithASearchBox() {
       </GoogleMap>
     </>
   );
-}
+});
 
 export default MapWithASearchBox;
