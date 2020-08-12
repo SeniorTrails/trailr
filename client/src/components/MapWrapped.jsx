@@ -24,6 +24,7 @@ class MapWithASearchBox extends Component {
         lat: 30.33735,
         lng: -90.03733,
       },
+      zoom: 10,
     };
 
     this.escHandler = this.escHandler.bind(this);
@@ -44,6 +45,14 @@ class MapWithASearchBox extends Component {
   }
 
   setGoogleMapRef(map, maps) {
+    let currentZoom = 10;
+    map.addListener('zoom_changed', () => {
+      currentZoom = map.getZoom();
+      // console.log(this);
+      // console.log(currentZoom);
+      this.setState({ zoom: currentZoom });
+      console.log(this.state.zoom)
+    });
     this.setState({
       mapApiLoaded: true,
       mapInstance: map,
@@ -70,10 +79,9 @@ class MapWithASearchBox extends Component {
     });
 
     // move up higher just above this.setState in this func
-    console.log(this.state);
     let placesNotClustered = places.reduce((notClustered, currentTrail) => {
       const scaler = 1; // multiply by current zoom?
-      const inRange = places.reduce((prev, current) => {
+      const notInRange = places.reduce((prev, current) => {
         const threshold = 0.02;
         if (
           Math.abs(+currentTrail.lat * scaler - +current.lat * scaler) >
@@ -81,24 +89,16 @@ class MapWithASearchBox extends Component {
           Math.abs(+currentTrail.lat * scaler - +current.lat * scaler) >
             threshold
         ) {
-          // console.log(
-          //   Math.abs(+currentTrail.lat * scaler - +current.lat * scaler)
-          // );
-          // console.log(
-          //   Math.abs(+currentTrail.lat * scaler - +current.lat * scaler)
-          // );
           prev.push(current);
         }
         return prev;
       }, []);
-      console.log(inRange);
-      // compare arrays return
-      if (inRange) {
-        notClustered.push([...inRange]);
+      if (notInRange) {
+        notClustered.push([...notInRange]);
       }
       return notClustered;
     }, []);
-    const notClustered = placesNotClustered[placesNotClustered.length - 1]
+    const notClustered = placesNotClustered[placesNotClustered.length - 1];
     this.setState({
       notClusteredPlaces: notClustered,
     });
@@ -159,7 +159,10 @@ class MapWithASearchBox extends Component {
           options={{ streetViewControl: false }}
         >
           {!isEmpty(places) && // change/add: notClusteredPlaces
-            notClusteredPlaces.map((place, i) => ( // was places
+            notClusteredPlaces.map((
+              place,
+              i // was places
+            ) => (
               <Marker
                 color={i === this.state.selectedTrailIndex ? 'green' : 'blue'}
                 key={place.id}
