@@ -17,6 +17,9 @@ const {
   deletePhoto,
 } = require('../../database/index.js');
 
+// import GCS functions
+const { uploadImage } = require('../../helpers/helpers');
+
 // set local variable to  a new instance of express router
 const router = Router();
 
@@ -109,6 +112,22 @@ router.post('/photos', (req, res) => {
       res.sendStatus(500);
       throw error;
     });
+});
+
+// Google cloud storage route
+router.post('/uploads', async(req, res, next) => {
+  try {
+    const myFile = req.file;
+    const imageUrl = await uploadImage(myFile);
+    res
+      .status(200)
+      .json({
+        message: 'Upload was successful',
+        data: `${imageUrl}`,
+      });
+  } catch (error) {
+    next(error);
+  }
 });
 
 /* --------------------------------- PUT Requests -----------------------------------------------*/
