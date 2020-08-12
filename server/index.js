@@ -4,6 +4,9 @@ require('dotenv').config();
 // import express framework
 const express = require('express');
 
+// import multer framework for middle functionality
+const multer = require('multer');
+
 // import passport framework
 const passport = require('passport');
 
@@ -30,6 +33,19 @@ const { getUser } = require('../database/index');
 
 // create new instance of express frame work saved to local variable
 const app = express();
+
+// describe multer upload object to be stored in bucket
+const multerMid = multer({
+  storage: multer.memoryStorage(),
+  limits: {
+    fileSize: 5 * 1024 * 1024,
+  },
+});
+
+// disable the name setting feature on the app settings table
+app.disable('x-powered-by');
+// set up express middleware to work with multer
+app.use(multerMid.single('file'));
 
 // direct express to certain middleware for requests on certain paths
 app.use('/', express.static(`${__dirname}/../client/dist`));
