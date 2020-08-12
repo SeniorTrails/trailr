@@ -12,8 +12,8 @@ import {
   Col,
 } from 'react-bootstrap';
 
-const InfoWindow = ({ props, onCloseClick }) => {
-  const { selectedTrail } = props;
+const InfoWindow = ({ selectedTrail, onCloseClick }) => {
+  // const { selectedTrail } = props;
   const place = selectedTrail;
   const thumbnail = place.thumbnail;
   const infoWindowStyle = {
