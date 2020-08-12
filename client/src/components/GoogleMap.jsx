@@ -8,28 +8,29 @@ const Wrapper = styled.main`
   height: 100%;
 `;
 
-const GoogleMap = ({ children, ...props }) => (
+/**
+ * Wraps the Google Map in a 100% size wrapper and returns it
+ */
+const GoogleMap = React.memo(({ children, ...props }) => (
   <Wrapper>
     <GoogleMapReact
       bootstrapURLKeys={{
         key: process.env.REACT_APP_MAP_KEY,
       }}
+      // eslint-disable-next-line react/jsx-props-no-spreading
       {...props}
     >
       {children}
     </GoogleMapReact>
   </Wrapper>
-);
-
-GoogleMap.propTypes = {
-  children: PropTypes.oneOfType([
-    PropTypes.node,
-    PropTypes.arrayOf(PropTypes.node),
-  ]),
-};
+));
 
 GoogleMap.defaultProps = {
   children: null,
 };
 
 export default GoogleMap;
+
+GoogleMap.propTypes = {
+  children: PropTypes.node,
+};

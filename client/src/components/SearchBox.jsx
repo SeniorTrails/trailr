@@ -53,7 +53,7 @@ class SearchBox extends Component {
           }}
           type="text"
           onFocus={this.clearSearchBox}
-          placeholder="Search"
+          placeholder="Search for trails"
         />
       </Wrapper>
     );

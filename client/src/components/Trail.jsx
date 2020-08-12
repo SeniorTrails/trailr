@@ -1,5 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
+import Image from 'react-bootstrap/Image';
+import Badge from 'react-bootstrap/Badge';
 import Input from './input.jsx';
 import Map from './TrailMap.jsx';
 import Carousel from './Carousel.jsx';
@@ -133,6 +137,9 @@ const ratingOptions = [
   { value: 5, label: '5' },
 ];
 
+/**
+ * The Trail Page component
+ */
 const trail = () => {
   const { id } = useParams();
   const [trailInfo, setTrailInfo] = useState({});
@@ -140,6 +147,7 @@ const trail = () => {
   const [userRatings, setUserRatings] = useState({});
   const [currentPhoto, setCurrentPhoto] = useState(0);
 
+  // Set all the initial data with DB calls based on id in useParams
   useEffect(() => {
     setTrailInfo(data);
     setPhotoInfo(photos);
@@ -156,6 +164,12 @@ const trail = () => {
     });
   }, []);
 
+  /**
+   * Toggles wether the rating is editable based on user clicks, if it is
+   *  already editable doesn't toggle if they click the selecter
+   * @param {Event} e the clicked event
+   * @param {String} target the value to edit
+   */
   const editable = (e, target) => {
     const newValue = { ...userRatings[target] };
     // If you don't click the select turn it off and on
@@ -167,6 +181,10 @@ const trail = () => {
     setUserRatings((prev) => ({ ...prev, [target]: newValue }));
   };
 
+  /**
+   * Custom changeHandler for ratings that updates DB whenever they are changed
+   * @param {Object} target input element to use to update the DB
+   */
   const changeHandler = ({ target }) => {
     // THIS IS WHERE WE CHANGE THE RATING IN THE DB
     const updatedElement = { ...userRatings[target.name] };
@@ -175,10 +193,19 @@ const trail = () => {
     setUserRatings((prev) => ({ ...prev, [target.name]: updatedElement }));
   };
 
+  /**
+   * Updates the photo being shown to the given Id
+   * @param {Number} photoId new photoId
+   */
   const changeCurrentPhoto = (photoId) => {
     setCurrentPhoto(photoId);
   };
 
+  /**
+   * After the DB call this appends the new comment to the photo for the user,
+   *  so that we don't have to make additional DB calls
+   * @param {Object} newComment comment to add to the photo
+   */
   const appendComments = (newComment) => {
     const updatedInfo = [...photoInfo];
     const updatedPhoto = { ...updatedInfo[currentPhoto] };
@@ -187,6 +214,11 @@ const trail = () => {
     setPhotoInfo(updatedInfo);
   };
 
+  /**
+   * After the DB call this appends the new photo to the trail for the user,
+   *  so that we don't have to make additional DB calls
+   * @param {Object} newPhotos photo to add to the trail
+   */
   const appendPhoto = (newPhotos) => {
     const updatedInfo = [...photoInfo];
     Object.keys(newPhotos).forEach((key) => {
@@ -195,69 +227,91 @@ const trail = () => {
     setPhotoInfo(updatedInfo);
   };
 
+  /**
+   * Sets the color of the Badge based on the rating
+   * @param {Number} num rating to dicate color by
+   */
+  const colorPicker = (num) => {
+    switch (+num) {
+      case 1: case 2: return 'danger';
+      case 4: case 5: return 'success';
+      case 3: default: return 'info';
+    }
+  };
+
   return (
     <>
-      <div className="col-6">
-        <div className="row">
-          <div className="col-9">
+      <Col xs={6}>
+        <Row>
+          <Col xs={9}>
             <h2>{trailInfo.name}</h2>
-          </div>
-          <div className="col-3">
+          </Col>
+          <Col xs={3}>
             <AddPicture
               appendPhoto={appendPhoto}
               center={{ lat: trailInfo.lat, lng: trailInfo.lon }}
             />
-          </div>
-        </div>
+          </Col>
+        </Row>
         <div style={{ width: '100%', height: '300px' }}>
-          <Map
-            googleMapURL={`https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=geometry,drawing,places&key=${process.env.GOOGLE_MAPS_API_KEY}`}
-            containerElement={<div style={{ height: '100%' }} />}
-            mapElement={<div style={{ height: '100%' }} />}
-            loadingElement={<div style={{ height: '100%' }} />}
-            location={{ lat: trailInfo.lat, lng: trailInfo.lon }}
-            id={trailInfo.id}
-            photoInfo={photoInfo}
-            changeCurrentPhoto={changeCurrentPhoto}
-            currentPhoto={currentPhoto}
-          />
+          {!photoInfo.length ? null : (
+            <Map
+              googleMapURL={`https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=geometry,drawing,places&key=${process.env.GOOGLE_MAPS_API_KEY}`}
+              containerElement={<div style={{ height: '100%' }} />}
+              mapElement={<div style={{ height: '100%' }} />}
+              loadingElement={<div style={{ height: '100%' }} />}
+              location={{ lat: trailInfo.lat, lng: trailInfo.lon }}
+              id={trailInfo.id}
+              photoInfo={photoInfo}
+              changeCurrentPhoto={changeCurrentPhoto}
+              currentPhoto={currentPhoto}
+            />
+          )}
         </div>
         <div>
           <p>{trailInfo.description}</p>
-          <img className="img-thumbnail w-50" src={trailInfo.thumbnail} />
-          <div className="row">
-            <div className="col-4">
-              <h3>Difficulty -
-                <small className="text-muted"> {trailInfo.difficulty}</small>
+          <Image className="w-50" src={trailInfo.thumbnail} />
+          <Row>
+            <Col xs={4}>
+              <h3>Difficulty
+                <Badge variant={colorPicker(trailInfo.difficulty)}>{trailInfo.difficulty}</Badge>
               </h3>
-              <h3>Likeability -
-                <small className="text-muted"> {trailInfo.likeability}</small>
+              <h3>Likeability
+                <Badge variant={colorPicker(trailInfo.likeability)}>{trailInfo.likeability}</Badge>
               </h3>
-            </div>
+            </Col>
             {!userRatings.userLoaded
               ? null
               : (
-                <div className="col-8">
-                  <div onClick={(e) => editable(e, 'diff')}>
-                    <h3 style={{ display: 'inline' }}>My Difficulty -
+                <Col xs={8}>
+                  <div onClick={(e) => editable(e, 'diff')} style={{ marginBottom: '8px' }}>
+                    <h3>My Difficulty
                       {userRatings.diff.edit
                         ? <Input value={userRatings.diff.value} changeHandler={changeHandler} name="diff" type="select" options={ratingOptions} style={{ display: 'inline' }} />
-                        : <small className="text-muted"> {userRatings.diff.value}</small>}
+                        : (
+                          <Badge variant={colorPicker(userRatings.diff.value)}>
+                            {userRatings.diff.value}
+                          </Badge>
+                        )}
                     </h3>
                   </div>
                   <div onClick={(e) => editable(e, 'like')}>
-                    <h3>My Likeability -
+                    <h3>My Likeability
                       {userRatings.like.edit
                         ? <Input value={userRatings.like.value} changeHandler={changeHandler} name="like" type="select" options={ratingOptions} style={{ display: 'inline' }} />
-                        : <small className="text-muted"> {userRatings.like.value}</small>}
+                        : (
+                          <Badge variant={colorPicker(userRatings.like.value)}>
+                            {userRatings.like.value}
+                          </Badge>
+                        )}
                     </h3>
                   </div>
-                </div>
+                </Col>
               )}
-          </div>
+          </Row>
         </div>
-      </div>
-      <div className="col-6">
+      </Col>
+      <Col xs={6}>
         {!photoInfo.length
           ? null
           : (
@@ -270,7 +324,7 @@ const trail = () => {
               <AddComment appendComments={appendComments} />
             </>
           )}
-      </div>
+      </Col>
     </>
   );
 };
