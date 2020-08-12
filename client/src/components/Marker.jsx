@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import redMarker from '../../assets/imgs/redMarker.png';
 import greenMarker from '../../assets/imgs/greenMarker.png';
 import blueMarker from '../../assets/imgs/blueMarker.png';
@@ -9,9 +10,14 @@ import blueMarker from '../../assets/imgs/blueMarker.png';
  * @param {String} color of marker defaults to red
  * @param {Number} size number for size defaults to 40
  */
-const marker = ({clickHandler, color, size = 40, $hover }) => {
+const marker = ({
+  clickHandler,
+  color,
+  size = 40,
+  $hover,
+}) => {
   let icon;
-  switch (color){
+  switch (color) {
     case 'green': icon = greenMarker; break;
     case 'blue': icon = blueMarker; break;
     case 'red': default: icon = redMarker;
@@ -39,3 +45,9 @@ const marker = ({clickHandler, color, size = 40, $hover }) => {
 };
 
 export default marker;
+
+marker.propTypes = {
+  clickHandler: PropTypes.func.isRequired,
+  color: PropTypes.oneOf(['green', 'blue', 'red']),
+  size: PropTypes.number,
+};
