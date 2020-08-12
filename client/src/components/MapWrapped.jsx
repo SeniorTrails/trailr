@@ -64,7 +64,7 @@ const MapWithASearchBox = React.memo(() => {
     setMapInstance(map);
     setMapApi(maps);
     setMapApiLoaded(true);
-    let googleRef = maps;
+    const googleRef = maps;
     const clustering = () => {
       const placesClustered = places.reduce((clusteredTrails, currentTrail) => {
         const scaler = 2 ** currentZoom;
@@ -82,21 +82,21 @@ const MapWithASearchBox = React.memo(() => {
         return clusteredTrails;
       }, []);
       const clustered = placesClustered[placesClustered.length - 1];
-      let notClustered = places.filter((x) => !clustered.includes(x));
+      const notClustered = places.filter((x) => !clustered.includes(x));
       setNotClusteredPlaces(notClustered);
     };
 
-    let locations = places.reduce((coordinates, currentTrail) => {
+    const locations = places.reduce((coordinates, currentTrail) => {
       coordinates.push({ lat: +currentTrail.lat, lng: +currentTrail.lon });
       return coordinates;
     }, []);
-    let markers =
+    const markers =
       locations &&
       locations.map((location) => {
         return new googleRef.Marker({ position: location });
       });
 
-    let markerCluster = new MarkerClusterer(map, markers, {
+    new MarkerClusterer(map, markers, {
       imagePath:
         'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m',
       gridSize: 15,
@@ -132,7 +132,7 @@ const MapWithASearchBox = React.memo(() => {
         options={{ streetViewControl: false }}
       >
         {!isEmpty(notClusteredPlaces) &&
-        zoom < 12 &&
+          zoom < 12 &&
           notClusteredPlaces.map((place, i) => (
             <Marker
               color={i === selectedTrailIndex ? 'green' : 'blue'}
@@ -151,7 +151,7 @@ const MapWithASearchBox = React.memo(() => {
             />
           ))}
         {!isEmpty(places) &&
-        zoom >= 12 &&
+          zoom >= 12 &&
           places.map((place, i) => (
             <Marker
               color={i === selectedTrailIndex ? 'green' : 'blue'}
