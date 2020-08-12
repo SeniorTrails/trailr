@@ -17,6 +17,7 @@ class MapWithASearchBox extends Component {
       mapInstance: null,
       mapApi: null,
       places: trailData.data,
+      notClusteredPlaces: [],
       selectedTrail: null,
       selectedTrailIndex: null,
       userLocation: {
@@ -64,9 +65,44 @@ class MapWithASearchBox extends Component {
     let markerCluster = new MarkerClusterer(map, markers, {
       imagePath:
         'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m',
-      gridSize: 10,
+      gridSize: 15,
       minimumClusterSize: 2,
     });
+
+    // move up higher just above this.setState in this func
+    console.log(this.state);
+    let placesNotClustered = places.reduce((notClustered, currentTrail) => {
+      const scaler = 1; // multiply by current zoom?
+      const inRange = places.reduce((prev, current) => {
+        const threshold = 0.02;
+        if (
+          Math.abs(+currentTrail.lat * scaler - +current.lat * scaler) >
+            threshold &&
+          Math.abs(+currentTrail.lat * scaler - +current.lat * scaler) >
+            threshold
+        ) {
+          // console.log(
+          //   Math.abs(+currentTrail.lat * scaler - +current.lat * scaler)
+          // );
+          // console.log(
+          //   Math.abs(+currentTrail.lat * scaler - +current.lat * scaler)
+          // );
+          prev.push(current);
+        }
+        return prev;
+      }, []);
+      console.log(inRange);
+      // compare arrays return
+      if (inRange) {
+        notClustered.push([...inRange]);
+      }
+      return notClustered;
+    }, []);
+    const notClustered = placesNotClustered[placesNotClustered.length - 1]
+    this.setState({
+      notClusteredPlaces: notClustered,
+    });
+    console.log(this.state.notClusteredPlaces);
   }
 
   addPlace = (place) => {
@@ -85,7 +121,13 @@ class MapWithASearchBox extends Component {
   }
 
   render() {
-    const { places, mapApiLoaded, mapInstance, mapApi } = this.state;
+    const {
+      places,
+      mapApiLoaded,
+      mapInstance,
+      mapApi,
+      notClusteredPlaces,
+    } = this.state;
 
     navigator.geolocation.getCurrentPosition((position) => {
       const { latitude, longitude } = position.coords;
@@ -116,21 +158,23 @@ class MapWithASearchBox extends Component {
           onGoogleApiLoaded={({ map, maps }) => this.setGoogleMapRef(map, maps)}
           options={{ streetViewControl: false }}
         >
-          {!isEmpty(places) &&
-            places.map((place, i) => (
+          {!isEmpty(places) && // change/add: notClusteredPlaces
+            notClusteredPlaces.map((place, i) => ( // was places
               <Marker
                 color={i === this.state.selectedTrailIndex ? 'green' : 'blue'}
                 key={place.id}
                 text={place.name}
                 lat={place.lat || place.geometry.location.lat()}
                 lng={place.lon || place.geometry.location.lng()}
-                clickHandler={() => {
+                clickHandler={(e) => {
                   if (this.state.selectedTrailIndex === i) {
                     this.clearSelectedTrail();
                   } else {
                     this.setState({ selectedTrail: place });
                     this.setState({ selectedTrailIndex: i });
                   }
+                  // e.persist();
+                  // console.log(e);
                 }}
               />
             ))}
