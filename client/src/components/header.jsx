@@ -1,7 +1,6 @@
 import React from 'react';
-import Navbar from 'react-bootstrap/Navbar';
-import Nav from 'react-bootstrap/Nav';
 import { Link } from 'react-router-dom';
+import { Nav, Navbar } from 'react-bootstrap';
 
 /**
  * Header to the page, contains all our navigation links

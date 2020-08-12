@@ -8,6 +8,7 @@ import GoogleMap from './GoogleMap.jsx';
 import SearchBox from './SearchBox.jsx';
 import * as trailData from '../data/trail-data.json';
 
+
 const MapWithASearchBox = React.memo(() => {
   const [mapApiLoaded, setMapApiLoaded] = useState(false);
   const [mapInstance, setMapInstance] = useState(null);

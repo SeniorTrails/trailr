@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
+import { InputGroup, FormControl } from 'react-bootstrap';
 
 const Wrapper = styled.div`
   position: relative;
@@ -46,16 +47,24 @@ class SearchBox extends Component {
 
   render() {
     return (
-      <Wrapper>
-        <input
+      <InputGroup className="mb-3">
+        <InputGroup.Prepend>
+          <InputGroup.Text id="basic-addon1">
+            {/* <span role="img" aria-label="hiking-emoji">🥾</span> */}
+            Find Trails
+          </InputGroup.Text>
+        </InputGroup.Prepend>
+        <FormControl
+          placeholder="Search by Location"
+          aria-label="Username"
+          aria-describedby="basic-addon1"
           ref={(ref) => {
             this.searchInput = ref;
           }}
           type="text"
           onFocus={this.clearSearchBox}
-          placeholder="Search for trails"
         />
-      </Wrapper>
+      </InputGroup>
     );
   }
 }

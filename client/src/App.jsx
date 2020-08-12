@@ -6,11 +6,21 @@ import Trail from './components/Trail.jsx';
 import User from './components/User.jsx';
 import Signup from './components/Signup.jsx';
 import Login from './components/Login.jsx';
-
+import mountainHeaderImage from '../assets/imgs/mountainHeader.png';
 
 const app = () => (
   <BrowserRouter>
     <div className="container">
+      <div>
+        <br />
+        <img
+          src={mountainHeaderImage}
+          className="img-fluid"
+          alt="Mountain trail"
+        />
+        <br />
+        <br />
+      </div>
       <Header />
       <div className="row">
         <Switch>
