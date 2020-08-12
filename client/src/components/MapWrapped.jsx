@@ -1,4 +1,4 @@
-import React, { Component, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import isEmpty from 'lodash.isempty';
 import { Link } from 'react-router-dom';
 import MarkerClusterer from '@google/markerclusterer';
@@ -8,50 +8,68 @@ import GoogleMap from './GoogleMap.jsx';
 import SearchBox from './SearchBox.jsx';
 import * as trailData from '../data/trail-data.json';
 
-class MapWithASearchBox extends Component {
-  constructor(props) {
-    super(props);
+const MapWithASearchBox = React.memo(() => {
+  const [mapApiLoaded, setMapApiLoaded] = useState(false);
+  const [mapInstance, setMapInstance] = useState(null);
+  const [mapApi, setMapApi] = useState(null);
+  const [places, setPlaces] = useState(trailData.data);
+  const [notClusteredPlaces, setNotClusteredPlaces] = useState(null);
+  const [selectedTrail, setSelectedTrail] = useState(null);
+  const [selectedTrailIndex, setSelectedTrailIndex] = useState(null);
+  const [userLocation, setUserLocation] = useState({
+    lat: 30.33735,
+    lng: -90.03733,
+  });
+  const [zoom, setZoom] = useState(10);
 
-    this.state = {
-      mapApiLoaded: false,
-      mapInstance: null,
-      mapApi: null,
-      places: trailData.data,
-      notClusteredPlaces: [],
-      selectedTrail: null,
-      selectedTrailIndex: null,
-      userLocation: {
-        lat: 30.33735,
-        lng: -90.03733,
-      },
-      zoom: 10,
-    };
+  const addPlace = (place) => {
+    setPlaces(place);
+  };
 
-    this.escHandler = this.escHandler.bind(this);
-  }
+  const clearSelectedTrail = () => {
+    setSelectedTrail(null);
+    setSelectedTrailIndex(null);
+  };
 
-  componentDidMount() {
-    window.addEventListener('keydown', this.escHandler);
-
+  useEffect(() => {
     const script = document.createElement('script');
     script.src =
       'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/markerclusterer.js';
     script.async = true;
     document.body.appendChild(script);
-  }
 
-  componentWillUnmount() {
-    window.removeEventListener('keydown', this.escHandler);
-  }
+    const listener = (e) => {
+      if (e.key === 'Escape') {
+        clearSelectedTrail();
+      }
+    };
+    window.addEventListener('keydown', listener);
 
-  setGoogleMapRef(map, maps) {
-    let currentZoom;
+    navigator.geolocation.getCurrentPosition((position) => {
+      const { latitude, longitude } = position.coords;
+      setUserLocation({ lat: latitude, lng: longitude });
+    });
+    return () => {
+      window.removeEventListener('keydown', listener);
+    };
+  }, []);
+
+  const setGoogleMapRef = (map, maps) => {
+    let currentZoom = currentZoom || 10;
+    map.addListener('zoom_changed', () => {
+      currentZoom = map.getZoom();
+      setZoom(currentZoom);
+      clustering();
+    });
+    setMapInstance(map);
+    setMapApi(maps);
+    setMapApiLoaded(true);
+    let googleRef = maps;
     const clustering = () => {
-      const placesClustered = places.reduce((notClustered, currentTrail) => {
-        const { zoom } = this.state;
-        const scaler = zoom; // multiply by current zoom
+      const placesClustered = places.reduce((clusteredTrails, currentTrail) => {
+        const scaler = 2 ** currentZoom;
         const notInRange = places.reduce((prev, current) => {
-          const threshold = 0.16; // 0.16
+          const threshold = 20;
           if (
             Math.abs(+currentTrail.lat - +current.lat) * scaler < threshold &&
             Math.abs(+currentTrail.lon - +current.lon) * scaler < threshold
@@ -60,28 +78,14 @@ class MapWithASearchBox extends Component {
           }
           return prev;
         }, []);
-        notClustered.push([...notInRange]);
-        return notClustered;
+        clusteredTrails.push([...notInRange]);
+        return clusteredTrails;
       }, []);
       const clustered = placesClustered[placesClustered.length - 1];
       let notClustered = places.filter((x) => !clustered.includes(x));
-      this.setState({
-        notClusteredPlaces: notClustered,
-      });
+      setNotClusteredPlaces(notClustered);
     };
-    map.addListener('zoom_changed', () => {
-      currentZoom = map.getZoom();
-      this.setState({ zoom: currentZoom });
-      clustering();
-    });
-    this.setState({
-      mapApiLoaded: true,
-      mapInstance: map,
-      mapApi: maps,
-    });
-    this.googleMapRef = map;
-    this.googleRef = maps;
-    const { places } = this.state;
+
     let locations = places.reduce((coordinates, currentTrail) => {
       coordinates.push({ lat: +currentTrail.lat, lng: +currentTrail.lon });
       return coordinates;
@@ -89,7 +93,7 @@ class MapWithASearchBox extends Component {
     let markers =
       locations &&
       locations.map((location) => {
-        return new this.googleRef.Marker({ position: location });
+        return new googleRef.Marker({ position: location });
       });
 
     let markerCluster = new MarkerClusterer(map, markers, {
@@ -100,130 +104,94 @@ class MapWithASearchBox extends Component {
     });
 
     clustering();
-  }
-
-  addPlace = (place) => {
-    this.setState({ places: place });
   };
 
-  clearSelectedTrail = () => {
-    this.setState({ selectedTrail: null });
-    this.setState({ selectedTrailIndex: null });
-  };
-
-  escHandler(event) {
-    if (event.key === 'Escape') {
-      this.clearSelectedTrail();
-    }
-  }
-
-  render() {
-    const {
-      places,
-      mapApiLoaded,
-      mapInstance,
-      mapApi,
-      notClusteredPlaces,
-    } = this.state;
-
-    navigator.geolocation.getCurrentPosition((position) => {
-      const { latitude, longitude } = position.coords;
-      this.setState({ userLocation: { lat: latitude, lng: longitude } });
-    });
-
-    return (
-      <>
-        {mapApiLoaded && (
-          <SearchBox
-            map={mapInstance}
-            mapApi={mapApi}
-            addplace={this.addPlace}
-          />
+  return (
+    <>
+      {mapApiLoaded && (
+        <SearchBox
+          map={mapInstance}
+          mapApi={mapApi}
+          places={places}
+          addplace={addPlace}
+        />
+      )}
+      <GoogleMap
+        defaultZoom={10}
+        defaultCenter={{
+          lat: 30.33735,
+          lng: -90.03733,
+        }}
+        center={userLocation}
+        bootstrapURLKeys={{
+          key: process.env.GOOGLE_MAPS_API_KEY,
+          libraries: ['places', 'geometry'],
+        }}
+        yesIWantToUseGoogleMapApiInternals
+        onGoogleApiLoaded={({ map, maps }) => setGoogleMapRef(map, maps)}
+        options={{ streetViewControl: false }}
+      >
+        {!isEmpty(notClusteredPlaces) &&
+        zoom < 12 &&
+          notClusteredPlaces.map((place, i) => (
+            <Marker
+              color={i === selectedTrailIndex ? 'green' : 'blue'}
+              key={place.id}
+              text={place.name}
+              lat={place.lat || place.geometry.location.lat()}
+              lng={place.lon || place.geometry.location.lng()}
+              clickHandler={() => {
+                if (selectedTrailIndex === i) {
+                  clearSelectedTrail();
+                } else {
+                  setSelectedTrail(place);
+                  setSelectedTrailIndex(i);
+                }
+              }}
+            />
+          ))}
+        {!isEmpty(places) &&
+        zoom >= 12 &&
+          places.map((place, i) => (
+            <Marker
+              color={i === selectedTrailIndex ? 'green' : 'blue'}
+              key={place.id}
+              text={place.name}
+              lat={place.lat || place.geometry.location.lat()}
+              lng={place.lon || place.geometry.location.lng()}
+              clickHandler={() => {
+                if (selectedTrailIndex === i) {
+                  clearSelectedTrail();
+                } else {
+                  setSelectedTrail(place);
+                  setSelectedTrailIndex(i);
+                }
+              }}
+            />
+          ))}
+        {selectedTrail && (
+          <InfoWindow
+            selectedTrail={selectedTrail}
+            onCloseClick={() => {
+              clearSelectedTrail();
+            }}
+            position={{
+              lat: +selectedTrail.lat,
+              lng: +selectedTrail.lon,
+            }}
+          >
+            <div>
+              <Link to={`/trail/${selectedTrail.id}`} activeclassname="active">
+                <h2>{selectedTrail.name}</h2>
+              </Link>
+              <p>{selectedTrail.length} miles</p>
+              <p>{selectedTrail.description}</p>
+            </div>
+          </InfoWindow>
         )}
-        <GoogleMap
-          defaultZoom={10}
-          defaultCenter={{
-            lat: 30.33735,
-            lng: -90.03733,
-          }}
-          center={this.state.userLocation}
-          bootstrapURLKeys={{
-            key: process.env.GOOGLE_MAPS_API_KEY,
-            libraries: ['places', 'geometry'],
-          }}
-          yesIWantToUseGoogleMapApiInternals
-          onGoogleApiLoaded={({ map, maps }) => this.setGoogleMapRef(map, maps)}
-          options={{ streetViewControl: false }}
-        >
-          {!isEmpty(notClusteredPlaces) &&
-          this.state.zoom < 12 && // zoom threshold switches
-            notClusteredPlaces.map((
-              // was places
-              place,
-              i
-            ) => (
-              <Marker
-                color={i === this.state.selectedTrailIndex ? 'green' : 'blue'}
-                key={place.id}
-                text={place.name}
-                lat={place.lat || place.geometry.location.lat()}
-                lng={place.lon || place.geometry.location.lng()}
-                clickHandler={(e) => {
-                  if (this.state.selectedTrailIndex === i) {
-                    this.clearSelectedTrail();
-                  } else {
-                    this.setState({ selectedTrail: place });
-                    this.setState({ selectedTrailIndex: i });
-                  }
-                }}
-              />
-            ))}
-          {!isEmpty(places) &&
-          this.state.zoom >= 12 && // zoom threshold switches
-            places.map((place, i) => (
-              <Marker
-                color={i === this.state.selectedTrailIndex ? 'green' : 'blue'}
-                key={place.id}
-                text={place.name}
-                lat={place.lat || place.geometry.location.lat()}
-                lng={place.lon || place.geometry.location.lng()}
-                clickHandler={(e) => {
-                  if (this.state.selectedTrailIndex === i) {
-                    this.clearSelectedTrail();
-                  } else {
-                    this.setState({ selectedTrail: place });
-                    this.setState({ selectedTrailIndex: i });
-                  }
-                }}
-              />
-            ))}
-          {this.state.selectedTrail && (
-            <InfoWindow
-              props={this.state}
-              onCloseClick={() => {
-                this.setState({ selectedTrail: null });
-              }}
-              position={{
-                lat: +this.state.selectedTrail.lat,
-                lng: +this.state.selectedTrail.lon,
-              }}
-            >
-              <div>
-                <Link
-                  to={`/trail/${this.state.selectedTrail.id}`}
-                  activeclassname="active"
-                >
-                  <h2>{this.state.selectedTrail.name}</h2>
-                </Link>
-                <p>{this.state.selectedTrail.length} miles</p>
-                <p>{this.state.selectedTrail.description}</p>
-              </div>
-            </InfoWindow>
-          )}
-        </GoogleMap>
-      </>
-    );
-  }
-}
+      </GoogleMap>
+    </>
+  );
+});
 
 export default MapWithASearchBox;
