@@ -137,6 +137,9 @@ const ratingOptions = [
   { value: 5, label: '5' },
 ];
 
+/**
+ * The Trail Page component
+ */
 const trail = () => {
   const { id } = useParams();
   const [trailInfo, setTrailInfo] = useState({});
@@ -144,6 +147,7 @@ const trail = () => {
   const [userRatings, setUserRatings] = useState({});
   const [currentPhoto, setCurrentPhoto] = useState(0);
 
+  // Set all the initial data with DB calls based on id in useParams
   useEffect(() => {
     setTrailInfo(data);
     setPhotoInfo(photos);
@@ -160,6 +164,12 @@ const trail = () => {
     });
   }, []);
 
+  /**
+   * Toggles wether the rating is editable based on user clicks, if it is
+   *  already editable doesn't toggle if they click the selecter
+   * @param {Event} e the clicked event
+   * @param {String} target the value to edit
+   */
   const editable = (e, target) => {
     const newValue = { ...userRatings[target] };
     // If you don't click the select turn it off and on
@@ -171,6 +181,10 @@ const trail = () => {
     setUserRatings((prev) => ({ ...prev, [target]: newValue }));
   };
 
+  /**
+   * Custom changeHandler for ratings that updates DB whenever they are changed
+   * @param {Object} target input element to use to update the DB
+   */
   const changeHandler = ({ target }) => {
     // THIS IS WHERE WE CHANGE THE RATING IN THE DB
     const updatedElement = { ...userRatings[target.name] };
@@ -179,10 +193,19 @@ const trail = () => {
     setUserRatings((prev) => ({ ...prev, [target.name]: updatedElement }));
   };
 
+  /**
+   * Updates the photo being shown to the given Id
+   * @param {Number} photoId new photoId
+   */
   const changeCurrentPhoto = (photoId) => {
     setCurrentPhoto(photoId);
   };
 
+  /**
+   * After the DB call this appends the new comment to the photo for the user,
+   *  so that we don't have to make additional DB calls
+   * @param {Object} newComment comment to add to the photo
+   */
   const appendComments = (newComment) => {
     const updatedInfo = [...photoInfo];
     const updatedPhoto = { ...updatedInfo[currentPhoto] };
@@ -191,6 +214,11 @@ const trail = () => {
     setPhotoInfo(updatedInfo);
   };
 
+  /**
+   * After the DB call this appends the new photo to the trail for the user,
+   *  so that we don't have to make additional DB calls
+   * @param {Object} newPhotos photo to add to the trail
+   */
   const appendPhoto = (newPhotos) => {
     const updatedInfo = [...photoInfo];
     Object.keys(newPhotos).forEach((key) => {
@@ -199,6 +227,10 @@ const trail = () => {
     setPhotoInfo(updatedInfo);
   };
 
+  /**
+   * Sets the color of the Badge based on the rating
+   * @param {Number} num rating to dicate color by
+   */
   const colorPicker = (num) => {
     switch (+num) {
       case 1: case 2: return 'danger';
@@ -251,7 +283,7 @@ const trail = () => {
               : (
                 <Col xs={8}>
                   <div onClick={(e) => editable(e, 'diff')} style={{ marginBottom: '8px' }}>
-                    <h3 style={{ display: 'inline' }}>My Difficulty
+                    <h3>My Difficulty
                       {userRatings.diff.edit
                         ? <Input value={userRatings.diff.value} changeHandler={changeHandler} name="diff" type="select" options={ratingOptions} style={{ display: 'inline' }} />
                         : (

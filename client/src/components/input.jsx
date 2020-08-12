@@ -61,7 +61,7 @@ input.propTypes = {
   type: PropTypes.string,
   options: PropTypes.arrayOf(
     PropTypes.shape({
-      value: PropTypes.oneOf([
+      value: PropTypes.oneOfType([
         PropTypes.number,
         PropTypes.string,
       ]),
