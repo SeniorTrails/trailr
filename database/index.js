@@ -3,20 +3,28 @@
 /* eslint-disable no-console */
 const mysql = require('mysql');
 
-const mysqlConfig = {
-  host: 'localhost',
-  user: 'root',
-  password: '',
-  database: 'trailr',
-};
+let connection;
+if (!process.env.NODE_ENV) {
+  connection = mysql.createConnection({
+    host: 'localhost',
+    user: 'root',
+    password: '',
+    database: 'trailr',
+  });
+} else {
+  connection = mysql.createPool({
+    user: process.env.DB_USER,
+    password: process.env.DB_PASS,
+    database: process.env.DB_NAME,
+    socketPath: `/cloudsql/${process.env.DB_INSTANCE_CONNECTION_NAME}`
+  });
+}
 
-const connection = mysql.createConnection(mysqlConfig);
-
-connection.connect((error) => {
-  if (error) throw error;
-  console.log('Connected to mysql database.');
-  connection.rollback();
-});
+// connection.connect((error) => {
+//   if (error) throw error;
+//   console.log('Connected to mysql database.');
+//   connection.rollback();
+// });
 
 const getUser = (id) => new Promise((resolve, reject) => {
   console.log('GET USER INVOKED');

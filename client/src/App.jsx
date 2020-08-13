@@ -1,5 +1,6 @@
 import React from 'react';
 import { BrowserRouter, Switch, Route } from 'react-router-dom';
+import { Root, Routes } from 'react-static';
 import MapWrapped from './components/MapWrapped.jsx';
 import Header from './components/header.jsx';
 import Trail from './components/Trail.jsx';
@@ -10,17 +11,30 @@ import mountainHeaderImage from '../assets/imgs/mountainHeader.png';
 
 const app = () => (
   <BrowserRouter>
-    <div className="container">
-      <div>
-        <br />
-        <img
-          src={mountainHeaderImage}
-          className="img-fluid"
-          alt="Mountain trail"
-        />
-        <br />
-        <br />
+    <div>
+      <div style={{ position: 'absolute', left: '50%' }}>
+        <div
+          style={{
+            position: 'relative',
+            left: '-50%',
+          }}
+        >
+          <img
+            src={mountainHeaderImage}
+            style={{ width: '380px' }}
+            className="img-fluid"
+            alt="Mountain trail"
+          />
+        </div>
       </div>
+    </div>
+    <br />
+    <br />
+    <br />
+    <br />
+    <br />
+    <br />
+    <div className="container">
       <Header />
       <div className="row">
         <Switch>
