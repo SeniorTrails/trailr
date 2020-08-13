@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import axios from 'axios';
 
 /**
  * useForm: A custom hook for forms that takes a callback functin that will be called
@@ -9,7 +10,7 @@ import { useState } from 'react';
  * @returns {Function} changeHandler: call on changes
  * @returns {Object} values: the form values
  */
-const useForm = (callback) => {
+export const useForm = (callback) => {
   const [values, setValues] = useState({});
 
   const submitHandler = (event) => {
@@ -28,4 +29,15 @@ const useForm = (callback) => {
   };
 };
 
-export default useForm;
+export const getUserData = (userId) => new Promise((resolve, reject) => {
+  axios({
+    method: 'get',
+    url: `/api/users/${userId}`,
+  })
+    .then((response) => {
+      resolve(response.data);
+    })
+    .catch((err) => {
+      reject(err);
+    });
+});
