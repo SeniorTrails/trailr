@@ -1,6 +1,8 @@
 // require .env package
 require('dotenv').config();
 
+const path = require('path');
+
 // import express framework
 const express = require('express');
 
@@ -47,9 +49,6 @@ app.disable('x-powered-by');
 // set up express middleware to work with multer
 app.use(multerMid.single('file'));
 
-// direct express to certain middleware for requests on certain paths
-app.use('/', express.static(`${__dirname}/../client/dist`));
-
 // utilize cookie-parser middleware from express framework
 app.use(cookieParser());
 
@@ -77,11 +76,11 @@ passport.deserializeUser((user, done) => {
   // use find user by id
   // getUser(id)
   //   .then((user) => {
-  //   })
+    //   })
   //   .catch((error) => {
-  //     throw error;
-  //   });
-  done(null, user);
+    //     throw error;
+    //   });
+    done(null, user);
 });
 
 // configure the PORT server will listen for calls on
@@ -92,7 +91,14 @@ app.use('/api', router);
 // authentication routes
 app.use('/auth', authRouter);
 
+// direct express to certain middleware for requests on certain paths
+app.use('/', express.static(path.join(__dirname, '/../client/dist')));
+// reroutes any route to the index.html so React Router works
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '/../client/dist/index.html'));
+});
+
 // set server to listen for requests on configured report
-app.listen(PORT, () => {
+app.listen(process.env.PORT || PORT, () => {
   console.log(`Server Walking The Trails on http://localhost:${PORT}`);
 });
