@@ -29,6 +29,10 @@ export const useForm = (callback) => {
   };
 };
 
+/**
+ * Calls the api to get a user's data
+ * @param {Number} userId a user's id number based on page params
+ */
 export const getUserData = (userId) => new Promise((resolve, reject) => {
   axios({
     method: 'get',

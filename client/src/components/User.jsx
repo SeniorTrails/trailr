@@ -175,9 +175,16 @@ const user = () => {
 
   // Set all the initial data with DB calls based on id in useParams
   useEffect(() => {
-    setPhotoInfo(photos);
-    setMyTrails(savedTrails);
-    getUserData(id);
+    getUserData(id)
+      .then((userData) => {
+        // setPhotoInfo(userData.photos);
+        // setMyTrails(userData.savedTrails);
+        setPhotoInfo(photos);
+        setMyTrails(savedTrails);
+      })
+      .catch((err) => {
+        console.error(err);
+      });
   }, []);
 
   /**
