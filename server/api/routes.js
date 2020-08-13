@@ -1,3 +1,6 @@
+// import axios framework for http requests
+const axios = require('axios');
+
 // import express framework
 const { Router } = require('express');
 
@@ -28,16 +31,43 @@ const router = Router();
 /* --------------------------------- Get Requests ------------------------------------------------*/
 
 // tested - sends back whole trail object, "getTrail"
+// router.get('/trails', (req, res) => {
+//   const { body } = req;
+//   getTrail(body)
+//     .then((success) => {
+//       console.log('******HIT THE THEN in getTrail********');
+//       res.send(success);
+//     })
+//     .catch((error) => {
+//       res.setStatus(500);
+//       throw error;
+//     });
+// });
+
+// route makes requests to trails api for trails data
+// not tested -
 router.get('/trails', (req, res) => {
-  const { body } = req;
-  getTrail(body)
-    .then((success) => {
-      console.log('******HIT THE THEN in getTrail********');
-      res.send(success);
+  axios({
+    method: 'GET',
+    url: 'https://trailapi-trailapi.p.rapidapi.com/trails/explore/',
+    headers: {
+      'content-type': 'application/octet-stream',
+      'x-rapidapi-host': 'trailapi-trailapi.p.rapidapi.com',
+      'x-rapidapi-key': process.env.TRAIL_API_KEY,
+      useQueryString: true,
+    },
+    params: {
+      radius: '25',
+      lat: '30',
+      lon: '-90',
+    },
+  })
+    .then((response) => {
+      const trailDataArray = response.data.data;
+      res.send(trailDataArray);
     })
     .catch((error) => {
-      res.setStatus(500);
-      throw error;
+      console.log(error);
     });
 });
 
@@ -53,7 +83,7 @@ router.get('/users/:id', (req, res) => {
     })
     .catch((error) => {
       res.sendStatus(500);
-      throw error;
+      throw (error);
     });
 });
 
