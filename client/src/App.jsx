@@ -29,7 +29,6 @@ const app = () => (
             <Login />
           </Route>
           <Route path="/404" component={NotFound} />
-          <Redirect to="/404" />
           <Route path="/">
             <div className="col-12" style={{ width: '100%', height: '600px' }}>
               <MapWrapped
