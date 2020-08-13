@@ -2,24 +2,27 @@ import React, { useEffect, useState } from 'react';
 import isEmpty from 'lodash.isempty';
 import { Link } from 'react-router-dom';
 import MarkerClusterer from '@google/markerclusterer';
+import axios from 'axios';
 import Marker from './Marker.jsx';
 import InfoWindow from './InfoWindow.jsx';
 import GoogleMap from './GoogleMap.jsx';
 import SearchBox from './SearchBox.jsx';
 import * as trailData from '../data/trail-data.json';
 
-const MapWithASearchBox = React.memo(() => {
+// const MapWithASearchBox = React.memo(() => {
+const MapWithASearchBox = () => {
   const [mapApiLoaded, setMapApiLoaded] = useState(false);
   const [mapInstance, setMapInstance] = useState(null);
   const [mapApi, setMapApi] = useState(null);
   const [places, setPlaces] = useState(trailData.data);
-  const [notClusteredPlaces, setNotClusteredPlaces] = useState(null);
-  const [selectedTrail, setSelectedTrail] = useState(null);
-  const [selectedTrailIndex, setSelectedTrailIndex] = useState(null);
+  const [center, setCenter] = useState(null);
   const [userLocation, setUserLocation] = useState({
     lat: 30.33735,
     lng: -90.03733,
   });
+  const [notClusteredPlaces, setNotClusteredPlaces] = useState(null);
+  const [selectedTrail, setSelectedTrail] = useState(null);
+  const [selectedTrailIndex, setSelectedTrailIndex] = useState(null);
   const [zoom, setZoom] = useState(10);
 
   const addPlace = (place) => {
@@ -31,7 +34,25 @@ const MapWithASearchBox = React.memo(() => {
     setSelectedTrailIndex(null);
   };
 
+  const updateTrails = (radius, lat, lng) => {
+    axios
+      .get('/api/trails', {
+        radius,
+        lat,
+        lon: lng,
+      })
+      .then(({ data }) => {
+        console.log(`🥾Trails back from API, GET req sent w/ radius:${radius}, lat: ${lat}, lon: ${lng}: `);
+        console.log(data);
+        setPlaces(data);
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  };
+
   useEffect(() => {
+    updateTrails(100, userLocation.lat, userLocation.lng);
     const script = document.createElement('script');
     script.src =
       'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/markerclusterer.js';
@@ -56,10 +77,28 @@ const MapWithASearchBox = React.memo(() => {
 
   const setGoogleMapRef = (map, maps) => {
     let currentZoom = currentZoom || 10;
+    let lastSearchedCenter = lastSearchedCenter || userLocation;
     map.addListener('zoom_changed', () => {
       currentZoom = map.getZoom();
       setZoom(currentZoom);
       clustering();
+    });
+    map.addListener('bounds_changed', () => {
+      const currentBounds = map.getBounds();
+      const currentCenter = {
+        lat: (currentBounds.Za.i + currentBounds.Za.j) / 2,
+        lng: (currentBounds.Va.i + currentBounds.Va.j) / 2,
+      };
+      // setCenter(currentCenter);
+      const range = 0.5; // degrees change, approx 69 miles per 1 latitude/longitude
+      const radius = 100; // miles
+      if (
+        Math.abs(+currentCenter.lat - +lastSearchedCenter.lat) > range ||
+        Math.abs(+currentCenter.lng - +lastSearchedCenter.lng) > range
+      ) {
+        lastSearchedCenter = (currentCenter);
+        updateTrails(radius, currentCenter.lat, currentCenter.lng);
+      }
     });
     setMapInstance(map);
     setMapApi(maps);
@@ -102,7 +141,6 @@ const MapWithASearchBox = React.memo(() => {
       gridSize: 15,
       minimumClusterSize: 2,
     });
-
     clustering();
   };
 
@@ -192,6 +230,6 @@ const MapWithASearchBox = React.memo(() => {
       </GoogleMap>
     </>
   );
-});
+};
 
 export default MapWithASearchBox;
