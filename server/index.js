@@ -93,6 +93,6 @@ app.use('/api', router);
 app.use('/auth', authRouter);
 
 // set server to listen for requests on configured report
-app.listen(PORT, () => {
+app.listen(process.env.PORT || PORT, () => {
   console.log(`Server Walking The Trails on http://localhost:${PORT}`);
 });
