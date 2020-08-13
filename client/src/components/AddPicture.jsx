@@ -48,6 +48,14 @@ const addPicture = ({ appendPhoto, center }) => {
         exifr.parse(e.target.files[i])
           .then((metaData) => {
             console.log(metaData);
+            const loc = {};
+            if (!metaData) {
+              loc.lat = center.lat;
+              loc.lng = center.lng;
+            } else {
+              loc.lat = metaData.latitude || center.lat;
+              loc.lng = metaData.longitude || center.lng;
+            }
             const newImage = {
               key: e.target.files[i].name,
               url: URL.createObjectURL(e.target.files[i]),
