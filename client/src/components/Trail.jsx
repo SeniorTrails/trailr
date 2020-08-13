@@ -45,19 +45,19 @@ const photos = [
         id: 1,
         text:
           'Lorem ipsum dolor sit amet consectetur adipisicing elit. Possimus laborum voluptatem nihil ipsam placeat itaque magnam.',
-        username: 'Daniel Troyano',
+        name: 'Daniel Troyano',
       },
       {
         id: 2,
         text:
           'Lorem ipsum dolor sit amet consectetur adipisicing elit. Possimus laborum voluptatem nihil ipsam placeat itaque magnam.',
-        username: 'Daniel Troyano',
+        name: 'Daniel Troyano',
       },
       {
         id: 3,
         text:
           'Lorem ipsum dolor sit amet consectetur adipisicing elit. Possimus laborum voluptatem nihil ipsam placeat itaque magnam.',
-        username: 'Daniel Troyano',
+        name: 'Daniel Troyano',
       },
     ],
   },
@@ -72,13 +72,13 @@ const photos = [
         id: 4,
         text:
           'Lorem ipsum dolor sit amet consectetur adipisicing elit. Possimus laborum voluptatem nihil ipsam placeat itaque magnam.',
-        username: 'Caylie Sadin',
+        name: 'Caylie Sadin',
       },
       {
         id: 5,
         text:
           'Lorem ipsum dolor sit amet consectetur adipisicing elit. Possimus laborum voluptatem nihil ipsam placeat itaque magnam.',
-        username: 'Daniel Troyano',
+        name: 'Daniel Troyano',
       },
     ],
   },
@@ -93,13 +93,13 @@ const photos = [
         id: 4,
         text:
           'Lorem ipsum dolor sit amet consectetur adipisicing elit. Possimus laborum voluptatem nihil ipsam placeat itaque magnam.',
-        username: 'Caylie Sadin',
+        name: 'Caylie Sadin',
       },
       {
         id: 5,
         text:
           'Lorem ipsum dolor sit amet consectetur adipisicing elit. Possimus laborum voluptatem nihil ipsam placeat itaque magnam.',
-        username: 'Daniel Troyano',
+        name: 'Daniel Troyano',
       },
     ],
   },
@@ -114,13 +114,13 @@ const photos = [
         id: 4,
         text:
           'Lorem ipsum dolor sit amet consectetur adipisicing elit. Possimus laborum voluptatem nihil ipsam placeat itaque magnam.',
-        username: 'Caylie Sadin',
+        name: 'Caylie Sadin',
       },
       {
         id: 5,
         text:
           'Lorem ipsum dolor sit amet consectetur adipisicing elit. Possimus laborum voluptatem nihil ipsam placeat itaque magnam.',
-        username: 'Daniel Troyano',
+        name: 'Daniel Troyano',
       },
     ],
   },
@@ -134,13 +134,13 @@ const photos = [
         id: 4,
         text:
           'Lorem ipsum dolor sit amet consectetur adipisicing elit. Possimus laborum voluptatem nihil ipsam placeat itaque magnam.',
-        username: 'Caylie Sadin',
+        name: 'Caylie Sadin',
       },
       {
         id: 5,
         text:
           'Lorem ipsum dolor sit amet consectetur adipisicing elit. Possimus laborum voluptatem nihil ipsam placeat itaque magnam.',
-        username: 'Daniel Troyano',
+        name: 'Daniel Troyano',
       },
     ],
   },

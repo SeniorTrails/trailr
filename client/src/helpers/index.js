@@ -75,7 +75,7 @@ export const getTrailData = (trailId) => new Promise((resolve, reject) => {
 export const updateUserRating = (type, value, idUser, idTrail) => new Promise((resolve, reject) => {
   axios({
     method: 'put',
-    url: type === 'like' ? '/likeability' : '/difficulty',
+    url: type === 'like' ? '/api/likeability' : '/api/difficulty',
     data: {
       id_user: idUser,
       id_trail: idTrail,
@@ -100,7 +100,7 @@ export const updateUserRating = (type, value, idUser, idTrail) => new Promise((r
 export const addCommentToPhoto = (text, idUser, idPhoto) => new Promise((resolve, reject) => {
   axios({
     method: 'post',
-    url: '/comments',
+    url: '/api/comments',
     data: {
       text,
       id_user: idUser,
