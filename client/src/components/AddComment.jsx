@@ -1,21 +1,30 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import useForm from '../helpers';
+import { useForm, addCommentToPhoto } from '../helpers';
 import Input from './input.jsx';
 
 /**
  * Displays an Input textarea and a submit button for adding a comment, upon
  *  submit it runs the appendComments function and updates the database
  * @param {Function} appendComments Function that appends comments to the photo
+ * @param {Number} userId current logged in user
+ * @param {Number} photoId current photo to add a comment to
+ * @param {String} username current logged in user's name
  */
-const addComment = ({ appendComments }) => {
+const addComment = ({ appendComments, userId, photoId, username }) => {
   /**
    * Runs on the form submit and updates database and runs appendComments
    * @param {String} text extracted from a values object
    */
   const commentSubmit = ({ text }) => {
-    console.log(text);
-    appendComments({ text, id: text[0], username: 'Danny' });
+    addCommentToPhoto(text, userId, photoId)
+      .then(({ id }) => {
+        console.log('USERNAME IS HARD CODED FIX THIS');
+        appendComments({ text, id, username });
+      })
+      .catch((err) => {
+        console.error(err);
+      });
   };
 
   const { values, changeHandler, submitHandler } = useForm(commentSubmit);
@@ -32,4 +41,7 @@ export default addComment;
 
 addComment.propTypes = {
   appendComments: PropTypes.func.isRequired,
+  userId: PropTypes.number.isRequired,
+  photoId: PropTypes.number.isRequired,
+  username: PropTypes.string.isRequired,
 };
