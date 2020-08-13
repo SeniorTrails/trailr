@@ -64,3 +64,29 @@ export const getTrailData = (trailId) => new Promise((resolve, reject) => {
       reject(err);
     });
 });
+
+/**
+ * Update the user's rating must be like or diff returns new rating
+ * @param {String} type like or diff which rating to update
+ * @param {Number} value new user rating
+ * @param {Number} idUser id of the user
+ * @param {Number} idTrail id of the trail
+ */
+export const updateUserRating = (type, value, idUser, idTrail) => new Promise((resolve, reject) => {
+  axios({
+    method: 'put',
+    url: type === 'like' ? '/likeability' : '/difficulty',
+    data: {
+      id_user: idUser,
+      id_trail: idTrail,
+      value,
+    },
+  })
+    .then((response) => {
+      console.log(response.data);
+      resolve(response.data);
+    })
+    .catch((err) => {
+      reject(err);
+    });
+});

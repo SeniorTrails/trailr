@@ -4,7 +4,7 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Image from 'react-bootstrap/Image';
 import Badge from 'react-bootstrap/Badge';
-import { getTrailData } from '../helpers';
+import { getTrailData, updateUserRating } from '../helpers';
 import Input from './input.jsx';
 import Map from './TrailMap.jsx';
 import Carousel from './Carousel.jsx';
@@ -213,6 +213,27 @@ const trail = () => {
    * @param {Object} target input element to use to update the DB
    */
   const changeHandler = ({ target }) => {
+    // USER ID IS HARD CODED FIX THIS
+    updateUserRating(target.name, target.value, 1, id)
+      .then((newRating) => {
+        console.log('USER ID IS HARD CODED FIX THIS');
+        const updatedElement = { ...userRatings[target.name] };
+        updatedElement.value = target.value;
+        updatedElement.edit = false;
+        setUserRatings((prev) => ({ ...prev, [target.name]: updatedElement }));
+        setTrailInfo((prev) => {
+          const updatedTrailInfo = { ...prev };
+          if (target.name === 'like') {
+            updatedTrailInfo.likeability = newRating;
+          } else {
+            updatedTrailInfo.difficulty = newRating;
+          }
+          return updatedTrailInfo;
+        });
+      })
+      .catch((err) => {
+        console.error(err);
+      });
     // THIS IS WHERE WE CHANGE THE RATING IN THE DB
     const updatedElement = { ...userRatings[target.name] };
     updatedElement.value = target.value;
