@@ -12,8 +12,8 @@ import Image from 'react-bootstrap/Image';
 import Marker from './Marker.jsx';
 
 const GoogleMapWrapper = styled.div`
-  height: 300px
-  width: 100%
+  height: 300px;
+  width: 100%;
 `;
 
 // The intention is to implement these at some point to keep people from overloading us
@@ -59,8 +59,8 @@ const addPicture = ({ appendPhoto, center }) => {
             const newImage = {
               key: e.target.files[i].name,
               url: URL.createObjectURL(e.target.files[i]),
-              lat: metaData.latitude,
-              lng: metaData.longitude,
+              lat: loc.lat,
+              lng: loc.lng,
             };
             // If the image is a heic convert it
             if (newImage.key.match(/.heic$|.HEIC$/)) {
@@ -108,6 +108,7 @@ const addPicture = ({ appendPhoto, center }) => {
    */
   const submitHandler = () => {
     console.log(images);
+    toggleModal();
     appendPhoto(images);
   };
 
@@ -133,7 +134,7 @@ const addPicture = ({ appendPhoto, center }) => {
                     defaultZoom={17}
                     onClick={(e) => addMarker(e, images[key].key)}
                   >
-                    <Marker lat={images[key].lat} lng={images[key].lng} />
+                    <Marker lat={images[key].lat} lng={images[key].lng} clickHandler={()=>{}} />
                   </GoogleMapReact>
                 </GoogleMapWrapper>
               </Col>
