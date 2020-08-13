@@ -50,6 +50,13 @@ const getUser = (id) => new Promise((resolve, reject) => {
       WHERE id_photo = ?
     `;
 
+    const getFavoritesCommand = `
+      SELECT trails.*
+      FROM favorites
+      LEFT JOIN trails ON favorites.id_trail = trails.id
+      WHERE favorites.id_user = ?
+    `;
+
     connection.beginTransaction((error) => {
       if (error) {
         connection.rollback(() => {
@@ -65,46 +72,55 @@ const getUser = (id) => new Promise((resolve, reject) => {
           });
         }
         const user = gottenUser[0];
-        connection.query(getPhotosCommand, [id], (error, gottenPhotos) => {
+        connection.query(getFavoritesCommand, [id], (error, gottenFavorites) => {
           if (error) {
             connection.rollback(() => {
               connection.release();
               return reject(error);
             });
           }
-          user.photos = gottenPhotos;
-          if (!gottenPhotos.length) {
-            connection.commit((error) => {
-              if (error) {
-                connection.rollback(() => {
-                  connection.release();
-                  return reject(error);
-                });
-              }
-              resolve(user);
-            });
-          }
-          user.photos.forEach((photo, i) => {
-            const { id } = photo;
-            connection.query(getCommentsCommand, [id], (error, gottenComments) => {
-              if (error) {
-                connection.rollback(() => {
-                  connection.release();
-                  return reject(error);
-                });
-              }
-              user.photos[i].comments = gottenComments;
-              if (i === user.photos.length - 1) {
-                connection.commit((error) => {
-                  if (error) {
-                    connection.rollback(() => {
-                      connection.release();
-                      return reject(error);
-                    });
-                  }
-                  resolve(user);
-                });
-              }
+          user.favorites = gottenFavorites;
+          connection.query(getPhotosCommand, [id], (error, gottenPhotos) => {
+            if (error) {
+              connection.rollback(() => {
+                connection.release();
+                return reject(error);
+              });
+            }
+            user.photos = gottenPhotos;
+            if (!gottenPhotos.length) {
+              connection.commit((error) => {
+                if (error) {
+                  connection.rollback(() => {
+                    connection.release();
+                    return reject(error);
+                  });
+                }
+                resolve(user);
+              });
+            }
+            user.photos.forEach((photo, i) => {
+              const { id } = photo;
+              connection.query(getCommentsCommand, [id], (error, gottenComments) => {
+                if (error) {
+                  connection.rollback(() => {
+                    connection.release();
+                    return reject(error);
+                  });
+                }
+                user.photos[i].comments = gottenComments;
+                if (i === user.photos.length - 1) {
+                  connection.commit((error) => {
+                    if (error) {
+                      connection.rollback(() => {
+                        connection.release();
+                        return reject(error);
+                      });
+                    }
+                    resolve(user);
+                  });
+                }
+              });
             });
           });
         });
@@ -833,6 +849,92 @@ const deletePhoto = (id) => new Promise((resolve, reject) => {
   });
 });
 
+const addFavorite = (favoriteObject) => new Promise((resolve, reject) => {
+  poolConnection.getConnection((error, connection) => {
+    if (error) reject(error);
+
+    console.log('ADD FAVORITE INVOKED');
+
+    const { id_user, id_trail } = favoriteObject;
+
+    const addFavoriteCommand = `
+      INSERT INTO favorites (id_user, id_trail)
+      VALUES (?, ?)
+    `;
+
+    connection.beginTransaction((error) => {
+      if (error) {
+        connection.rollback(() => {
+          connection.release();
+          return reject(error);
+        });
+      }
+      connection.query(addFavoriteCommand,
+        [id_user, id_trail],
+        (error, addedFavorite) => {
+          if (error) {
+            connection.rollback(() => {
+              connection.release();
+              return reject(error);
+            });
+          }
+          connection.commit((error) => {
+            if (error) {
+              connection.rollback(() => {
+                connection.release();
+                return reject(error);
+              });
+            }
+            console.log('FAVORITE ADDED');
+            resolve({ id: `${addedFavorite.insertId}` });
+          });
+        });
+    });
+  });
+});
+
+const deleteFavorite = (favoriteObject) => new Promise((resolve, reject) => {
+  poolConnection.getConnection((error, connection) => {
+    if (error) reject(error);
+
+    console.log('DELETE FAVORITE INVOKED');
+
+    const { id_user, id_trail } = favoriteObject;
+
+    const deleteFavoriteCommand = `
+      DELETE FROM favorites
+      WHERE id_user = ? AND id_trail = ?
+    `;
+    connection.beginTransaction((error) => {
+      if (error) {
+        connection.rollback(() => {
+          connection.release();
+          return reject(error);
+        });
+      }
+      connection.query(deleteFavoriteCommand,
+        [id_user, id_trail],
+        (error, deletedFavoriteData) => {
+          if (error) {
+            connection.rollback(() => {
+              connection.release();
+              return reject(error);
+            });
+          }
+          connection.commit((error) => {
+            if (error) {
+              connection.rollback(() => {
+                connection.release();
+                return reject(error);
+              });
+            }
+            resolve(deletedFavoriteData, console.log('COMMENT DELETED'));
+          });
+        });
+    });
+  });
+});
+
 module.exports = {
   getUser,
   addUser,
@@ -846,6 +948,8 @@ module.exports = {
   addPhoto,
   deleteComment,
   deletePhoto,
+  addFavorite,
+  deleteFavorite,
 };
 
 // mysql -uroot < server/index.js
