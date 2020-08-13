@@ -39,6 +39,76 @@ export const getUserData = (userId) => new Promise((resolve, reject) => {
     url: `/api/users/${userId}`,
   })
     .then((response) => {
+      console.log(response.data);
+      resolve(response.data);
+    })
+    .catch((err) => {
+      reject(err);
+    });
+});
+
+/**
+ * Calls the api to get a trail's data
+ * @param {Number} trailId a trail's id number based on the page params
+ */
+export const getTrailData = (trailId) => new Promise((resolve, reject) => {
+  axios({
+    method: 'get',
+    url: `/api/trails/${trailId}`,
+  })
+    .then((response) => {
+      console.log(response.data);
+      resolve(response.data);
+    })
+    .catch((err) => {
+      reject(err);
+    });
+});
+
+/**
+ * Update the user's rating must be like or diff returns new rating
+ * @param {String} type like or diff which rating to update
+ * @param {Number} value new user rating
+ * @param {Number} idUser id of the user
+ * @param {Number} idTrail id of the trail
+ */
+export const updateUserRating = (type, value, idUser, idTrail) => new Promise((resolve, reject) => {
+  axios({
+    method: 'put',
+    url: type === 'like' ? '/likeability' : '/difficulty',
+    data: {
+      id_user: idUser,
+      id_trail: idTrail,
+      value,
+    },
+  })
+    .then((response) => {
+      console.log(response.data);
+      resolve(response.data);
+    })
+    .catch((err) => {
+      reject(err);
+    });
+});
+
+/**
+ * Adds a comment to the given photo by the given user
+ * @param {String} text comment text
+ * @param {Number} idUser id of user submitting comment
+ * @param {Number} idPhoto id of photo to attach the comment to
+ */
+export const addCommentToPhoto = (text, idUser, idPhoto) => new Promise((resolve, reject) => {
+  axios({
+    method: 'post',
+    url: '/comments',
+    data: {
+      text,
+      id_user: idUser,
+      id_photo: idPhoto,
+    },
+  })
+    .then((response) => {
+      console.log(response.data);
       resolve(response.data);
     })
     .catch((err) => {
