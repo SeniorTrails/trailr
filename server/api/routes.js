@@ -2,7 +2,13 @@
 const axios = require('axios');
 
 // import express framework
+// const express = require('express');
 const { Router } = require('express');
+
+// const app = express();
+// const bodyParser = require('body-parser');
+
+// app.use(bodyParser.json());
 
 // importing DB query functions
 const {
@@ -55,10 +61,8 @@ router.get('/trails/:id', (req, res) => {
 // route makes requests to trails api for trails data
 // tested - sens back array of objects containing trail information from trail API
 router.get('/trails', (req, res) => {
-  // debugger;
-  // console.log(req);
   console.log('', process.env.TRAIL_API_KEY);
-  const { radius, lat, lon } = req.body;
+  const { radius, lat, lon } = req.query;
   axios({
     method: 'GET',
     url: 'https://trailapi-trailapi.p.rapidapi.com/trails/explore/',

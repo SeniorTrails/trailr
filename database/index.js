@@ -928,7 +928,7 @@ const deleteFavorite = (favoriteObject) => new Promise((resolve, reject) => {
                 return reject(error);
               });
             }
-            resolve(deletedFavoriteData, console.log('COMMENT DELETED'));
+            resolve(deletedFavoriteData, console.log('FAVORITE DELETED'));
           });
         });
     });
