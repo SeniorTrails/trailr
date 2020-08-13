@@ -400,7 +400,12 @@ const trail = () => {
               currentPhoto={currentPhoto}
               changeCurrentPhoto={changeCurrentPhoto}
             />
-            <AddComment appendComments={appendComments} />
+            <AddComment
+              appendComments={appendComments}
+              userId={1}
+              photoId={photoInfo[currentPhoto].id}
+              username={'Danny'}
+            />
           </>
         )}
       </Col>

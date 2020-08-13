@@ -90,3 +90,28 @@ export const updateUserRating = (type, value, idUser, idTrail) => new Promise((r
       reject(err);
     });
 });
+
+/**
+ * Adds a comment to the given photo by the given user
+ * @param {String} text comment text
+ * @param {Number} idUser id of user submitting comment
+ * @param {Number} idPhoto id of photo to attach the comment to
+ */
+export const addCommentToPhoto = (text, idUser, idPhoto) => new Promise((resolve, reject) => {
+  axios({
+    method: 'post',
+    url: '/comments',
+    data: {
+      text,
+      id_user: idUser,
+      id_photo: idPhoto,
+    },
+  })
+    .then((response) => {
+      console.log(response.data);
+      resolve(response.data);
+    })
+    .catch((err) => {
+      reject(err);
+    });
+});
