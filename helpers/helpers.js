@@ -1,7 +1,7 @@
 const util = require('util');
 const gc = require('../config/google-cloud-storage');
 
-const bucket = gc.bucket('trailr_photos'); // should be your bucket name
+const bucket = gc.bucket(process.env.GCLOUD_BUCKET_NAME); // should be your bucket name
 
 /**
  *
