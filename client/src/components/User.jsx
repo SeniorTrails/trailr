@@ -6,6 +6,7 @@ import Accordion from 'react-bootstrap/Accordion';
 import Card from 'react-bootstrap/Card';
 import Badge from 'react-bootstrap/Badge';
 import Image from 'react-bootstrap/Image';
+import { getUserData } from '../helpers';
 import Carousel from './Carousel.jsx';
 import AddComment from './AddComment.jsx';
 
@@ -174,8 +175,16 @@ const user = () => {
 
   // Set all the initial data with DB calls based on id in useParams
   useEffect(() => {
-    setPhotoInfo(photos);
-    setMyTrails(savedTrails);
+    getUserData(id)
+      .then((userData) => {
+        // setPhotoInfo(userData.photos);
+        // setMyTrails(userData.savedTrails);
+        setPhotoInfo(photos);
+        setMyTrails(savedTrails);
+      })
+      .catch((err) => {
+        console.error(err);
+      });
   }, []);
 
   /**
