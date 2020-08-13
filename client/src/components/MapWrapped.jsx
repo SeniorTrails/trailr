@@ -15,7 +15,6 @@ const MapWithASearchBox = () => {
   const [mapInstance, setMapInstance] = useState(null);
   const [mapApi, setMapApi] = useState(null);
   const [places, setPlaces] = useState(trailData.data);
-  const [center, setCenter] = useState(null);
   const [userLocation, setUserLocation] = useState({
     lat: 30.33735,
     lng: -90.03733,
@@ -89,7 +88,6 @@ const MapWithASearchBox = () => {
         lat: (currentBounds.Za.i + currentBounds.Za.j) / 2,
         lng: (currentBounds.Va.i + currentBounds.Va.j) / 2,
       };
-      // setCenter(currentCenter);
       const range = 0.5; // degrees change, approx 69 miles per 1 latitude/longitude
       const radius = 100; // miles
       if (
