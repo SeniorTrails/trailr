@@ -55,6 +55,7 @@
     "react-google-maps": "^9.4.5",
     "react-hot-loader": "^4.12.21",
     "react-icons": "^3.10.0",
+    "react-router": "^5.2.0",
     "react-router-dom": "^5.2.0",
     "react-scripts": "^3.4.1",
     "react-static": "^7.4.2",
