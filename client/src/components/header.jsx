@@ -10,7 +10,7 @@ import { Nav, Navbar } from 'react-bootstrap';
 const isLoggedIn = false;
 
 const header = () => (
-  <Navbar expand="lg" bg="light">
+  <Navbar expand="sm" bg="light">
     <Link to="/" className="navbar-brand">
       Trailr
     </Link>
