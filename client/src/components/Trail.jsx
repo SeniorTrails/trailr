@@ -4,6 +4,7 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Image from 'react-bootstrap/Image';
 import Badge from 'react-bootstrap/Badge';
+import { getTrailData } from '../helpers';
 import Input from './input.jsx';
 import Map from './TrailMap.jsx';
 import Carousel from './Carousel.jsx';
@@ -166,19 +167,28 @@ const trail = () => {
 
   // Set all the initial data with DB calls based on id in useParams
   useEffect(() => {
-    setTrailInfo(data);
-    setPhotoInfo(photos);
-    setUserRatings({
-      userLoaded: true,
-      like: {
-        value: userData.like,
-        edit: false,
-      },
-      diff: {
-        value: userData.diff,
-        edit: false,
-      },
-    });
+    getTrailData(id)
+      .then(trailData => {
+        // setTrailInfo(trailData);
+        // setPhotoInfo(trailData.photos);
+        // Check if User is logged in to set User ratings
+        setTrailInfo(data);
+        setPhotoInfo(photos);
+        setUserRatings({
+          userLoaded: true,
+          like: {
+            value: userData.like,
+            edit: false,
+          },
+          diff: {
+            value: userData.diff,
+            edit: false,
+          },
+        });
+      })
+      .catch((err) => {
+        console.error(err);
+      });
   }, []);
 
   /**

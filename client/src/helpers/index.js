@@ -39,6 +39,25 @@ export const getUserData = (userId) => new Promise((resolve, reject) => {
     url: `/api/users/${userId}`,
   })
     .then((response) => {
+      console.log(response.data);
+      resolve(response.data);
+    })
+    .catch((err) => {
+      reject(err);
+    });
+});
+
+/**
+ * Calls the api to get a trail's data
+ * @param {Number} trailId a trail's id number based on the page params
+ */
+export const getTrailData = (trailId) => new Promise((resolve, reject) => {
+  axios({
+    method: 'get',
+    url: `/api/trails/${trailId}`,
+  })
+    .then((response) => {
+      console.log(response.data);
       resolve(response.data);
     })
     .catch((err) => {
