@@ -83,8 +83,7 @@ router.get('/trails', (req, res) => {
       res.send(trailDataArray);
     })
     .catch((error) => {
-      // console.log('ERROR: ', error);
-      console.error(error);
+      console.log('ERROR: ', error);
     });
 });
 
