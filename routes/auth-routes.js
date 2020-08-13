@@ -17,7 +17,8 @@ authRouter.get('/login', (req, res) => {
 // create logout route
 authRouter.get('/logout', (req, res) => {
   // add in passport handler for logout here
-  res.send('Logging out');
+  req.logOut();
+  res.redirect('/');
   // finish with redirect to "/"
 });
 

@@ -70,17 +70,23 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 passport.serializeUser((user, done) => {
-  done(null, user);
+  console.log('SERIALIZE', user);
+  done(null, user.id);
 });
-passport.deserializeUser((user, done) => {
+passport.deserializeUser((id, done) => {
+  console.log('DESERIALIZE', id);
   // use find user by id
-  // getUser(id)
-  //   .then((user) => {
-    //   })
-  //   .catch((error) => {
-    //     throw error;
-    //   });
-    done(null, user);
+  getUser(id)
+    .then((user) => {
+      const userInfo = {
+        id: user.id,
+        name: user.name,
+      };
+      done(null, userInfo);
+    })
+    .catch((error) => {
+      done(error);
+    });
 });
 
 // configure the PORT server will listen for calls on

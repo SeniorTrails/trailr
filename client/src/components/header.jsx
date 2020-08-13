@@ -26,7 +26,7 @@ const header = () => (
         {isLoggedIn ? (
           <Nav.Link href="/auth/logout">Signout</Nav.Link>
         ) : (
-          <Nav.Link href="/auth/login">Login</Nav.Link>
+          <Nav.Link href="/auth/google">Login</Nav.Link>
         )}
       </Nav>
     </Navbar.Collapse>
