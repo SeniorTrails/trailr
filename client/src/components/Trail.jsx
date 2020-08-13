@@ -222,7 +222,7 @@ const trail = () => {
   const appendPhoto = (newPhotos) => {
     const updatedInfo = [...photoInfo];
     Object.keys(newPhotos).forEach((key) => {
-      updatedInfo.push({ ...newPhotos[key], comments: [], id: key });
+      updatedInfo.push({ ...newPhotos[key], comments: [], id: photoInfo.length + 1 });
     });
     setPhotoInfo(updatedInfo);
   };
