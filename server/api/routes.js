@@ -18,6 +18,8 @@ const {
   addPhoto,
   deleteComment,
   deletePhoto,
+  addFavorite,
+  deleteFavorite,
 } = require('../../database/index.js');
 
 // import GCS functions
@@ -31,22 +33,29 @@ const router = Router();
 /* --------------------------------- Get Requests ------------------------------------------------*/
 
 // tested - sends back whole trail object, "getTrail"
-// router.get('/trails', (req, res) => {
-//   const { body } = req;
-//   getTrail(body)
-//     .then((success) => {
-//       console.log('******HIT THE THEN in getTrail********');
-//       res.send(success);
-//     })
-//     .catch((error) => {
-//       res.setStatus(500);
-//       throw error;
-//     });
-// });
+router.get('/trails/:id', (req, res) => {
+  const { id } = req.body;
+  const idT = req.params.id;
+  // console.log('**********REQ OBJECT**********', id, idT);
+  const trailObject = {
+    id_trail: idT,
+    id_user: id,
+  };
+  getTrail(trailObject)
+    .then((success) => {
+      // console.log('******HIT THE THEN in getTrail********');
+      res.send(success);
+    })
+    .catch((error) => {
+      res.sendStatus(500);
+      throw error;
+    });
+});
 
 // route makes requests to trails api for trails data
-// not tested -
+// tested - sens back array of objects containing trail information from trail API
 router.get('/trails', (req, res) => {
+  const { radius, lat, lon } = req.body.params;
   axios({
     method: 'GET',
     url: 'https://trailapi-trailapi.p.rapidapi.com/trails/explore/',
@@ -57,9 +66,9 @@ router.get('/trails', (req, res) => {
       useQueryString: true,
     },
     params: {
-      radius: '25',
-      lat: '30',
-      lon: '-90',
+      radius,
+      lat,
+      lon,
     },
   })
     .then((response) => {
@@ -83,7 +92,7 @@ router.get('/users/:id', (req, res) => {
     })
     .catch((error) => {
       res.sendStatus(500);
-      throw (error);
+      throw error;
     });
 });
 
@@ -185,6 +194,20 @@ router.post('/uploads', (req, res) => {
     });
 });
 
+// add favorite trial to the database table
+router.post('/favorites', (req, res) => {
+  const { body } = req;
+  addFavorite(body)
+    .then((success) => {
+      console.log('******HIT THE THEN of addFavorite********');
+      res.send(success);
+    })
+    .catch((error) => {
+      res.sendStatus(500);
+      throw error;
+    });
+});
+
 /* --------------------------------- PUT Requests -----------------------------------------------*/
 // tested - not working yet
 router.put('/trails', (req, res) => {
@@ -264,6 +287,20 @@ router.delete('/comments/:id', (req, res) => {
   deleteComment(id)
     .then((success) => {
       console.log('******HIT THE THEN of deleteComment********');
+      res.send(success);
+    })
+    .catch((error) => {
+      res.sendStatus(500);
+      throw error;
+    });
+});
+
+// delete a favorite trail form the db
+router.delete('/favorites', (req, res) => {
+  const { body } = req;
+  deleteFavorite(body)
+    .then((success) => {
+      console.log('******HIT THE THEN of deleteFavorite********');
       res.send(success);
     })
     .catch((error) => {
