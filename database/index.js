@@ -3,12 +3,19 @@
 /* eslint-disable no-console */
 const mysql = require('mysql');
 
-const mysqlConfig = {
-  host: 'localhost',
-  user: 'root',
-  password: '',
-  database: 'trailr',
-};
+const mysqlConfig = !process.env.NODE_ENV
+  ? {
+    host: 'localhost',
+    user: 'root',
+    password: '',
+    database: 'trailr',
+  }
+  : {
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASS,
+    database: process.env.DB_NAME,
+  };
 
 const connection = mysql.createConnection(mysqlConfig);
 
