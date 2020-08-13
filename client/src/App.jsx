@@ -1,11 +1,12 @@
 import React from 'react';
-import { BrowserRouter, Switch, Route } from 'react-router-dom';
+import { BrowserRouter, Switch, Route, Redirect } from 'react-router-dom';
 import MapWrapped from './components/MapWrapped.jsx';
 import Header from './components/header.jsx';
 import Trail from './components/Trail.jsx';
 import User from './components/User.jsx';
 import Signup from './components/Signup.jsx';
 import Login from './components/Login.jsx';
+import NotFound from './components/NotFound.jsx';
 import HeaderImage from './components/HeaderImage.jsx';
 
 const app = () => (
@@ -27,6 +28,8 @@ const app = () => (
           <Route path="/login">
             <Login />
           </Route>
+          <Route path="/404" component={NotFound} />
+          <Redirect to="/404" />
           <Route path="/">
             <div className="col-12" style={{ width: '100%', height: '600px' }}>
               <MapWrapped
