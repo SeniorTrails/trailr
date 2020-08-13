@@ -34,12 +34,16 @@ const MapWithASearchBox = () => {
   };
 
   const updateTrails = (radius, lat, lng) => {
-    axios
-      .get('/api/trails', {
-        radius,
-        lat,
-        lon: lng,
-      })
+    const strungRadius = radius.toString();
+    const strungLat = lat.toString();
+    const strungLng = lng.toString();
+    console.log('RADIUS, LAT, LNG', radius, lat, lng, strungRadius, strungLat, strungLng);
+    axios({method: 'get', url: '/api/trails', data: {
+      radius: strungRadius,
+      lat: strungLat,
+      lon: strungLng,
+    },
+    })
       .then(({ data }) => {
         console.log(`🥾Trails back from API, GET req sent w/ radius:${radius}, lat: ${lat}, lon: ${lng}: `);
         console.log(data);
