@@ -123,7 +123,7 @@ const MapWithASearchBox = React.memo(() => {
         new MarkerClusterer(map, markers, {
           imagePath:
             'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m',
-          gridSize: 10,
+          gridSize: 15,
           minimumClusterSize: 2,
         });
       }
@@ -165,6 +165,7 @@ const MapWithASearchBox = React.memo(() => {
               color={i === selectedTrailIndex ? 'green' : 'blue'}
               key={place.id}
               text={place.name}
+              size={28}
               lat={place.lat || place.geometry.location.lat()}
               lng={place.lon || place.geometry.location.lng()}
               clickHandler={() => {
