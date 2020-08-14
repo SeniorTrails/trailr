@@ -119,7 +119,6 @@ const trail = ({ user }) => {
       const numValue = +target.value;
       updateUserRating(target.name, numValue, user.id, id)
         .then((newRating) => {
-          console.log(target);
           const updatedElement = { ...userRatings[target.name] };
           updatedElement.value = numValue.toString();
           updatedElement.edit = false;
