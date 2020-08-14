@@ -3,6 +3,9 @@
 /* eslint-disable no-console */
 const mysql = require('mysql');
 
+/**
+ *
+*/
 let poolConnection;
 if (!process.env.NODE_ENV) {
   poolConnection = mysql.createConnection({
@@ -71,59 +74,71 @@ const getUser = (id) => new Promise((resolve, reject) => {
             return reject(error);
           });
         }
-        const user = gottenUser[0];
-        connection.query(getFavoritesCommand, [id], (error, gottenFavorites) => {
-          if (error) {
-            connection.rollback(() => {
-              connection.release();
-              return reject(error);
-            });
-          }
-          user.favorites = gottenFavorites;
-          connection.query(getPhotosCommand, [id], (error, gottenPhotos) => {
+        if (gottenUser.length === 0) {
+          connection.commit((error) => {
             if (error) {
               connection.rollback(() => {
                 connection.release();
                 return reject(error);
               });
             }
-            user.photos = gottenPhotos;
-            if (!gottenPhotos.length) {
-              connection.commit((error) => {
-                if (error) {
-                  connection.rollback(() => {
-                    connection.release();
-                    return reject(error);
-                  });
-                }
-                resolve(user);
+            resolve(gottenUser);
+          });
+        } else if (gottenUser.length > 0) {
+          const user = gottenUser[0];
+          connection.query(getFavoritesCommand, [id], (error, gottenFavorites) => {
+            if (error) {
+              connection.rollback(() => {
+                connection.release();
+                return reject(error);
               });
             }
-            user.photos.forEach((photo, i) => {
-              const { id } = photo;
-              connection.query(getCommentsCommand, [id], (error, gottenComments) => {
-                if (error) {
-                  connection.rollback(() => {
-                    connection.release();
-                    return reject(error);
-                  });
-                }
-                user.photos[i].comments = gottenComments;
-                if (i === user.photos.length - 1) {
-                  connection.commit((error) => {
-                    if (error) {
-                      connection.rollback(() => {
-                        connection.release();
-                        return reject(error);
-                      });
-                    }
-                    resolve(user);
-                  });
-                }
+            user.favorites = gottenFavorites;
+            connection.query(getPhotosCommand, [id], (error, gottenPhotos) => {
+              if (error) {
+                connection.rollback(() => {
+                  connection.release();
+                  return reject(error);
+                });
+              }
+              user.photos = gottenPhotos;
+              if (!gottenPhotos.length) {
+                connection.commit((error) => {
+                  if (error) {
+                    connection.rollback(() => {
+                      connection.release();
+                      return reject(error);
+                    });
+                  }
+                  resolve(user);
+                });
+              }
+              user.photos.forEach((photo, i) => {
+                const { id } = photo;
+                connection.query(getCommentsCommand, [id], (error, gottenComments) => {
+                  if (error) {
+                    connection.rollback(() => {
+                      connection.release();
+                      return reject(error);
+                    });
+                  }
+                  user.photos[i].comments = gottenComments;
+                  if (i === user.photos.length - 1) {
+                    connection.commit((error) => {
+                      if (error) {
+                        connection.rollback(() => {
+                          connection.release();
+                          return reject(error);
+                        });
+                      }
+                      resolve(user);
+                    });
+                  }
+                });
               });
             });
           });
-        });
+        }
       });
     });
   });
@@ -169,7 +184,7 @@ const addUser = (userObject) => new Promise((resolve, reject) => {
               });
             }
             resolve({
-              message: 'Existing user. Use id listed here and getUser(id) to lookup user or updateUser(id) to update.',
+              message: 'Existing user. Use id listed here with getUser(id) to lookup user or updateUser(id) to update user.',
               id: userResult[0].id,
               name: userResult[0].name,
             });
@@ -267,51 +282,63 @@ const getTrail = (trailObject) => new Promise((resolve, reject) => {
               return reject(error);
             });
           }
-          const trail = gottenTrail[0];
-          const { id } = trail;
-          connection.query(getPhotosCommand, [id], (error, gottenPhotos) => {
-            if (error) {
-              connection.rollback(() => {
-                connection.release();
-                return reject(error);
-              });
-            }
-            if (!gottenPhotos.length) {
-              connection.commit((error) => {
-                if (error) {
-                  connection.rollback(() => {
-                    connection.release();
-                    return reject(error);
-                  });
-                }
-                resolve(trail);
-              });
-            }
-            trail.photos = gottenPhotos;
-            trail.photos.forEach((photo, i) => {
-              const { id } = photo;
-              connection.query(getCommentsCommand, [id], (error, gottenComments) => {
-                if (error) {
-                  connection.rollback(() => {
-                    connection.release();
-                    return reject(error);
-                  });
-                }
-                trail.photos[i].comments = gottenComments;
-                if (i === trail.photos.length - 1) {
-                  connection.commit((error) => {
-                    if (error) {
-                      connection.rollback(() => {
-                        connection.release();
-                        return reject(error);
-                      });
-                    }
-                    resolve(trail);
-                  });
-                }
+          if (gottenTrail.length === 0) {
+            connection.commit((error) => {
+              if (error) {
+                connection.rollback(() => {
+                  connection.release();
+                  return reject(error);
+                });
+              }
+              resolve(gottenTrail);
+            });
+          } else if (gottenTrail.length > 0) {
+            const trail = gottenTrail[0];
+            const { id } = trail;
+            connection.query(getPhotosCommand, [id], (error, gottenPhotos) => {
+              if (error) {
+                connection.rollback(() => {
+                  connection.release();
+                  return reject(error);
+                });
+              }
+              if (!gottenPhotos.length) {
+                connection.commit((error) => {
+                  if (error) {
+                    connection.rollback(() => {
+                      connection.release();
+                      return reject(error);
+                    });
+                  }
+                  resolve(trail);
+                });
+              }
+              trail.photos = gottenPhotos;
+              trail.photos.forEach((photo, i) => {
+                const { id } = photo;
+                connection.query(getCommentsCommand, [id], (error, gottenComments) => {
+                  if (error) {
+                    connection.rollback(() => {
+                      connection.release();
+                      return reject(error);
+                    });
+                  }
+                  trail.photos[i].comments = gottenComments;
+                  if (i === trail.photos.length - 1) {
+                    connection.commit((error) => {
+                      if (error) {
+                        connection.rollback(() => {
+                          connection.release();
+                          return reject(error);
+                        });
+                      }
+                      resolve(trail);
+                    });
+                  }
+                });
               });
             });
-          });
+          }
         });
     });
   });
@@ -359,7 +386,7 @@ const addTrail = (trailObject) => new Promise((resolve, reject) => {
               });
             }
             resolve({
-              message: 'Existing trail. Use id listed here and getTrail(id) to lookup trail or updateTrail(id) to update.',
+              message: 'Existing trail. Use id listed here with getTrail(id) to lookup trail or updateTrail(id) to update trail.',
               id: trailResult[0].id,
             });
           });
@@ -936,6 +963,47 @@ const deleteFavorite = (favoriteObject) => new Promise((resolve, reject) => {
   });
 });
 
+const updateComment = (commentObject) => new Promise((resolve, reject) => {
+  poolConnection.getConnection((error, connection) => {
+    if (error) reject(error);
+
+    console.log('UPDATE COMMENT INVOKED');
+    const updateCommentCommand = `
+      UPDATE comments
+      SET text = ?
+      WHERE id = ?
+    `;
+
+    connection.beginTransaction((error) => {
+      if (error) {
+        connection.rollback(() => {
+          connection.release();
+          return reject(error);
+        });
+      }
+      connection.query(updateCommentCommand,
+        [commentObject.text, commentObject.id],
+        (error, updatedComment) => {
+          if (error) {
+            connection.rollback(() => {
+              connection.release();
+              return reject(error);
+            });
+          }
+          connection.commit((error) => {
+            if (error) {
+              connection.rollback(() => {
+                connection.release();
+                return reject(error);
+              });
+            }
+            resolve(updatedComment, console.log('COMMENT UPDATED'));
+          });
+        });
+    });
+  });
+});
+
 module.exports = {
   getUser,
   addUser,
@@ -951,6 +1019,7 @@ module.exports = {
   deletePhoto,
   addFavorite,
   deleteFavorite,
+  updateComment,
 };
 
 // mysql -uroot < server/index.js
