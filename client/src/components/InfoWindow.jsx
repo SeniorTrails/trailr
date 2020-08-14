@@ -1,6 +1,14 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Redirect } from 'react-router-dom';
 import { OverlayTrigger, Popover, Button, Image } from 'react-bootstrap';
+import styled from 'styled-components';
+import { addTrail } from '../helpers';
+
+const LinkDiv = styled.div`
+  :hover {
+    color: blue
+  }
+`;
 
 /**
  * InfoWindow is small pop-up window that displays a clickable title of the currently selected
@@ -11,6 +19,7 @@ import { OverlayTrigger, Popover, Button, Image } from 'react-bootstrap';
  */
 
 const InfoWindow = React.memo(({ selectedTrail, onCloseClick }) => {
+  const [redirect, setRedirect] = useState(false);
   const place = selectedTrail;
   const { thumbnail } = place;
   const infoWindowStyle = {
@@ -25,9 +34,26 @@ const InfoWindow = React.memo(({ selectedTrail, onCloseClick }) => {
     zIndex: 0,
   };
 
+  const clickHandler = () => {
+    const trailData = {
+      ...place,
+      api_id: place.id,
+      latitude: +place.lat,
+      longitude: +place.lon,
+    };
+    addTrail(trailData)
+      .then((response) => {
+        setRedirect(`/trail/${response.id}`);
+      })
+      .catch((err) => {
+        setRedirect('/404');
+      });
+  };
+
   return (
     <div style={infoWindowStyle}>
       <>
+        {!redirect ? null : <Redirect to={redirect} />}
         {['top'].map((placement) => (
           <OverlayTrigger
             trigger="click"
@@ -49,9 +75,7 @@ const InfoWindow = React.memo(({ selectedTrail, onCloseClick }) => {
                 X
               </div>
               <div>
-                <Link to={`/trail/${place.id}`} activeclassname="active">
-                  <h4>{place.name}</h4>
-                </Link>
+                <LinkDiv onClick={clickHandler}><h4>{place.name}</h4></LinkDiv>
               </div>
               <div>
                 <Image
