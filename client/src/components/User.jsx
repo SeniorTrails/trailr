@@ -177,9 +177,9 @@ const user = () => {
   useEffect(() => {
     getUserData(id)
       .then((userData) => {
-        // setPhotoInfo(userData.photos);
+        setPhotoInfo(userData.photos);
         // setMyTrails(userData.savedTrails);
-        setPhotoInfo(photos);
+        //setPhotoInfo(photos);
         setMyTrails(savedTrails);
       })
       .catch((err) => {
@@ -220,7 +220,12 @@ const user = () => {
                 currentPhoto={currentPhoto}
                 changeCurrentPhoto={changeCurrentPhoto}
               />
-              <AddComment appendComments={appendComments} />
+              <AddComment
+                appendComments={appendComments}
+                userId={2}
+                photoId={photoInfo[currentPhoto].id}
+                name='DANNY'
+              />
             </>
           )}
       </Col>

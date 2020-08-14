@@ -11,16 +11,17 @@ import Input from './input.jsx';
  * @param {Number} photoId current photo to add a comment to
  * @param {String} username current logged in user's name
  */
-const addComment = ({ appendComments, userId, photoId, username }) => {
+const addComment = ({ appendComments, userId, photoId, name }) => {
   /**
    * Runs on the form submit and updates database and runs appendComments
    * @param {String} text extracted from a values object
    */
   const commentSubmit = ({ text }) => {
+    console.log(text, userId, photoId)
     addCommentToPhoto(text, userId, photoId)
       .then(({ id }) => {
         console.log('USERNAME IS HARD CODED FIX THIS');
-        appendComments({ text, id, username });
+        appendComments({ text, id, name });
       })
       .catch((err) => {
         console.error(err);
@@ -43,5 +44,5 @@ addComment.propTypes = {
   appendComments: PropTypes.func.isRequired,
   userId: PropTypes.number.isRequired,
   photoId: PropTypes.number.isRequired,
-  username: PropTypes.string.isRequired,
+  name: PropTypes.string.isRequired,
 };

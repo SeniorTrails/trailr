@@ -58,6 +58,29 @@ app.use(bodyParser.json());
 // utilize the urlencoder from express framework
 app.use(bodyParser.urlencoded({ extended: false }));
 
+// utilize passport middleware initialize && session authentication functionality
+
+passport.serializeUser((user, done) => {
+  done(null, {id: user.id, name: user.name});
+});
+passport.deserializeUser((id, done) => {
+  // use find user by id
+  getUser(id)
+    .then((user) => {
+      const userInfo = {
+        id: user.id,
+        name: user.name,
+      };
+      done(null, userInfo);
+    })
+    .catch((error) => {
+      done(error);
+    });
+});
+app.use(passport.initialize());
+app.use(passport.session());
+// configure the PORT server will listen for calls on
+const PORT = 8080;
 // utilize express-session middleware to read session cookies
 app.use(session({
   secret: process.env.SECRET, // not sure if this is right
@@ -65,39 +88,18 @@ app.use(session({
   saveUninitialized: true,
   // cookie: { secure: true }, //don't know if we need this
 }));
-
-// utilize passport middleware initialize && session authentication functionality
-app.use(passport.initialize());
-app.use(passport.session());
-passport.serializeUser((user, done) => {
-  done(null, user);
-});
-passport.deserializeUser((user, done) => {
-  // use find user by id
-  // getUser(id)
-  //   .then((user) => {
-    //   })
-  //   .catch((error) => {
-    //     throw error;
-    //   });
-    done(null, user);
-});
-
-// configure the PORT server will listen for calls on
-const PORT = 8080;
+// direct express to certain middleware for requests on certain paths
 
 app.use('/api', router);
 
 // authentication routes
 app.use('/auth', authRouter);
 
-// direct express to certain middleware for requests on certain paths
 app.use('/', express.static(path.join(__dirname, '/../client/dist')));
 // reroutes any route to the index.html so React Router works
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '/../client/dist/index.html'));
 });
-
 // set server to listen for requests on configured report
 app.listen(process.env.PORT || PORT, () => {
   console.log(`Server Walking The Trails on http://localhost:${PORT}`);
