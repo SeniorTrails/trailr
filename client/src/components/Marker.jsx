@@ -13,7 +13,7 @@ import blueMarker from '../../assets/imgs/blueMarker.png';
 const marker = ({
   clickHandler,
   color,
-  size = 43,
+  size = 30,
   $hover,
 }) => {
   let icon;

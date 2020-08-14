@@ -7,7 +7,7 @@ import Marker from './Marker.jsx';
 import InfoWindow from './InfoWindow.jsx';
 import GoogleMap from './GoogleMap.jsx';
 import SearchBox from './SearchBox.jsx';
-import blueMarker from '../../assets/imgs/blueMarker.png';
+import transparentMarker from '../../assets/imgs/transparentMarker.png';
 import * as trailData from '../data/trail-data.json';
 
 // const MapWithASearchBox = React.memo(() => {
@@ -17,16 +17,12 @@ const MapWithASearchBox = () => {
   const [mapApi, setMapApi] = useState(null);
   const [places, setPlaces] = useState(trailData.data);
   const [geolocation, setGeolocation] = useState(false);
-  const [firstClustering, setFirstClustering] = useState(false);
   const [userLocation, setUserLocation] = useState({
     lat: 30.33735,
     lng: -90.03733,
   });
-  const [notClusteredPlaces, setNotClusteredPlaces] = useState(null);
-  const [clusteredPlaces, setClusteredPlaces] = useState(null);
   const [selectedTrail, setSelectedTrail] = useState(null);
   const [selectedTrailIndex, setSelectedTrailIndex] = useState(null);
-  const [zoom, setZoom] = useState(10);
 
   const addPlace = (place) => {
     setPlaces(place);
@@ -88,46 +84,12 @@ const MapWithASearchBox = () => {
     };
   }, []);
 
-  // const clustering = (thisZoom) => {
-  //   if (places) {
-  //     const placesClustered = places.reduce((clusteredTrails, currentTrail) => {
-  //       const notInRange = places.reduce((prev, current) => {
-  //         const threshold = 128 / (2 ** thisZoom); // 1024
-  //         const latCompare = Math.abs(+currentTrail.lat - +current.lat);
-  //         const lonCompare = Math.abs(+currentTrail.lon - +current.lon);
-  //         if (
-  //           latCompare !== 0 &&
-  //           lonCompare !== 0 &&
-  //           latCompare < threshold &&
-  //           lonCompare < threshold
-  //         ) {
-  //           prev.push(current);
-  //         }
-  //         console.log('threshold:', threshold);
-  //         console.log('latCompare:', latCompare);
-  //         console.log('lonCompare:', lonCompare);
-  //         return prev;
-  //       }, []);
-  //       clusteredTrails.push([...notInRange]);
-  //       return clusteredTrails;
-  //     }, []);
-  //     const clustered = placesClustered[placesClustered.length - 1];
-  //     const notClustered = places.filter((x) => !clustered.includes(x));
-  //     // console.log('notclustered:');
-  //     // console.log(notClustered);
-  //     setClusteredPlaces(clustered);
-  //     setNotClusteredPlaces(notClustered);
-  //   }
-  // };
-
   const setGoogleMapRef = (map, maps) => {
     if (map && maps) {
       let currentZoom = currentZoom || 10;
       let lastSearchedCenter = lastSearchedCenter || userLocation;
       map.addListener('zoom_changed', () => {
         currentZoom = map.getZoom();
-        setZoom(currentZoom);
-        // clustering(currentZoom);
       });
       map.addListener('bounds_changed', () => {
         const currentBounds = map.getBounds();
@@ -150,36 +112,38 @@ const MapWithASearchBox = () => {
       setMapApi(maps);
       setMapApiLoaded(true);
       const googleRef = maps;
-      const locations = places.reduce((coordinates, currentTrail) => {
-        coordinates.push({ lat: +currentTrail.lat, lng: +currentTrail.lon });
-        return coordinates;
-      }, []);
-      let markers =
-        locations &&
-        locations.map((location) => {
-          return new googleRef.Marker({
-            position: location,
-            icon: {
-              src: blueMarker,
-            },
+      if (places) {
+        const locations = places.reduce((coordinates, currentTrail) => {
+          coordinates.push({ lat: +currentTrail.lat, lng: +currentTrail.lon });
+          return coordinates;
+        }, []);
+        const markers =
+          locations &&
+          locations.map((location) => {
+            return new googleRef.Marker({
+              position: location,
+              icon: transparentMarker,
+            });
           });
-        });
 
-      new MarkerClusterer(map, markers, {
-        imagePath:
-          'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m',
-        gridSize: 15,
-        minimumClusterSize: 2,
-      });
-      // if (!firstClustering) {
-      //   clustering(currentZoom);
-      //   setFirstClustering(true);
-      // }
+        new MarkerClusterer(map, markers, {
+          imagePath:
+            'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m',
+          // styles: {
+          //   textColor: 'white',
+          //   url:
+          //     'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m',
+          //   height: 1,
+          //   width: 1,
+          // },
+          gridSize: 15,
+          minimumClusterSize: 2,
+        });
+      }
     }
   };
 
   useEffect(() => {
-    // clustering(zoom);
     setGoogleMapRef(mapInstance, mapApi);
   }, [places]);
 
@@ -208,31 +172,8 @@ const MapWithASearchBox = () => {
         onGoogleApiLoaded={({ map, maps }) => setGoogleMapRef(map, maps)}
         options={{ streetViewControl: false }}
       >
-        {/* {!isEmpty(notClusteredPlaces) &&
-          zoom < 12 &&
-          notClusteredPlaces.map((place, i) => (
-            <Marker
-              color={i === selectedTrailIndex ? 'green' : 'blue'}
-              key={place.id}
-              text={place.name}
-              lat={place.lat || place.geometry.location.lat()}
-              lng={place.lon || place.geometry.location.lng()}
-              clickHandler={() => {
-                if (selectedTrailIndex === i) {
-                  clearSelectedTrail();
-                } else {
-                  setSelectedTrail(place);
-                  setSelectedTrailIndex(i);
-                }
-              }}
-            />
-          ))} */}
         {!isEmpty(places) &&
-          // zoom >= 12 &&
-          places.map((
-            place,
-            i // have one with just places for the zoom greater than 12?
-          ) => (
+          places.map((place, i) => (
             <Marker
               color={i === selectedTrailIndex ? 'green' : 'blue'}
               key={place.id}
