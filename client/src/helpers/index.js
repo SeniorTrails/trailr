@@ -29,6 +29,9 @@ export const useForm = (callback) => {
   };
 };
 
+/**
+ * Checks the session on the server to see if there is a logged in user
+ */
 export const getAuth = () => new Promise((resolve, reject) => {
   axios({
     method: 'get',

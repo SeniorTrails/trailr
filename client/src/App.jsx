@@ -10,10 +10,12 @@ import Login from './components/Login.jsx';
 import NoMatchPage from './components/NoMatchPage.jsx';
 import HeaderImage from './components/HeaderImage.jsx';
 
+// Logged out state
 const loggedOut = { loggedIn: false };
 
 const app = () => {
   const [user, setUser] = useState(loggedOut);
+  // Get's the auth state and saves it to the user object
   useEffect(() => {
     getAuth()
       .then((response) => {

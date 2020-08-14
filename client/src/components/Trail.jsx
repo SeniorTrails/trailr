@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Redirect } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
@@ -11,141 +12,7 @@ import Carousel from './Carousel.jsx';
 import AddComment from './AddComment.jsx';
 import AddPicture from './AddPicture.jsx';
 
-const data = {
-  id: 279988,
-  name: 'Eagle Trail',
-  url: 'https://www.singletracks.com/bike-trails/eagle-trail-8663/',
-  description:
-    'Nice easy trail.  Smaller in width than South or North Loop. South side of trail borders the Beaver Pond.',
-  city: 'Mandeville',
-  region: 'Louisiana',
-  country: 'United States',
-  lat: 30.35324,
-  lon: -90.02715,
-  difficulty: 3,
-  likeability: 4,
-  thumbnail:
-    'https://images.singletracks.com/blog/wp-content/uploads/2014/06/et3-orig.jpg',
-};
-
-const userData = {
-  diff: 2,
-  like: 1,
-};
-
-const photos = [
-  {
-    id: 1,
-    url:
-      'https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/Natchez_Trace_Trail.jpg/1280px-Natchez_Trace_Trail.jpg',
-    lat: 30.35121,
-    lng: -90.026479,
-    comments: [
-      {
-        id: 1,
-        text:
-          'Lorem ipsum dolor sit amet consectetur adipisicing elit. Possimus laborum voluptatem nihil ipsam placeat itaque magnam.',
-        name: 'Daniel Troyano',
-      },
-      {
-        id: 2,
-        text:
-          'Lorem ipsum dolor sit amet consectetur adipisicing elit. Possimus laborum voluptatem nihil ipsam placeat itaque magnam.',
-        name: 'Daniel Troyano',
-      },
-      {
-        id: 3,
-        text:
-          'Lorem ipsum dolor sit amet consectetur adipisicing elit. Possimus laborum voluptatem nihil ipsam placeat itaque magnam.',
-        name: 'Daniel Troyano',
-      },
-    ],
-  },
-  {
-    id: 2,
-    url:
-      'https://upload.wikimedia.org/wikipedia/commons/c/ce/North_Country_Trail_Manistee_Forest.jpg',
-    lat: 30.350458,
-    lng: -90.026045,
-    comments: [
-      {
-        id: 4,
-        text:
-          'Lorem ipsum dolor sit amet consectetur adipisicing elit. Possimus laborum voluptatem nihil ipsam placeat itaque magnam.',
-        name: 'Caylie Sadin',
-      },
-      {
-        id: 5,
-        text:
-          'Lorem ipsum dolor sit amet consectetur adipisicing elit. Possimus laborum voluptatem nihil ipsam placeat itaque magnam.',
-        name: 'Daniel Troyano',
-      },
-    ],
-  },
-  {
-    id: 5,
-    url:
-      'https://vbwsjdqd1l-flywheel.netdna-ssl.com/wp-content/uploads/2014/04/Santos-Trails-1.jpg',
-    lat: 30.352326,
-    lng: -90.02711,
-    comments: [
-      {
-        id: 4,
-        text:
-          'Lorem ipsum dolor sit amet consectetur adipisicing elit. Possimus laborum voluptatem nihil ipsam placeat itaque magnam.',
-        name: 'Caylie Sadin',
-      },
-      {
-        id: 5,
-        text:
-          'Lorem ipsum dolor sit amet consectetur adipisicing elit. Possimus laborum voluptatem nihil ipsam placeat itaque magnam.',
-        name: 'Daniel Troyano',
-      },
-    ],
-  },
-  {
-    id: 3,
-    url:
-      'https://www.pittsburghmagazine.com/content/uploads/2020/03/cb-cook-forest-trail1.jpg',
-    lat: 30.35326,
-    lng: -90.027236,
-    comments: [
-      {
-        id: 4,
-        text:
-          'Lorem ipsum dolor sit amet consectetur adipisicing elit. Possimus laborum voluptatem nihil ipsam placeat itaque magnam.',
-        name: 'Caylie Sadin',
-      },
-      {
-        id: 5,
-        text:
-          'Lorem ipsum dolor sit amet consectetur adipisicing elit. Possimus laborum voluptatem nihil ipsam placeat itaque magnam.',
-        name: 'Daniel Troyano',
-      },
-    ],
-  },
-  {
-    id: 4,
-    url: 'https://www.cliftonpark.com/images/100acretrail.jpg',
-    lat: 30.348433,
-    lng: -90.026569,
-    comments: [
-      {
-        id: 4,
-        text:
-          'Lorem ipsum dolor sit amet consectetur adipisicing elit. Possimus laborum voluptatem nihil ipsam placeat itaque magnam.',
-        name: 'Caylie Sadin',
-      },
-      {
-        id: 5,
-        text:
-          'Lorem ipsum dolor sit amet consectetur adipisicing elit. Possimus laborum voluptatem nihil ipsam placeat itaque magnam.',
-        name: 'Daniel Troyano',
-      },
-    ],
-  },
-];
-
+// Options for the ratings selector
 const ratingOptions = [
   { value: '', label: '' },
   { value: 1, label: '1' },
@@ -156,6 +23,33 @@ const ratingOptions = [
 ];
 
 /**
+ * Takes the server's trail data and parses it into several different variables
+ *  so that it's easier to work with
+ * @param {Object} data trail data from server to parse
+ * @returns {Object} photoData, userRatingData, trailData
+ */
+const parseTrailData = (data) => {
+  const trailData = {
+    id: data.id,
+    name: data.name,
+    url: data.url,
+    description: data.description,
+    lat: data.latitude,
+    lon: data.longitude,
+    difficulty: data.averageDifficulty,
+    likeability: data.averageLikeability,
+    thumbnail: data.thumbnail,
+  };
+  const photoData = data.photos;
+  const userRatingData = { diff: data.userDifficulty, like: data.userLikeability };
+  return {
+    photoData,
+    userRatingData,
+    trailData,
+  };
+};
+
+/**
  * The Trail Page component
  */
 const trail = () => {
@@ -164,38 +58,32 @@ const trail = () => {
   const [photoInfo, setPhotoInfo] = useState([]);
   const [userRatings, setUserRatings] = useState({});
   const [currentPhoto, setCurrentPhoto] = useState(0);
+  // Redirect if no trail info is found
+  let redirect = null;
 
   // Set all the initial data with DB calls based on id in useParams
   useEffect(() => {
-    getAuth()
-      .then(response => {
-        console.log('AUTHRESPONSE')
-        console.log(response);
-      })
-      .catch(err=> {
-        console.error(err);
-      });
     getTrailData(id)
-      .then(trailData => {
-        // setTrailInfo(trailData);
-        // setPhotoInfo(trailData.photos);
+      .then((response) => {
+        console.log(response);
+        const { photoData, userRatingData, trailData } = parseTrailData(response);
+        setTrailInfo(trailData);
+        setPhotoInfo(photoData);
         // Check if User is logged in to set User ratings
-        setTrailInfo(data);
-        setPhotoInfo(photos);
         setUserRatings({
           userLoaded: true,
           like: {
-            value: userData.like,
+            value: userRatingData.like,
             edit: false,
           },
           diff: {
-            value: userData.diff,
+            value: userRatingData.diff,
             edit: false,
           },
         });
       })
       .catch((err) => {
-        console.error(err);
+        redirect = <Redirect to="/404" />;
       });
   }, []);
 
@@ -307,6 +195,7 @@ const trail = () => {
 
   return (
     <>
+      {redirect}
       <Col xs={6}>
         <Row>
           <Col xs={9}>
