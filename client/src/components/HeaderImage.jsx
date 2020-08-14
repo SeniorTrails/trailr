@@ -12,9 +12,11 @@ const HeaderImage = () => (
         }}
       >
         <Image
+          className='pt-2'
           src={mountainHeaderImage}
-          style={{ height: '110px' }}
+          style={{ minWidth: '500px', height: '190px' }}
           alt="Mountain trail"
+          fluid
         />
       </div>
     </div>

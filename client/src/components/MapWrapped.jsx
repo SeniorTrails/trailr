@@ -165,6 +165,7 @@ const MapWithASearchBox = React.memo(() => {
               color={i === selectedTrailIndex ? 'green' : 'blue'}
               key={place.id}
               text={place.name}
+              size={28}
               lat={place.lat || place.geometry.location.lat()}
               lng={place.lon || place.geometry.location.lng()}
               clickHandler={() => {
