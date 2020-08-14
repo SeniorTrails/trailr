@@ -42,7 +42,7 @@ export default comment;
 comment.propTypes = {
   info: PropTypes.shape({
     text: PropTypes.string.isRequired,
-    username: PropTypes.string.isRequired,
+    name: PropTypes.string.isRequired,
     id: PropTypes.number.isRequired,
     id_user: PropTypes.number.isRequired,
   }).isRequired,
