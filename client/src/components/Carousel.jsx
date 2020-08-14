@@ -4,8 +4,11 @@ import styled from 'styled-components';
 import Carousel from '@brainhubeu/react-carousel';
 import '@brainhubeu/react-carousel/lib/style.css';
 import Image from 'react-bootstrap/Image';
+import Button from 'react-bootstrap/Button';
+import Row from 'react-bootstrap/Row';
 import Photo from './Photo.jsx';
 import Comment from './Comment.jsx';
+import { deletePhoto } from '../helpers';
 
 const StyledImage = styled(Image)`
   width: 100px
@@ -17,8 +20,9 @@ const StyledImage = styled(Image)`
  * @param {Array} photos an array of photo information
  * @param {Number} currentPhoto a number representing the location of the current photo
  * @param {Function} changeCurrentPhoto a function that changes the current photo
+ * @param {Object} user loggedIn, id, name
  */
-const carousel = ({ photos, currentPhoto, changeCurrentPhoto }) => {
+const carousel = ({ photos, currentPhoto, changeCurrentPhoto, user }) => {
   const [photo, setPhoto] = useState({});
   const [comments, setComments] = useState([]);
 
@@ -26,6 +30,16 @@ const carousel = ({ photos, currentPhoto, changeCurrentPhoto }) => {
     setComments([...photos[currentPhoto].comments]);
     setPhoto({ url: photos[currentPhoto].url });
   }, [currentPhoto, photos]);
+
+  const deleteHandler = (id) => {
+    deletePhoto(photos[id].id)
+      .then((response) => {
+        console.log(response);
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  };
 
   return (
     <div>
@@ -36,7 +50,7 @@ const carousel = ({ photos, currentPhoto, changeCurrentPhoto }) => {
         slidesPerPage={5}
       >
         {photos.map((item, i) => (
-          <div onClick={() => changeCurrentPhoto(i)} key={item.id}>
+          <div onClick={() => changeCurrentPhoto(i)} key={`image${item.id}`}>
             <StyledImage
               thumbnail
               src={item.url}
@@ -45,9 +59,15 @@ const carousel = ({ photos, currentPhoto, changeCurrentPhoto }) => {
           </div>
         ))}
       </Carousel>
+      <Row>
+        {user.loggedIn && user.id === photos[currentPhoto].id_user
+          ? <Button variant="danger" onClick={() => deleteHandler(currentPhoto)}>Delete Photo</Button>
+          : null}
+      </Row>
       {!comments
         ? null
-        : comments.map((i) => <Comment key={i.id} text={i.text} username={i.name} />)}
+        : comments.map((i) => <Comment key={i.id} info={i} user={user} />)}
+
     </div>
   );
 };
@@ -70,4 +90,9 @@ carousel.propTypes = {
   ).isRequired,
   currentPhoto: PropTypes.number.isRequired,
   changeCurrentPhoto: PropTypes.func.isRequired,
+  user: PropTypes.shape({
+    loggedIn: PropTypes.bool.isRequired,
+    id: PropTypes.number,
+    name: PropTypes.string,
+  }),
 };
