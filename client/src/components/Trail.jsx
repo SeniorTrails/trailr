@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Redirect } from 'react-router-dom';
-import { useParams } from 'react-router-dom';
+import PropTypes from 'prop-types';
+import { Redirect, useParams } from 'react-router-dom';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Image from 'react-bootstrap/Image';
 import Badge from 'react-bootstrap/Badge';
-import { getTrailData, updateUserRating, getAuth } from '../helpers';
+import { getTrailData, updateUserRating } from '../helpers';
 import Input from './input.jsx';
 import Map from './TrailMap.jsx';
 import Carousel from './Carousel.jsx';
@@ -51,8 +51,9 @@ const parseTrailData = (data) => {
 
 /**
  * The Trail Page component
+ * @param {Object} user loggedIn, name, id
  */
-const trail = () => {
+const trail = ({ user }) => {
   const { id } = useParams();
   const [trailInfo, setTrailInfo] = useState({});
   const [photoInfo, setPhotoInfo] = useState([]);
@@ -65,22 +66,23 @@ const trail = () => {
   useEffect(() => {
     getTrailData(id)
       .then((response) => {
-        console.log(response);
         const { photoData, userRatingData, trailData } = parseTrailData(response);
         setTrailInfo(trailData);
         setPhotoInfo(photoData);
         // Check if User is logged in to set User ratings
-        setUserRatings({
-          userLoaded: true,
-          like: {
-            value: userRatingData.like,
-            edit: false,
-          },
-          diff: {
-            value: userRatingData.diff,
-            edit: false,
-          },
-        });
+        if (user.loggedIn) {
+          setUserRatings({
+            userLoaded: true,
+            like: {
+              value: userRatingData.like,
+              edit: false,
+            },
+            diff: {
+              value: userRatingData.diff,
+              edit: false,
+            },
+          });
+        }
       })
       .catch((err) => {
         redirect = <Redirect to="/404" />;
@@ -202,10 +204,14 @@ const trail = () => {
             <h2>{trailInfo.name}</h2>
           </Col>
           <Col xs={3}>
-            <AddPicture
-              appendPhoto={appendPhoto}
-              center={{ lat: trailInfo.lat, lng: trailInfo.lon }}
-            />
+            {!user.loggedIn
+              ? null
+              : (
+                <AddPicture
+                  appendPhoto={appendPhoto}
+                  center={{ lat: trailInfo.lat, lng: trailInfo.lon }}
+                />
+              )}
           </Col>
         </Row>
         <div style={{ width: '100%', height: '300px' }}>
@@ -297,12 +303,16 @@ const trail = () => {
               currentPhoto={currentPhoto}
               changeCurrentPhoto={changeCurrentPhoto}
             />
-            <AddComment
-              appendComments={appendComments}
-              userId={1}
-              photoId={photoInfo[currentPhoto].id}
-              username={'Danny'}
-            />
+            {!user.loggedIn
+              ? null
+              : (
+                <AddComment
+                  appendComments={appendComments}
+                  userId={user.id}
+                  photoId={photoInfo[currentPhoto].id}
+                  name={user.name}
+                />
+              )}
           </>
         )}
       </Col>
@@ -311,3 +321,11 @@ const trail = () => {
 };
 
 export default trail;
+
+trail.propTypes = {
+  user: PropTypes.shape({
+    loggedIn: PropTypes.bool.isRequired,
+    name: PropTypes.string,
+    id: PropTypes.number,
+  }),
+};

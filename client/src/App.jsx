@@ -40,7 +40,7 @@ const app = () => {
         <div className="row">
           <Switch>
             <Route path="/trail/:id">
-              <Trail />
+              <Trail user={user} />
             </Route>
             <Route path="/user/:id">
               <User />
