@@ -29,6 +29,19 @@ export const useForm = (callback) => {
   };
 };
 
+export const getAuth = () => new Promise((resolve, reject) => {
+  axios({
+    method: 'get',
+    url: '/auth/session',
+  })
+    .then((response) => {
+      resolve(response.data);
+    })
+    .catch((err) => {
+      reject(err);
+    });
+});
+
 /**
  * Calls the api to get a user's data
  * @param {Number} userId a user's id number based on page params
@@ -75,7 +88,7 @@ export const getTrailData = (trailId) => new Promise((resolve, reject) => {
 export const updateUserRating = (type, value, idUser, idTrail) => new Promise((resolve, reject) => {
   axios({
     method: 'put',
-    url: type === 'like' ? '/likeability' : '/difficulty',
+    url: type === 'like' ? '/api/likeability' : '/api/difficulty',
     data: {
       id_user: idUser,
       id_trail: idTrail,
@@ -100,7 +113,7 @@ export const updateUserRating = (type, value, idUser, idTrail) => new Promise((r
 export const addCommentToPhoto = (text, idUser, idPhoto) => new Promise((resolve, reject) => {
   axios({
     method: 'post',
-    url: '/comments',
+    url: '/api/comments',
     data: {
       text,
       id_user: idUser,
