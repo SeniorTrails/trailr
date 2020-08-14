@@ -20,7 +20,6 @@ authRouter.get('/logout', (req, res) => {
   // add in passport handler for logout here
   req.logOut();
   req.session.destroy();
-  console.log(req.session);
   res.redirect('/');
   // finish with redirect to "/"
 });

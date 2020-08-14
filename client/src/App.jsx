@@ -7,7 +7,7 @@ import Trail from './components/Trail.jsx';
 import User from './components/User.jsx';
 import Signup from './components/Signup.jsx';
 import Login from './components/Login.jsx';
-import NotFound from './components/NotFound.jsx';
+import NoMatchPage from './components/NoMatchPage.jsx';
 import HeaderImage from './components/HeaderImage.jsx';
 
 const loggedOut = { loggedIn: false };
@@ -49,7 +49,6 @@ const app = () => {
             <Route path="/login">
               <Login />
             </Route>
-            <Route path="/404" component={NotFound} />
             <Route path="/">
               <div className="col-12" style={{ width: '100%', height: '600px' }}>
                 <MapWrapped
@@ -60,6 +59,7 @@ const app = () => {
                 />
               </div>
             </Route>
+            <Route path="/404"><NoMatchPage /></Route>
           </Switch>
         </div>
       </div>

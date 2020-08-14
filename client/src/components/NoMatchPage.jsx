@@ -2,8 +2,7 @@ import React from 'react';
 import { Image, Alert } from 'react-bootstrap';
 import NotFoundImage from '../../assets/imgs/losthiking.gif';
 
-
-const NotFound = () => (
+const NoMatchPage = () => (
   <div className="page-container">
     <div style={{ position: 'absolute', left: '50%' }}>
       <div
@@ -18,9 +17,9 @@ const NotFound = () => (
             <center>Page Not Found</center>
           </Alert.Heading>
           <hr />
-          <p>
-            <center>You must have taken a wrong turn somewhere...</center>
-          </p>
+          <center>
+            <p>You must have taken a wrong turn somewhere...</p>
+          </center>
         </Alert>
         <Image src={NotFoundImage} fluid alt="Lost hikers" />
       </div>
@@ -28,4 +27,4 @@ const NotFound = () => (
   </div>
 );
 
-export default NotFound;
+export default NoMatchPage;
