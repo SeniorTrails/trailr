@@ -306,6 +306,7 @@ const trail = ({ user }) => {
               photos={photoInfo}
               currentPhoto={currentPhoto}
               changeCurrentPhoto={changeCurrentPhoto}
+              user={user}
             />
             {!user.loggedIn
               ? null
