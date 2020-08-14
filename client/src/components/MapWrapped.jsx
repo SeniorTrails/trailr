@@ -15,6 +15,7 @@ const MapWithASearchBox = () => {
   const [mapInstance, setMapInstance] = useState(null);
   const [mapApi, setMapApi] = useState(null);
   const [places, setPlaces] = useState(trailData.data);
+  const [geolocation, setGeolocation] = useState(false);
   const [userLocation, setUserLocation] = useState({
     lat: 30.33735,
     lng: -90.03733,
@@ -38,15 +39,18 @@ const MapWithASearchBox = () => {
     const strungLat = lat.toString();
     const strungLng = lng.toString();
     console.log('RADIUS/LAT/LNG: ', strungRadius, strungLat, strungLng);
-    axios.get('/api/trails', {
-      params: {
-        radius: strungRadius,
-        lat: strungLat,
-        lon: strungLng,
-      },
-    })
+    axios
+      .get('/api/trails', {
+        params: {
+          radius: strungRadius,
+          lat: strungLat,
+          lon: strungLng,
+        },
+      })
       .then(({ data }) => {
-        console.log(`🥾Trails back from API, GET req sent w/ radius:${radius}, lat: ${lat}, lon: ${lng}: `);
+        console.log(
+          `🥾Trails back from API, GET req sent w/ radius:${radius}, lat: ${lat}, lon: ${lng}: `
+        );
         console.log(data);
         setPlaces(data);
       })
@@ -70,14 +74,43 @@ const MapWithASearchBox = () => {
     };
     window.addEventListener('keydown', listener);
 
-    navigator.geolocation.getCurrentPosition((position) => {
-      const { latitude, longitude } = position.coords;
-      setUserLocation({ lat: latitude, lng: longitude });
-    });
+    if (!geolocation) {
+      navigator.geolocation.getCurrentPosition((position) => {
+        const { latitude, longitude } = position.coords;
+        setUserLocation({ lat: latitude, lng: longitude });
+        setGeolocation(true);
+      });
+    }
     return () => {
       window.removeEventListener('keydown', listener);
     };
   }, []);
+  const clustering = (thisZoom) => {
+    const placesClustered = places.reduce((clusteredTrails, currentTrail) => {
+      const scaler = 2 ** thisZoom;
+      const notInRange = places.reduce((prev, current) => {
+        const threshold = 20;
+        if (
+          Math.abs(+currentTrail.lat - +current.lat) * scaler < threshold &&
+          Math.abs(+currentTrail.lon - +current.lon) * scaler < threshold
+        ) {
+          prev.push(current);
+        }
+        return prev;
+      }, []);
+      clusteredTrails.push([...notInRange]);
+      return clusteredTrails;
+    }, []);
+    const clustered = placesClustered[placesClustered.length - 1];
+    const notClustered = places.filter((x) => !clustered.includes(x));
+    // console.log('notclustered:');
+    // console.log(notClustered);
+    setNotClusteredPlaces(notClustered);
+  };
+
+  useEffect(() => {
+    clustering(zoom);
+  }, [places]);
 
   const setGoogleMapRef = (map, maps) => {
     let currentZoom = currentZoom || 10;
@@ -85,7 +118,7 @@ const MapWithASearchBox = () => {
     map.addListener('zoom_changed', () => {
       currentZoom = map.getZoom();
       setZoom(currentZoom);
-      clustering();
+      clustering(currentZoom);
     });
     map.addListener('bounds_changed', () => {
       const currentBounds = map.getBounds();
@@ -93,13 +126,13 @@ const MapWithASearchBox = () => {
         lat: (currentBounds.Za.i + currentBounds.Za.j) / 2,
         lng: (currentBounds.Va.i + currentBounds.Va.j) / 2,
       };
-      const range = 0.5; // degrees change, approx 69 miles per 1 latitude/longitude
+      const range = 0.6; // degrees change, approx 69 miles per 1 latitude/longitude
       const radius = 100; // miles
       if (
         Math.abs(+currentCenter.lat - +lastSearchedCenter.lat) > range ||
         Math.abs(+currentCenter.lng - +lastSearchedCenter.lng) > range
       ) {
-        lastSearchedCenter = (currentCenter);
+        lastSearchedCenter = currentCenter;
         updateTrails(radius, currentCenter.lat, currentCenter.lng);
       }
     });
@@ -107,27 +140,6 @@ const MapWithASearchBox = () => {
     setMapApi(maps);
     setMapApiLoaded(true);
     const googleRef = maps;
-    const clustering = () => {
-      const placesClustered = places.reduce((clusteredTrails, currentTrail) => {
-        const scaler = 2 ** currentZoom;
-        const notInRange = places.reduce((prev, current) => {
-          const threshold = 20;
-          if (
-            Math.abs(+currentTrail.lat - +current.lat) * scaler < threshold &&
-            Math.abs(+currentTrail.lon - +current.lon) * scaler < threshold
-          ) {
-            prev.push(current);
-          }
-          return prev;
-        }, []);
-        clusteredTrails.push([...notInRange]);
-        return clusteredTrails;
-      }, []);
-      const clustered = placesClustered[placesClustered.length - 1];
-      const notClustered = places.filter((x) => !clustered.includes(x));
-      setNotClusteredPlaces(notClustered);
-    };
-
     const locations = places.reduce((coordinates, currentTrail) => {
       coordinates.push({ lat: +currentTrail.lat, lng: +currentTrail.lon });
       return coordinates;
@@ -144,7 +156,7 @@ const MapWithASearchBox = () => {
       gridSize: 15,
       minimumClusterSize: 2,
     });
-    clustering();
+    clustering(currentZoom);
   };
 
   return (
@@ -158,6 +170,7 @@ const MapWithASearchBox = () => {
         />
       )}
       <GoogleMap
+        // key={places}
         defaultZoom={10}
         defaultCenter={{
           lat: 30.33735,
