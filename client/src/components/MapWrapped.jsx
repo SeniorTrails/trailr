@@ -7,10 +7,10 @@ import Marker from './Marker.jsx';
 import InfoWindow from './InfoWindow.jsx';
 import GoogleMap from './GoogleMap.jsx';
 import SearchBox from './SearchBox.jsx';
+import transparentMarker from '../../assets/imgs/transparentMarker.png';
 import * as trailData from '../data/trail-data.json';
 
-// const MapWithASearchBox = React.memo(() => {
-const MapWithASearchBox = () => {
+const MapWithASearchBox = React.memo(() => {
   const [mapApiLoaded, setMapApiLoaded] = useState(false);
   const [mapInstance, setMapInstance] = useState(null);
   const [mapApi, setMapApi] = useState(null);
@@ -20,10 +20,8 @@ const MapWithASearchBox = () => {
     lat: 30.33735,
     lng: -90.03733,
   });
-  const [notClusteredPlaces, setNotClusteredPlaces] = useState(null);
   const [selectedTrail, setSelectedTrail] = useState(null);
   const [selectedTrailIndex, setSelectedTrailIndex] = useState(null);
-  const [zoom, setZoom] = useState(10);
 
   const addPlace = (place) => {
     setPlaces(place);
@@ -38,7 +36,6 @@ const MapWithASearchBox = () => {
     const strungRadius = radius.toString();
     const strungLat = lat.toString();
     const strungLng = lng.toString();
-    // console.log('RADIUS/LAT/LNG: ', strungRadius, strungLat, strungLng);
     axios
       .get('/api/trails', {
         params: {
@@ -48,10 +45,6 @@ const MapWithASearchBox = () => {
         },
       })
       .then(({ data }) => {
-        // console.log(
-        //   `🥾Trails back from API, GET req sent w/ radius:${radius}, lat: ${lat}, lon: ${lng}: `
-        // );
-        // console.log(data);
         setPlaces(data);
       })
       .catch((err) => {
@@ -86,37 +79,12 @@ const MapWithASearchBox = () => {
     };
   }, []);
 
-  const clustering = (thisZoom) => {
-    const placesClustered = places.reduce((clusteredTrails, currentTrail) => {
-      const scaler = 2 ** thisZoom;
-      const notInRange = places.reduce((prev, current) => {
-        const threshold = 20;
-        if (
-          Math.abs(+currentTrail.lat - +current.lat) * scaler < threshold &&
-          Math.abs(+currentTrail.lon - +current.lon) * scaler < threshold
-        ) {
-          prev.push(current);
-        }
-        return prev;
-      }, []);
-      clusteredTrails.push([...notInRange]);
-      return clusteredTrails;
-    }, []);
-    const clustered = placesClustered[placesClustered.length - 1];
-    const notClustered = places.filter((x) => !clustered.includes(x));
-    // console.log('notclustered:');
-    // console.log(notClustered);
-    setNotClusteredPlaces(notClustered);
-  };
-
   const setGoogleMapRef = (map, maps) => {
     if (map && maps) {
       let currentZoom = currentZoom || 10;
       let lastSearchedCenter = lastSearchedCenter || userLocation;
       map.addListener('zoom_changed', () => {
         currentZoom = map.getZoom();
-        setZoom(currentZoom);
-        clustering(currentZoom);
       });
       map.addListener('bounds_changed', () => {
         const currentBounds = map.getBounds();
@@ -139,28 +107,30 @@ const MapWithASearchBox = () => {
       setMapApi(maps);
       setMapApiLoaded(true);
       const googleRef = maps;
-      const locations = places.reduce((coordinates, currentTrail) => {
-        coordinates.push({ lat: +currentTrail.lat, lng: +currentTrail.lon });
-        return coordinates;
-      }, []);
-      const markers =
-        locations &&
-        locations.map((location) => {
-          return new googleRef.Marker({ position: location });
+      if (places) {
+        const locations = places.reduce((coordinates, currentTrail) => {
+          coordinates.push({ lat: +currentTrail.lat, lng: +currentTrail.lon });
+          return coordinates;
+        }, []);
+        const markers =
+          locations &&
+          locations.map((location) => {
+            return new googleRef.Marker({
+              position: location,
+              icon: transparentMarker,
+            });
+          });
+        new MarkerClusterer(map, markers, {
+          imagePath:
+            'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m',
+          gridSize: 15,
+          minimumClusterSize: 2,
         });
-
-      new MarkerClusterer(map, markers, {
-        imagePath:
-          'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m',
-        gridSize: 15,
-        minimumClusterSize: 2,
-      });
-      clustering(currentZoom);
+      }
     }
   };
 
   useEffect(() => {
-    clustering(zoom);
     setGoogleMapRef(mapInstance, mapApi);
   }, [places]);
 
@@ -175,7 +145,6 @@ const MapWithASearchBox = () => {
         />
       )}
       <GoogleMap
-        // key={places}
         defaultZoom={10}
         defaultCenter={{
           lat: 30.33735,
@@ -190,32 +159,13 @@ const MapWithASearchBox = () => {
         onGoogleApiLoaded={({ map, maps }) => setGoogleMapRef(map, maps)}
         options={{ streetViewControl: false }}
       >
-        {!isEmpty(notClusteredPlaces) &&
-          zoom < 12 &&
-          notClusteredPlaces.map((place, i) => (
-            <Marker
-              color={i === selectedTrailIndex ? 'green' : 'blue'}
-              key={place.id}
-              text={place.name}
-              lat={place.lat || place.geometry.location.lat()}
-              lng={place.lon || place.geometry.location.lng()}
-              clickHandler={() => {
-                if (selectedTrailIndex === i) {
-                  clearSelectedTrail();
-                } else {
-                  setSelectedTrail(place);
-                  setSelectedTrailIndex(i);
-                }
-              }}
-            />
-          ))}
         {!isEmpty(places) &&
-          zoom >= 12 &&
           places.map((place, i) => (
             <Marker
               color={i === selectedTrailIndex ? 'green' : 'blue'}
               key={place.id}
               text={place.name}
+              size={28}
               lat={place.lat || place.geometry.location.lat()}
               lng={place.lon || place.geometry.location.lng()}
               clickHandler={() => {
@@ -251,6 +201,6 @@ const MapWithASearchBox = () => {
       </GoogleMap>
     </>
   );
-};
+});
 
 export default MapWithASearchBox;
