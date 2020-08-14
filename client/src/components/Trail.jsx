@@ -14,12 +14,12 @@ import AddPicture from './AddPicture.jsx';
 
 // Options for the ratings selector
 const ratingOptions = [
-  { value: '', label: '' },
-  { value: 1, label: '1' },
-  { value: 2, label: '2' },
-  { value: 3, label: '3' },
-  { value: 4, label: '4' },
-  { value: 5, label: '5' },
+  { value: 'Rate this trail:', label: '' },
+  { value: '1', label: '1' },
+  { value: '2', label: '2' },
+  { value: '3', label: '3' },
+  { value: '4', label: '4' },
+  { value: '5', label: '5' },
 ];
 
 /**
@@ -72,20 +72,19 @@ const trail = ({ user }) => {
           const { photoData, userRatingData, trailData } = parseTrailData(response);
           setTrailInfo(trailData);
           setPhotoInfo(photoData);
+          // console.log(user.loggedIn)
           // Check if User is logged in to set User ratings
-          if (user.loggedIn) {
-            setUserRatings({
-              userLoaded: true,
-              like: {
-                value: userRatingData.like,
-                edit: false,
-              },
-              diff: {
-                value: userRatingData.diff,
-                edit: false,
-              },
-            });
-          }
+          setUserRatings({
+            userLoaded: true,
+            like: {
+              value: userRatingData.like,
+              edit: false,
+            },
+            diff: {
+              value: userRatingData.diff,
+              edit: false,
+            },
+          });
         }
       })
       .catch((err) => {
@@ -116,31 +115,29 @@ const trail = ({ user }) => {
    */
   const changeHandler = ({ target }) => {
     // USER ID IS HARD CODED FIX THIS
-    updateUserRating(target.name, target.value, user.id, id)
-      .then((newRating) => {
-        console.log(newRating);
-        const updatedElement = { ...userRatings[target.name] };
-        updatedElement.value = target.value;
-        updatedElement.edit = false;
-        setUserRatings((prev) => ({ ...prev, [target.name]: updatedElement }));
-        setTrailInfo((prev) => {
-          const updatedTrailInfo = { ...prev };
-          if (target.name === 'like') {
-            updatedTrailInfo.likeability = +newRating.averageLikeability;
-          } else {
-            updatedTrailInfo.difficulty = +newRating.averageDifficulty;
-          }
-          return updatedTrailInfo;
+    if (target.value !== 'Rate this trail:') {
+      const numValue = +target.value;
+      updateUserRating(target.name, numValue, user.id, id)
+        .then((newRating) => {
+          console.log(target);
+          const updatedElement = { ...userRatings[target.name] };
+          updatedElement.value = numValue.toString();
+          updatedElement.edit = false;
+          setUserRatings((prev) => ({ ...prev, [target.name]: updatedElement }));
+          setTrailInfo((prev) => {
+            const updatedTrailInfo = { ...prev };
+            if (target.name === 'like') {
+              updatedTrailInfo.likeability = +newRating.averageLikeability;
+            } else {
+              updatedTrailInfo.difficulty = +newRating.averageDifficulty;
+            }
+            return updatedTrailInfo;
+          });
+        })
+        .catch((err) => {
+          console.error(err);
         });
-      })
-      .catch((err) => {
-        console.error(err);
-      });
-    // THIS IS WHERE WE CHANGE THE RATING IN THE DB
-    const updatedElement = { ...userRatings[target.name] };
-    updatedElement.value = target.value;
-    updatedElement.edit = false;
-    setUserRatings((prev) => ({ ...prev, [target.name]: updatedElement }));
+      }
   };
 
   /**
@@ -251,7 +248,7 @@ const trail = ({ user }) => {
                 </Badge>
               </h3>
             </Col>
-            {!userRatings.userLoaded ? null : (
+            {!user.loggedIn || !userRatings.userLoaded ? null : (
               <Col xs={8}>
                 <div
                   onClick={(e) => editable(e, 'diff')}
