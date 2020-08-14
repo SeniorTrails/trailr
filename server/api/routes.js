@@ -40,8 +40,9 @@ const router = Router();
 
 // tested - sends back whole trail object, "getTrail"
 router.get('/trails/:id', (req, res) => {
-  const { id } = req.body;
+  const { id } = req.query;
   const idT = req.params.id;
+  console.log(id);
   // console.log('**********REQ OBJECT**********', id, idT);
   const trailObject = {
     id_trail: idT,

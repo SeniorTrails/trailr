@@ -64,7 +64,7 @@ const trail = ({ user }) => {
 
   // Set all the initial data with DB calls based on id in useParams
   useEffect(() => {
-    getTrailData(id)
+    getTrailData(id, user.id)
       .then((response) => {
         const { photoData, userRatingData, trailData } = parseTrailData(response);
         setTrailInfo(trailData);
@@ -112,9 +112,9 @@ const trail = ({ user }) => {
    */
   const changeHandler = ({ target }) => {
     // USER ID IS HARD CODED FIX THIS
-    updateUserRating(target.name, target.value, 1, id)
+    updateUserRating(target.name, target.value, user.id, id)
       .then((newRating) => {
-        console.log('USER ID IS HARD CODED FIX THIS');
+        console.log(newRating);
         const updatedElement = { ...userRatings[target.name] };
         updatedElement.value = target.value;
         updatedElement.edit = false;
@@ -122,9 +122,9 @@ const trail = ({ user }) => {
         setTrailInfo((prev) => {
           const updatedTrailInfo = { ...prev };
           if (target.name === 'like') {
-            updatedTrailInfo.likeability = newRating;
+            updatedTrailInfo.likeability = +newRating.averageLikeability;
           } else {
-            updatedTrailInfo.difficulty = newRating;
+            updatedTrailInfo.difficulty = +newRating.averageDifficulty;
           }
           return updatedTrailInfo;
         });

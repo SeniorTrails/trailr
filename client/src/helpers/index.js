@@ -66,11 +66,15 @@ export const getUserData = (userId) => new Promise((resolve, reject) => {
 /**
  * Calls the api to get a trail's data
  * @param {Number} trailId a trail's id number based on the page params
+ * @param {Number} userId undefined if not logged in
  */
-export const getTrailData = (trailId) => new Promise((resolve, reject) => {
+export const getTrailData = (trailId, userId) => new Promise((resolve, reject) => {
   axios({
     method: 'get',
     url: `/api/trails/${trailId}`,
+    params: {
+      id: userId,
+    },
   })
     .then((response) => {
       console.log(response.data);
@@ -100,7 +104,7 @@ export const updateUserRating = (type, value, idUser, idTrail) => new Promise((r
   })
     .then((response) => {
       console.log(response.data);
-      resolve(response.data);
+      resolve(response.data[0]);
     })
     .catch((err) => {
       reject(err);
