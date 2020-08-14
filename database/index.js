@@ -3,6 +3,9 @@
 /* eslint-disable no-console */
 const mysql = require('mysql');
 
+/**
+ *
+*/
 let poolConnection;
 if (!process.env.NODE_ENV) {
   poolConnection = mysql.createConnection({
@@ -169,7 +172,7 @@ const addUser = (userObject) => new Promise((resolve, reject) => {
               });
             }
             resolve({
-              message: 'Existing user. Use id listed here and getUser(id) to lookup user or updateUser(id) to update.',
+              message: 'Existing user. Use id listed here with getUser(id) to lookup user or updateUser(id) to update user.',
               id: userResult[0].id,
             });
           });
@@ -358,7 +361,7 @@ const addTrail = (trailObject) => new Promise((resolve, reject) => {
               });
             }
             resolve({
-              message: 'Existing trail. Use id listed here and getTrail(id) to lookup trail or updateTrail(id) to update.',
+              message: 'Existing trail. Use id listed here with getTrail(id) to lookup trail or updateTrail(id) to update trail.',
               id: trailResult[0].id,
             });
           });
@@ -935,6 +938,48 @@ const deleteFavorite = (favoriteObject) => new Promise((resolve, reject) => {
   });
 });
 
+const updateComment = (commentObject) => new Promise((resolve, reject) => {
+  poolConnection.getConnection((error, connection) => {
+    if (error) reject(error);
+
+    console.log('UPDATE COMMENT INVOKED');
+    const updateCommentCommand = `
+      UPDATE comments
+      SET
+        text = ?
+      WHERE id = ?
+    `;
+
+    connection.beginTransaction((error) => {
+      if (error) {
+        connection.rollback(() => {
+          connection.release();
+          return reject(error);
+        });
+      }
+      connection.query(updateCommentCommand,
+        [commentObject.text, commentObject.id],
+        (error, updatedComment) => {
+          if (error) {
+            connection.rollback(() => {
+              connection.release();
+              return reject(error);
+            });
+          }
+          connection.commit((error) => {
+            if (error) {
+              connection.rollback(() => {
+                connection.release();
+                return reject(error);
+              });
+            }
+            resolve(updatedComment, console.log('COMMENT UPDATED'));
+          });
+        });
+    });
+  });
+});
+
 module.exports = {
   getUser,
   addUser,
@@ -950,6 +995,7 @@ module.exports = {
   deletePhoto,
   addFavorite,
   deleteFavorite,
+  updateComment,
 };
 
 // mysql -uroot < server/index.js
