@@ -85,10 +85,9 @@ const MapWithASearchBox = () => {
       window.removeEventListener('keydown', listener);
     };
   }, []);
-
-  useEffect(() => {
+  const clustering = (thisZoom) => {
     const placesClustered = places.reduce((clusteredTrails, currentTrail) => {
-      const scaler = 2 ** zoom;
+      const scaler = 2 ** thisZoom;
       const notInRange = places.reduce((prev, current) => {
         const threshold = 20;
         if (
@@ -107,6 +106,10 @@ const MapWithASearchBox = () => {
     // console.log('notclustered:');
     // console.log(notClustered);
     setNotClusteredPlaces(notClustered);
+  };
+
+  useEffect(() => {
+    clustering(zoom);
   }, [places]);
 
   const setGoogleMapRef = (map, maps) => {
@@ -115,7 +118,7 @@ const MapWithASearchBox = () => {
     map.addListener('zoom_changed', () => {
       currentZoom = map.getZoom();
       setZoom(currentZoom);
-      clustering();
+      clustering(currentZoom);
     });
     map.addListener('bounds_changed', () => {
       const currentBounds = map.getBounds();
@@ -137,29 +140,6 @@ const MapWithASearchBox = () => {
     setMapApi(maps);
     setMapApiLoaded(true);
     const googleRef = maps;
-    const clustering = () => {
-      const placesClustered = places.reduce((clusteredTrails, currentTrail) => {
-        const scaler = 2 ** currentZoom;
-        const notInRange = places.reduce((prev, current) => {
-          const threshold = 20;
-          if (
-            Math.abs(+currentTrail.lat - +current.lat) * scaler < threshold &&
-            Math.abs(+currentTrail.lon - +current.lon) * scaler < threshold
-          ) {
-            prev.push(current);
-          }
-          return prev;
-        }, []);
-        clusteredTrails.push([...notInRange]);
-        return clusteredTrails;
-      }, []);
-      const clustered = placesClustered[placesClustered.length - 1];
-      const notClustered = places.filter((x) => !clustered.includes(x));
-      // console.log('notclustered:');
-      // console.log(notClustered);
-      setNotClusteredPlaces(notClustered);
-    };
-
     const locations = places.reduce((coordinates, currentTrail) => {
       coordinates.push({ lat: +currentTrail.lat, lng: +currentTrail.lon });
       return coordinates;
@@ -176,7 +156,7 @@ const MapWithASearchBox = () => {
       gridSize: 15,
       minimumClusterSize: 2,
     });
-    clustering();
+    clustering(currentZoom);
   };
 
   return (
