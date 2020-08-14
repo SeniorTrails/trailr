@@ -21,6 +21,7 @@ const MapWithASearchBox = () => {
     lng: -90.03733,
   });
   const [notClusteredPlaces, setNotClusteredPlaces] = useState(null);
+  const [clusteredPlaces, setClusteredPlaces] = useState(null);
   const [selectedTrail, setSelectedTrail] = useState(null);
   const [selectedTrailIndex, setSelectedTrailIndex] = useState(null);
   const [zoom, setZoom] = useState(10);
@@ -38,7 +39,6 @@ const MapWithASearchBox = () => {
     const strungRadius = radius.toString();
     const strungLat = lat.toString();
     const strungLng = lng.toString();
-    // console.log('RADIUS/LAT/LNG: ', strungRadius, strungLat, strungLng);
     axios
       .get('/api/trails', {
         params: {
@@ -87,26 +87,29 @@ const MapWithASearchBox = () => {
   }, []);
 
   const clustering = (thisZoom) => {
-    const placesClustered = places.reduce((clusteredTrails, currentTrail) => {
-      const scaler = 2 ** thisZoom;
-      const notInRange = places.reduce((prev, current) => {
-        const threshold = 20;
-        if (
-          Math.abs(+currentTrail.lat - +current.lat) * scaler < threshold &&
-          Math.abs(+currentTrail.lon - +current.lon) * scaler < threshold
-        ) {
-          prev.push(current);
-        }
-        return prev;
+    if (places) {
+      const placesClustered = places.reduce((clusteredTrails, currentTrail) => {
+        const scaler = 2 ** thisZoom;
+        const notInRange = places.reduce((prev, current) => {
+          const threshold = 20; // 20
+          if (
+            Math.abs(+currentTrail.lat - +current.lat) * scaler < threshold &&
+            Math.abs(+currentTrail.lon - +current.lon) * scaler < threshold
+          ) {
+            prev.push(current);
+          }
+          return prev;
+        }, []);
+        clusteredTrails.push([...notInRange]);
+        return clusteredTrails;
       }, []);
-      clusteredTrails.push([...notInRange]);
-      return clusteredTrails;
-    }, []);
-    const clustered = placesClustered[placesClustered.length - 1];
-    const notClustered = places.filter((x) => !clustered.includes(x));
-    // console.log('notclustered:');
-    // console.log(notClustered);
-    setNotClusteredPlaces(notClustered);
+      const clustered = placesClustered[placesClustered.length - 1];
+      const notClustered = places.filter((x) => !clustered.includes(x));
+      // console.log('notclustered:');
+      // console.log(notClustered);
+      setClusteredPlaces(clustered);
+      setNotClusteredPlaces(notClustered);
+    }
   };
 
   const setGoogleMapRef = (map, maps) => {
@@ -211,7 +214,10 @@ const MapWithASearchBox = () => {
           ))}
         {!isEmpty(places) &&
           zoom >= 12 &&
-          places.map((place, i) => (
+          places.map((
+            place,
+            i // have one with just places for the zoom greater than 12?
+          ) => (
             <Marker
               color={i === selectedTrailIndex ? 'green' : 'blue'}
               key={place.id}
