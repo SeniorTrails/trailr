@@ -35,7 +35,6 @@ export const getAuth = () => new Promise((resolve, reject) => {
     url: '/auth/session',
   })
     .then((response) => {
-      console.log(response)
       resolve(response.data);
     })
     .catch((err) => {

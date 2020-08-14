@@ -19,13 +19,14 @@ authRouter.get('/login', (req, res) => {
 authRouter.get('/logout', (req, res) => {
   // add in passport handler for logout here
   req.logOut();
+  req.session.destroy();
+  console.log(req.session);
   res.redirect('/');
   // finish with redirect to "/"
 });
 
 authRouter.get('/session', (req, res) => {
   if (req.session.passport) {
-    console.log(req.session.passport);
     res.status(200).json(req.session.passport);
   } else {
     res.status(200).json(null);

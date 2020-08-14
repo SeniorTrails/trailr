@@ -5,11 +5,7 @@ import { Nav, Navbar } from 'react-bootstrap';
 /**
  * Header to the page, contains all our navigation links
  */
-
-// temporary isLoggedIn boolean:
-const isLoggedIn = false;
-
-const header = () => (
+const header = ({ loggedIn }) => (
   <Navbar expand="sm" bg="light">
     <Link to="/" className="navbar-brand">
       Trailr
@@ -23,7 +19,7 @@ const header = () => (
         <Link to="/trail/1" className="nav-item nav-link">
           Trail
         </Link>
-        {isLoggedIn ? (
+        {loggedIn ? (
           <Nav.Link href="/auth/logout">Signout</Nav.Link>
         ) : (
           <Nav.Link href="/auth/google">Login</Nav.Link>
