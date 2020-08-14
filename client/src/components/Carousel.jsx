@@ -36,7 +36,7 @@ const carousel = ({ photos, currentPhoto, changeCurrentPhoto }) => {
         slidesPerPage={5}
       >
         {photos.map((item, i) => (
-          <div onClick={() => changeCurrentPhoto(i)} key={item.id}>
+          <div onClick={() => changeCurrentPhoto(i)} key={`image${item.id}`}>
             <StyledImage
               thumbnail
               src={item.url}
