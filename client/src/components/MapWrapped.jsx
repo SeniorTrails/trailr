@@ -146,7 +146,7 @@ const MapWithASearchBox = () => {
         coordinates.push({ lat: +currentTrail.lat, lng: +currentTrail.lon });
         return coordinates;
       }, []);
-      const markers =
+      let markers =
         locations &&
         locations.map((location) => {
           return new googleRef.Marker({ position: location });
@@ -158,6 +158,7 @@ const MapWithASearchBox = () => {
         gridSize: 15,
         minimumClusterSize: 2,
       });
+      markers = [];
       clustering(currentZoom);
     }
   };
@@ -178,7 +179,6 @@ const MapWithASearchBox = () => {
         />
       )}
       <GoogleMap
-        // key={places}
         defaultZoom={10}
         defaultCenter={{
           lat: 30.33735,
