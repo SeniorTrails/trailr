@@ -58,14 +58,12 @@ app.use(bodyParser.json());
 // utilize the urlencoder from express framework
 app.use(bodyParser.urlencoded({ extended: false }));
 
-
 // utilize passport middleware initialize && session authentication functionality
 
 passport.serializeUser((user, done) => {
-  done(null, user.id);
+  done(null, {id: user.id, name: user.name});
 });
 passport.deserializeUser((id, done) => {
-  console.log('deserialize')
   // use find user by id
   getUser(id)
     .then((user) => {
@@ -100,7 +98,6 @@ app.use('/auth', authRouter);
 app.use('/', express.static(path.join(__dirname, '/../client/dist')));
 // reroutes any route to the index.html so React Router works
 app.get('*', (req, res) => {
-  console.log('USER',req.session.passport)
   res.sendFile(path.join(__dirname, '/../client/dist/index.html'));
 });
 // set server to listen for requests on configured report
