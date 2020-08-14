@@ -3,7 +3,7 @@ const { Router } = require('express');
 
 // import passport library to file
 const passport = require('passport');
-const {restart} = require('nodemon');
+const { restart } = require('nodemon');
 
 // set local variable to  a new instance of express router
 const authRouter = Router();
@@ -43,9 +43,6 @@ authRouter.get('/google',
 
 // callback route for google to redirect to homepage "/"
 authRouter.get('/google/redirect', passport.authenticate('google'), (req, res) => {
-  console.log("USER", req.user);
-  console.log("COOKIES", req.cookies);
-  console.log("SIGNED COOKIES", req.signedCookies);
   res.redirect('/'); // this works sending back to home screen
   // res.send('You reached the callback URI'); // this works
 });
@@ -54,16 +51,3 @@ authRouter.get('/google/redirect', passport.authenticate('google'), (req, res) =
 module.exports = {
   authRouter,
 };
-
-// // testing addUser function
-// authRouter.post('/user/', (req, res) => {
-//   const userObject = req.body;
-//   addUser(userObject)
-//     .then((success) => {
-//       res.send(success);
-//     })
-//     .catch((error) => {
-//       res.sendStatus(500);
-//       throw error;
-//     });
-// });

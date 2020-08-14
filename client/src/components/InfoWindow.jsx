@@ -19,7 +19,7 @@ const InfoWindow = React.memo(({ selectedTrail, onCloseClick }) => {
     boxShadow: '0 0px 0px 0px rgba(0, 0, 0, 0)',
     padding: 10,
     fontSize: 14,
-    zIndex: 100,
+    zIndex: 0,
   };
 
   return (

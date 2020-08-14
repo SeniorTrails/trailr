@@ -61,7 +61,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 // utilize passport middleware initialize && session authentication functionality
 
 passport.serializeUser((user, done) => {
-  done(null, {id: user.id, name: user.name});
+  done(null, { id: user.id, name: user.name });
 });
 passport.deserializeUser((id, done) => {
   // use find user by id
