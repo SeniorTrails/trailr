@@ -13,6 +13,7 @@ import HeaderImage from './components/HeaderImage.jsx';
 // Logged out state
 const loggedOut = { loggedIn: false };
 
+// The app
 const app = () => {
   const [user, setUser] = useState(loggedOut);
   // Get's the auth state and saves it to the user object
@@ -36,7 +37,7 @@ const app = () => {
     <BrowserRouter>
       <HeaderImage />
       <div className="container">
-        <Header loggedIn={user.loggedIn} />
+        <Header user={user} />
         <div className="row">
           <Switch>
             <Route path="/trail/:id">
@@ -44,12 +45,6 @@ const app = () => {
             </Route>
             <Route path="/user/:id">
               <User user={user} />
-            </Route>
-            <Route path="/signup">
-              <Signup />
-            </Route>
-            <Route path="/login">
-              <Login />
             </Route>
             <Route path="/404"><NoMatchPage /></Route>
             <Route path="/">

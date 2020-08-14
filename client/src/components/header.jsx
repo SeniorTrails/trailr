@@ -5,7 +5,7 @@ import { Nav, Navbar } from 'react-bootstrap';
 /**
  * Header to the page, contains all our navigation links
  */
-const header = ({ loggedIn }) => (
+const header = ({ user }) => (
   <Navbar expand="sm" bg="light">
     <Link to="/" className="navbar-brand">
       Trailr
@@ -13,14 +13,13 @@ const header = ({ loggedIn }) => (
     <Navbar.Toggle aria-controls="menuBar" />
     <Navbar.Collapse id="menuBar">
       <Nav>
-        <Link to="/user/3" className="nav-item nav-link">
-          User
-        </Link>
-        <Link to="/trail/1" className="nav-item nav-link">
-          Trail
-        </Link>
-        {loggedIn ? (
-          <Nav.Link href="/auth/logout">Signout</Nav.Link>
+        {user.loggedIn ? (
+          <>
+            <Link to={`/user/${user.id}`} className="nav-item nav-link">
+              My Profile
+            </Link>
+            <Nav.Link href="/auth/logout">Signout</Nav.Link>
+          </>
         ) : (
           <Nav.Link href="/auth/google">Login</Nav.Link>
         )}
