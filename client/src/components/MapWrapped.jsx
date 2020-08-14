@@ -126,7 +126,7 @@ const MapWithASearchBox = () => {
         lat: (currentBounds.Za.i + currentBounds.Za.j) / 2,
         lng: (currentBounds.Va.i + currentBounds.Va.j) / 2,
       };
-      const range = 0.5; // degrees change, approx 69 miles per 1 latitude/longitude
+      const range = 0.6; // degrees change, approx 69 miles per 1 latitude/longitude
       const radius = 100; // miles
       if (
         Math.abs(+currentCenter.lat - +lastSearchedCenter.lat) > range ||
