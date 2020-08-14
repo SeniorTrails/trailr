@@ -191,7 +191,7 @@ const addUser = (userObject) => new Promise((resolve, reject) => {
                     return reject(error);
                   });
                 }
-                resolve({ id: addedUser.insertId }, console.log('USER ADDED'));
+                resolve({ id: addedUser.insertId, name: userObject.name }, console.log('USER ADDED'));
               });
             });
         }
