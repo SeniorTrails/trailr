@@ -64,8 +64,8 @@ export const getUserData = (userId) => new Promise((resolve, reject) => {
 });
 
 /**
- * Calls the api to get a trail's data
- * @param {Number} trailId a trail's id number based on the page params
+ * Calls the DB to get a trail's data
+ * @param {Number} trailId a trail's api id
  * @param {Number} userId undefined if not logged in
  */
 export const getTrailData = (trailId, userId) => new Promise((resolve, reject) => {
@@ -166,6 +166,26 @@ export const deleteComment = (commentId) => new Promise((resolve, reject) => {
   axios({
     method: 'delete',
     url: `/api/comments/${commentId}`,
+  })
+    .then((response) => {
+      resolve(response.data);
+    })
+    .catch((err) => {
+      reject(err);
+    });
+});
+
+/**
+ * Adds a trail to the db based on an api call
+ * @param {Object} trail contains api trail info
+ */
+export const addTrail = (trail) => new Promise((resolve, reject) => {
+  axios({
+    method: 'post',
+    url: '/api/trails',
+    data: {
+      ...trail,
+    },
   })
     .then((response) => {
       resolve(response.data);
