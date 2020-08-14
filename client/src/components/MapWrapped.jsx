@@ -123,7 +123,7 @@ const MapWithASearchBox = React.memo(() => {
         new MarkerClusterer(map, markers, {
           imagePath:
             'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m',
-          gridSize: 15,
+          gridSize: 10,
           minimumClusterSize: 2,
         });
       }
