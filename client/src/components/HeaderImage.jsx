@@ -2,6 +2,10 @@ import React from 'react';
 import Image from 'react-bootstrap/Image';
 import mountainHeaderImage from '../../assets/imgs/mountainHeader.png';
 
+/**
+ * HeaderImage contains the Bootstrapped header photo for the homepage.
+ */
+
 const HeaderImage = () => (
   <div>
     <div style={{ position: 'absolute', left: '50%' }}>
@@ -12,7 +16,7 @@ const HeaderImage = () => (
         }}
       >
         <Image
-          className='pt-2'
+          className="pt-2"
           src={mountainHeaderImage}
           style={{ minWidth: '500px', height: '190px' }}
           alt="Mountain trail"
