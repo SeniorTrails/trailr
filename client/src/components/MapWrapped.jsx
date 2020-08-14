@@ -10,8 +10,7 @@ import SearchBox from './SearchBox.jsx';
 import transparentMarker from '../../assets/imgs/transparentMarker.png';
 import * as trailData from '../data/trail-data.json';
 
-// const MapWithASearchBox = React.memo(() => {
-const MapWithASearchBox = () => {
+const MapWithASearchBox = React.memo(() => {
   const [mapApiLoaded, setMapApiLoaded] = useState(false);
   const [mapInstance, setMapInstance] = useState(null);
   const [mapApi, setMapApi] = useState(null);
@@ -46,10 +45,6 @@ const MapWithASearchBox = () => {
         },
       })
       .then(({ data }) => {
-        // console.log(
-        //   `🥾Trails back from API, GET req sent w/ radius:${radius}, lat: ${lat}, lon: ${lng}: `
-        // );
-        // console.log(data);
         setPlaces(data);
       })
       .catch((err) => {
@@ -125,17 +120,9 @@ const MapWithASearchBox = () => {
               icon: transparentMarker,
             });
           });
-
         new MarkerClusterer(map, markers, {
           imagePath:
             'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m',
-          // styles: {
-          //   textColor: 'white',
-          //   url:
-          //     'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m',
-          //   height: 1,
-          //   width: 1,
-          // },
           gridSize: 15,
           minimumClusterSize: 2,
         });
@@ -213,6 +200,6 @@ const MapWithASearchBox = () => {
       </GoogleMap>
     </>
   );
-};
+});
 
 export default MapWithASearchBox;
