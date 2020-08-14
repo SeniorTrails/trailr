@@ -43,7 +43,7 @@ const app = () => {
               <Trail user={user} />
             </Route>
             <Route path="/user/:id">
-              <User />
+              <User user={user} />
             </Route>
             <Route path="/signup">
               <Signup />

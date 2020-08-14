@@ -156,3 +156,21 @@ export const deletePhoto = (idPhoto) => new Promise((resolve, reject) => {
       reject(err);
     });
 });
+
+/**
+ * Deletes a comment, only call if you have already verified the user is authorized
+ *  to delete the comment
+ * @param {Number} commentId id of comment to delete
+ */
+export const deleteComment = (commentId) => new Promise((resolve, reject) => {
+  axios({
+    method: 'delete',
+    url: `/api/comments/${commentId}`,
+  })
+    .then((response) => {
+      resolve(response.data);
+    })
+    .catch((err) => {
+      reject(err);
+    });
+});

@@ -61,12 +61,12 @@ const carousel = ({ photos, currentPhoto, changeCurrentPhoto, user }) => {
       </Carousel>
       <Row>
         {user.loggedIn && user.id === photos[currentPhoto].id_user
-          ? <Button onClick={() => deleteHandler(currentPhoto)}>Delete Photo</Button>
+          ? <Button variant="danger" onClick={() => deleteHandler(currentPhoto)}>Delete Photo</Button>
           : null}
       </Row>
       {!comments
         ? null
-        : comments.map((i) => <Comment key={i.id} text={i.text} username={i.name} />)}
+        : comments.map((i) => <Comment key={i.id} info={i} user={user} />)}
 
     </div>
   );
