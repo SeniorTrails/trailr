@@ -40,7 +40,11 @@ const parseTrailData = (data) => {
     likeability: data.averageLikeability,
     thumbnail: data.thumbnail,
   };
-  const photoData = data.photos;
+  // Sorts the photos by newest closest to the picture
+  const photoData = data.photos.map((photo) => {
+    const sorted = photo.comments.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+    return { ...photo, comments: sorted };
+  });
   const userRatingData = { diff: data.userDifficulty, like: data.userLikeability };
   return {
     photoData,
