@@ -16,6 +16,7 @@ const MapWithASearchBox = () => {
   const [mapApi, setMapApi] = useState(null);
   const [places, setPlaces] = useState(trailData.data);
   const [geolocation, setGeolocation] = useState(false);
+  const [firstClustering, setFirstClustering] = useState(false);
   const [userLocation, setUserLocation] = useState({
     lat: 30.33735,
     lng: -90.03733,
@@ -158,8 +159,10 @@ const MapWithASearchBox = () => {
         gridSize: 15,
         minimumClusterSize: 2,
       });
-      markers = [];
-      clustering(currentZoom);
+      if (!firstClustering) {
+        clustering(currentZoom);
+        setFirstClustering(true);
+      }
     }
   };
 
