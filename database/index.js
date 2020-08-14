@@ -171,6 +171,7 @@ const addUser = (userObject) => new Promise((resolve, reject) => {
             resolve({
               message: 'Existing user. Use id listed here and getUser(id) to lookup user or updateUser(id) to update.',
               id: userResult[0].id,
+              name: userResult[0].name,
             });
           });
         } else if (userResult.length === 0) {

@@ -47,7 +47,7 @@ const carousel = ({ photos, currentPhoto, changeCurrentPhoto }) => {
       </Carousel>
       {!comments
         ? null
-        : comments.map((i) => <Comment key={i.id} text={i.text} username={i.username} />)}
+        : comments.map((i) => <Comment key={i.id} text={i.text} username={i.name} />)}
     </div>
   );
 };
@@ -61,9 +61,9 @@ carousel.propTypes = {
       url: PropTypes.string.isRequired,
       comments: PropTypes.arrayOf(
         PropTypes.shape({
-          id: PropTypes.number.isRequired,
-          text: PropTypes.string.isRequired,
-          username: PropTypes.string.isRequired,
+          id: PropTypes.number,
+          text: PropTypes.string,
+          username: PropTypes.string,
         }),
       ),
     }),
