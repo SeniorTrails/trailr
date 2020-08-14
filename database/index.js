@@ -21,7 +21,6 @@ if (!process.env.NODE_ENV) {
     database: process.env.DB_NAME,
     host: '34.70.176.46',
   });
-  // console.log('POOL CONNECTION: ', poolConnection);
 } else {
   poolConnection = mysql.createPool({
     user: process.env.DB_USER,
@@ -32,7 +31,6 @@ if (!process.env.NODE_ENV) {
 }
 
 const getUser = (id) => new Promise((resolve, reject) => {
-  console.log('GET USER INVOKED');
   poolConnection.getConnection((error, connection) => {
     if (error) reject(error);
 
@@ -47,7 +45,7 @@ const getUser = (id) => new Promise((resolve, reject) => {
       WHERE id_user = ?
     `;
     const getCommentsCommand = `
-      SELECT comments.*, users.*
+      SELECT users.*, comments.*
       FROM comments
       LEFT JOIN users ON comments.id_user = users.id
       WHERE id_photo = ?
@@ -74,7 +72,7 @@ const getUser = (id) => new Promise((resolve, reject) => {
             return reject(error);
           });
         }
-        if (gottenUser.length === 0) {
+        if (!gottenUser.length) {
           connection.commit((error) => {
             if (error) {
               connection.rollback(() => {
@@ -189,7 +187,7 @@ const addUser = (userObject) => new Promise((resolve, reject) => {
               name: userResult[0].name,
             });
           });
-        } else if (userResult.length === 0) {
+        } else if (!userResult.length) {
           connection.query(addUserCommand,
             [userObject.google_id, userObject.name, userObject.profile_photo_url],
             (error, addedUser) => {
@@ -260,7 +258,7 @@ const getTrail = (trailObject) => new Promise((resolve, reject) => {
     `;
 
     const getCommentsCommand = `
-      SELECT comments.*, users.*
+      SELECT users.*, comments.*
       FROM comments
       LEFT JOIN users ON comments.id_user = users.id
       WHERE id_photo = ?
@@ -282,7 +280,7 @@ const getTrail = (trailObject) => new Promise((resolve, reject) => {
               return reject(error);
             });
           }
-          if (gottenTrail.length === 0) {
+          if (!gottenTrail.length) {
             connection.commit((error) => {
               if (error) {
                 connection.rollback(() => {
@@ -390,7 +388,7 @@ const addTrail = (trailObject) => new Promise((resolve, reject) => {
               id: trailResult[0].id,
             });
           });
-        } else if (trailResult.length === 0) {
+        } else if (!trailResult.length) {
           connection.query(addTrailCommand,
             [trailObject.api_id, trailObject.name, trailObject.city, trailObject.region,
               trailObject.country, trailObject.latitude, trailObject.longitude,
@@ -556,7 +554,7 @@ const updateDifficulty = (difficultyObject) => new Promise((resolve, reject) => 
               return reject(error);
             });
           }
-          if (difficultyResult.length === 0) {
+          if (!difficultyResult.length) {
             connection.query(addDifficultyCommand,
               [id_user, id_trail, value], (error, addedDifficulty) => {
                 if (error) {
@@ -648,19 +646,21 @@ const updateLikeability = (likeabilityObject) => new Promise((resolve, reject) =
           if (error) {
             connection.rollback(() => {
               connection.release();
-              return reject(error);
+              resolve(error);
             });
           }
-          if (likeabilityResult.length === 0) {
+          let rowsResult;
+          console.log('LIKEABILITY RESULT: ', likeabilityResult);
+          if (!likeabilityResult.length) {
             connection.query(addLikeabilityCommand,
               [id_user, id_trail, value], (error, addedLikeability) => {
                 if (error) {
                   connection.rollback(() => {
                     connection.release();
-                    return reject(error);
+                    resolve(error);
                   });
                 }
-                console.log('LIKEABILITY RATING ADDED: ', addedLikeability);
+                rowsResult = addedLikeability ? addedLikeability.affectedRows : 0;
               });
           } else if (likeabilityResult.length > 0) {
             connection.query(updateLikeabilityCommand,
@@ -669,10 +669,10 @@ const updateLikeability = (likeabilityObject) => new Promise((resolve, reject) =
                 if (error) {
                   connection.rollback(() => {
                     connection.release();
-                    return reject(error);
+                    resolve(error);
                   });
                 }
-                console.log('LIKEABILITY RATING UPDATED: ', updatedLikeability);
+                rowsResult = updatedLikeability ? updatedLikeability.affectedRows : 0;
               });
           }
           connection.query(getAvgLikeCommand,
@@ -681,17 +681,19 @@ const updateLikeability = (likeabilityObject) => new Promise((resolve, reject) =
               if (error) {
                 connection.rollback(() => {
                   connection.release();
-                  return reject(error);
+                  resolve(error);
                 });
               }
               connection.commit((error) => {
                 if (error) {
                   connection.rollback(() => {
                     connection.release();
-                    return reject(error);
+                    resolve(error);
                   });
                 }
-                resolve(newAvgLike);
+                const likeabilityReturn = newAvgLike[0] ? newAvgLike : [{}];
+                likeabilityReturn[0].affectedRows = rowsResult;
+                resolve(likeabilityReturn);
               });
             });
         });
