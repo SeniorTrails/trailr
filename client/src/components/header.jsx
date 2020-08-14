@@ -17,7 +17,7 @@ const header = () => (
     <Navbar.Toggle aria-controls="menuBar" />
     <Navbar.Collapse id="menuBar">
       <Nav>
-        <Link to="/user/0" className="nav-item nav-link">
+        <Link to="/user/3" className="nav-item nav-link">
           User
         </Link>
         <Link to="/trail/1" className="nav-item nav-link">
