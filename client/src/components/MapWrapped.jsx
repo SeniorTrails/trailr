@@ -7,6 +7,7 @@ import Marker from './Marker.jsx';
 import InfoWindow from './InfoWindow.jsx';
 import GoogleMap from './GoogleMap.jsx';
 import SearchBox from './SearchBox.jsx';
+import blueMarker from '../../assets/imgs/blueMarker.png';
 import * as trailData from '../data/trail-data.json';
 
 // const MapWithASearchBox = React.memo(() => {
@@ -87,31 +88,37 @@ const MapWithASearchBox = () => {
     };
   }, []);
 
-  const clustering = (thisZoom) => {
-    if (places) {
-      const placesClustered = places.reduce((clusteredTrails, currentTrail) => {
-        const scaler = 2 ** thisZoom;
-        const notInRange = places.reduce((prev, current) => {
-          const threshold = 20; // 20
-          if (
-            Math.abs(+currentTrail.lat - +current.lat) * scaler < threshold &&
-            Math.abs(+currentTrail.lon - +current.lon) * scaler < threshold
-          ) {
-            prev.push(current);
-          }
-          return prev;
-        }, []);
-        clusteredTrails.push([...notInRange]);
-        return clusteredTrails;
-      }, []);
-      const clustered = placesClustered[placesClustered.length - 1];
-      const notClustered = places.filter((x) => !clustered.includes(x));
-      // console.log('notclustered:');
-      // console.log(notClustered);
-      setClusteredPlaces(clustered);
-      setNotClusteredPlaces(notClustered);
-    }
-  };
+  // const clustering = (thisZoom) => {
+  //   if (places) {
+  //     const placesClustered = places.reduce((clusteredTrails, currentTrail) => {
+  //       const notInRange = places.reduce((prev, current) => {
+  //         const threshold = 128 / (2 ** thisZoom); // 1024
+  //         const latCompare = Math.abs(+currentTrail.lat - +current.lat);
+  //         const lonCompare = Math.abs(+currentTrail.lon - +current.lon);
+  //         if (
+  //           latCompare !== 0 &&
+  //           lonCompare !== 0 &&
+  //           latCompare < threshold &&
+  //           lonCompare < threshold
+  //         ) {
+  //           prev.push(current);
+  //         }
+  //         console.log('threshold:', threshold);
+  //         console.log('latCompare:', latCompare);
+  //         console.log('lonCompare:', lonCompare);
+  //         return prev;
+  //       }, []);
+  //       clusteredTrails.push([...notInRange]);
+  //       return clusteredTrails;
+  //     }, []);
+  //     const clustered = placesClustered[placesClustered.length - 1];
+  //     const notClustered = places.filter((x) => !clustered.includes(x));
+  //     // console.log('notclustered:');
+  //     // console.log(notClustered);
+  //     setClusteredPlaces(clustered);
+  //     setNotClusteredPlaces(notClustered);
+  //   }
+  // };
 
   const setGoogleMapRef = (map, maps) => {
     if (map && maps) {
@@ -120,7 +127,7 @@ const MapWithASearchBox = () => {
       map.addListener('zoom_changed', () => {
         currentZoom = map.getZoom();
         setZoom(currentZoom);
-        clustering(currentZoom);
+        // clustering(currentZoom);
       });
       map.addListener('bounds_changed', () => {
         const currentBounds = map.getBounds();
@@ -150,7 +157,12 @@ const MapWithASearchBox = () => {
       let markers =
         locations &&
         locations.map((location) => {
-          return new googleRef.Marker({ position: location });
+          return new googleRef.Marker({
+            position: location,
+            icon: {
+              src: blueMarker,
+            },
+          });
         });
 
       new MarkerClusterer(map, markers, {
@@ -159,15 +171,15 @@ const MapWithASearchBox = () => {
         gridSize: 15,
         minimumClusterSize: 2,
       });
-      if (!firstClustering) {
-        clustering(currentZoom);
-        setFirstClustering(true);
-      }
+      // if (!firstClustering) {
+      //   clustering(currentZoom);
+      //   setFirstClustering(true);
+      // }
     }
   };
 
   useEffect(() => {
-    clustering(zoom);
+    // clustering(zoom);
     setGoogleMapRef(mapInstance, mapApi);
   }, [places]);
 
@@ -196,7 +208,7 @@ const MapWithASearchBox = () => {
         onGoogleApiLoaded={({ map, maps }) => setGoogleMapRef(map, maps)}
         options={{ streetViewControl: false }}
       >
-        {!isEmpty(notClusteredPlaces) &&
+        {/* {!isEmpty(notClusteredPlaces) &&
           zoom < 12 &&
           notClusteredPlaces.map((place, i) => (
             <Marker
@@ -214,9 +226,9 @@ const MapWithASearchBox = () => {
                 }
               }}
             />
-          ))}
+          ))} */}
         {!isEmpty(places) &&
-          zoom >= 12 &&
+          // zoom >= 12 &&
           places.map((
             place,
             i // have one with just places for the zoom greater than 12?
