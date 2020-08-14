@@ -74,59 +74,71 @@ const getUser = (id) => new Promise((resolve, reject) => {
             return reject(error);
           });
         }
-        const user = gottenUser[0];
-        connection.query(getFavoritesCommand, [id], (error, gottenFavorites) => {
-          if (error) {
-            connection.rollback(() => {
-              connection.release();
-              return reject(error);
-            });
-          }
-          user.favorites = gottenFavorites;
-          connection.query(getPhotosCommand, [id], (error, gottenPhotos) => {
+        if (gottenUser.length === 0) {
+          connection.commit((error) => {
             if (error) {
               connection.rollback(() => {
                 connection.release();
                 return reject(error);
               });
             }
-            user.photos = gottenPhotos;
-            if (!gottenPhotos.length) {
-              connection.commit((error) => {
-                if (error) {
-                  connection.rollback(() => {
-                    connection.release();
-                    return reject(error);
-                  });
-                }
-                resolve(user);
+            resolve(gottenUser);
+          });
+        } else if (gottenUser.length > 0) {
+          const user = gottenUser[0];
+          connection.query(getFavoritesCommand, [id], (error, gottenFavorites) => {
+            if (error) {
+              connection.rollback(() => {
+                connection.release();
+                return reject(error);
               });
             }
-            user.photos.forEach((photo, i) => {
-              const { id } = photo;
-              connection.query(getCommentsCommand, [id], (error, gottenComments) => {
-                if (error) {
-                  connection.rollback(() => {
-                    connection.release();
-                    return reject(error);
-                  });
-                }
-                user.photos[i].comments = gottenComments;
-                if (i === user.photos.length - 1) {
-                  connection.commit((error) => {
-                    if (error) {
-                      connection.rollback(() => {
-                        connection.release();
-                        return reject(error);
-                      });
-                    }
-                    resolve(user);
-                  });
-                }
+            user.favorites = gottenFavorites;
+            connection.query(getPhotosCommand, [id], (error, gottenPhotos) => {
+              if (error) {
+                connection.rollback(() => {
+                  connection.release();
+                  return reject(error);
+                });
+              }
+              user.photos = gottenPhotos;
+              if (!gottenPhotos.length) {
+                connection.commit((error) => {
+                  if (error) {
+                    connection.rollback(() => {
+                      connection.release();
+                      return reject(error);
+                    });
+                  }
+                  resolve(user);
+                });
+              }
+              user.photos.forEach((photo, i) => {
+                const { id } = photo;
+                connection.query(getCommentsCommand, [id], (error, gottenComments) => {
+                  if (error) {
+                    connection.rollback(() => {
+                      connection.release();
+                      return reject(error);
+                    });
+                  }
+                  user.photos[i].comments = gottenComments;
+                  if (i === user.photos.length - 1) {
+                    connection.commit((error) => {
+                      if (error) {
+                        connection.rollback(() => {
+                          connection.release();
+                          return reject(error);
+                        });
+                      }
+                      resolve(user);
+                    });
+                  }
+                });
               });
             });
           });
-        });
+        }
       });
     });
   });
@@ -270,51 +282,63 @@ const getTrail = (trailObject) => new Promise((resolve, reject) => {
               return reject(error);
             });
           }
-          const trail = gottenTrail[0];
-          const { id } = trail;
-          connection.query(getPhotosCommand, [id], (error, gottenPhotos) => {
-            if (error) {
-              connection.rollback(() => {
-                connection.release();
-                return reject(error);
-              });
-            }
-            if (!gottenPhotos.length) {
-              connection.commit((error) => {
-                if (error) {
-                  connection.rollback(() => {
-                    connection.release();
-                    return reject(error);
-                  });
-                }
-                resolve(trail);
-              });
-            }
-            trail.photos = gottenPhotos;
-            trail.photos.forEach((photo, i) => {
-              const { id } = photo;
-              connection.query(getCommentsCommand, [id], (error, gottenComments) => {
-                if (error) {
-                  connection.rollback(() => {
-                    connection.release();
-                    return reject(error);
-                  });
-                }
-                trail.photos[i].comments = gottenComments;
-                if (i === trail.photos.length - 1) {
-                  connection.commit((error) => {
-                    if (error) {
-                      connection.rollback(() => {
-                        connection.release();
-                        return reject(error);
-                      });
-                    }
-                    resolve(trail);
-                  });
-                }
+          if (gottenTrail.length === 0) {
+            connection.commit((error) => {
+              if (error) {
+                connection.rollback(() => {
+                  connection.release();
+                  return reject(error);
+                });
+              }
+              resolve(gottenTrail);
+            });
+          } else if (gottenTrail.length > 0) {
+            const trail = gottenTrail[0];
+            const { id } = trail;
+            connection.query(getPhotosCommand, [id], (error, gottenPhotos) => {
+              if (error) {
+                connection.rollback(() => {
+                  connection.release();
+                  return reject(error);
+                });
+              }
+              if (!gottenPhotos.length) {
+                connection.commit((error) => {
+                  if (error) {
+                    connection.rollback(() => {
+                      connection.release();
+                      return reject(error);
+                    });
+                  }
+                  resolve(trail);
+                });
+              }
+              trail.photos = gottenPhotos;
+              trail.photos.forEach((photo, i) => {
+                const { id } = photo;
+                connection.query(getCommentsCommand, [id], (error, gottenComments) => {
+                  if (error) {
+                    connection.rollback(() => {
+                      connection.release();
+                      return reject(error);
+                    });
+                  }
+                  trail.photos[i].comments = gottenComments;
+                  if (i === trail.photos.length - 1) {
+                    connection.commit((error) => {
+                      if (error) {
+                        connection.rollback(() => {
+                          connection.release();
+                          return reject(error);
+                        });
+                      }
+                      resolve(trail);
+                    });
+                  }
+                });
               });
             });
-          });
+          }
         });
     });
   });
@@ -946,8 +970,7 @@ const updateComment = (commentObject) => new Promise((resolve, reject) => {
     console.log('UPDATE COMMENT INVOKED');
     const updateCommentCommand = `
       UPDATE comments
-      SET
-        text = ?
+      SET text = ?
       WHERE id = ?
     `;
 
