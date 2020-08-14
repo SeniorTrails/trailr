@@ -38,7 +38,7 @@ const MapWithASearchBox = () => {
     const strungRadius = radius.toString();
     const strungLat = lat.toString();
     const strungLng = lng.toString();
-    console.log('RADIUS/LAT/LNG: ', strungRadius, strungLat, strungLng);
+    // console.log('RADIUS/LAT/LNG: ', strungRadius, strungLat, strungLng);
     axios
       .get('/api/trails', {
         params: {
@@ -48,10 +48,10 @@ const MapWithASearchBox = () => {
         },
       })
       .then(({ data }) => {
-        console.log(
-          `🥾Trails back from API, GET req sent w/ radius:${radius}, lat: ${lat}, lon: ${lng}: `
-        );
-        console.log(data);
+        // console.log(
+        //   `🥾Trails back from API, GET req sent w/ radius:${radius}, lat: ${lat}, lon: ${lng}: `
+        // );
+        // console.log(data);
         setPlaces(data);
       })
       .catch((err) => {
@@ -85,6 +85,7 @@ const MapWithASearchBox = () => {
       window.removeEventListener('keydown', listener);
     };
   }, []);
+
   const clustering = (thisZoom) => {
     const placesClustered = places.reduce((clusteredTrails, currentTrail) => {
       const scaler = 2 ** thisZoom;
@@ -108,56 +109,60 @@ const MapWithASearchBox = () => {
     setNotClusteredPlaces(notClustered);
   };
 
-  useEffect(() => {
-    clustering(zoom);
-  }, [places]);
-
   const setGoogleMapRef = (map, maps) => {
-    let currentZoom = currentZoom || 10;
-    let lastSearchedCenter = lastSearchedCenter || userLocation;
-    map.addListener('zoom_changed', () => {
-      currentZoom = map.getZoom();
-      setZoom(currentZoom);
-      clustering(currentZoom);
-    });
-    map.addListener('bounds_changed', () => {
-      const currentBounds = map.getBounds();
-      const currentCenter = {
-        lat: (currentBounds.Za.i + currentBounds.Za.j) / 2,
-        lng: (currentBounds.Va.i + currentBounds.Va.j) / 2,
-      };
-      const range = 0.6; // degrees change, approx 69 miles per 1 latitude/longitude
-      const radius = 100; // miles
-      if (
-        Math.abs(+currentCenter.lat - +lastSearchedCenter.lat) > range ||
-        Math.abs(+currentCenter.lng - +lastSearchedCenter.lng) > range
-      ) {
-        lastSearchedCenter = currentCenter;
-        updateTrails(radius, currentCenter.lat, currentCenter.lng);
-      }
-    });
-    setMapInstance(map);
-    setMapApi(maps);
-    setMapApiLoaded(true);
-    const googleRef = maps;
-    const locations = places.reduce((coordinates, currentTrail) => {
-      coordinates.push({ lat: +currentTrail.lat, lng: +currentTrail.lon });
-      return coordinates;
-    }, []);
-    const markers =
-      locations &&
-      locations.map((location) => {
-        return new googleRef.Marker({ position: location });
+    if (map && maps) {
+      let currentZoom = currentZoom || 10;
+      let lastSearchedCenter = lastSearchedCenter || userLocation;
+      map.addListener('zoom_changed', () => {
+        currentZoom = map.getZoom();
+        setZoom(currentZoom);
+        clustering(currentZoom);
+      });
+      map.addListener('bounds_changed', () => {
+        const currentBounds = map.getBounds();
+        const currentCenter = {
+          lat: (currentBounds.Za.i + currentBounds.Za.j) / 2,
+          lng: (currentBounds.Va.i + currentBounds.Va.j) / 2,
+        };
+        const range = 0.6; // degrees change, approx 69 miles per 1 latitude/longitude
+        const radius = 100; // miles
+        if (
+          Math.abs(+currentCenter.lat - +lastSearchedCenter.lat) > range ||
+          Math.abs(+currentCenter.lng - +lastSearchedCenter.lng) > range
+        ) {
+          lastSearchedCenter = currentCenter;
+          updateTrails(radius, currentCenter.lat, currentCenter.lng);
+        }
       });
 
-    new MarkerClusterer(map, markers, {
-      imagePath:
-        'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m',
-      gridSize: 15,
-      minimumClusterSize: 2,
-    });
-    clustering(currentZoom);
+      setMapInstance(map);
+      setMapApi(maps);
+      setMapApiLoaded(true);
+      const googleRef = maps;
+      const locations = places.reduce((coordinates, currentTrail) => {
+        coordinates.push({ lat: +currentTrail.lat, lng: +currentTrail.lon });
+        return coordinates;
+      }, []);
+      const markers =
+        locations &&
+        locations.map((location) => {
+          return new googleRef.Marker({ position: location });
+        });
+
+      new MarkerClusterer(map, markers, {
+        imagePath:
+          'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m',
+        gridSize: 15,
+        minimumClusterSize: 2,
+      });
+      clustering(currentZoom);
+    }
   };
+
+  useEffect(() => {
+    clustering(zoom);
+    setGoogleMapRef(mapInstance, mapApi);
+  }, [places]);
 
   return (
     <>
