@@ -4,7 +4,7 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Image from 'react-bootstrap/Image';
 import Badge from 'react-bootstrap/Badge';
-import { getTrailData, updateUserRating } from '../helpers';
+import { getTrailData, updateUserRating, getAuth } from '../helpers';
 import Input from './input.jsx';
 import Map from './TrailMap.jsx';
 import Carousel from './Carousel.jsx';
@@ -167,6 +167,14 @@ const trail = () => {
 
   // Set all the initial data with DB calls based on id in useParams
   useEffect(() => {
+    getAuth()
+      .then(response => {
+        console.log('AUTHRESPONSE')
+        console.log(response);
+      })
+      .catch(err=> {
+        console.error(err);
+      });
     getTrailData(id)
       .then(trailData => {
         // setTrailInfo(trailData);

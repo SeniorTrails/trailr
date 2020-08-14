@@ -29,6 +29,20 @@ export const useForm = (callback) => {
   };
 };
 
+export const getAuth = () => new Promise((resolve, reject) => {
+  axios({
+    method: 'get',
+    url: '/auth/session',
+  })
+    .then((response) => {
+      console.log(response)
+      resolve(response.data);
+    })
+    .catch((err) => {
+      reject(err);
+    });
+});
+
 /**
  * Calls the api to get a user's data
  * @param {Number} userId a user's id number based on page params

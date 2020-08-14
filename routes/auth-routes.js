@@ -3,6 +3,7 @@ const { Router } = require('express');
 
 // import passport library to file
 const passport = require('passport');
+const {restart} = require('nodemon');
 
 // set local variable to  a new instance of express router
 const authRouter = Router();
@@ -20,6 +21,15 @@ authRouter.get('/logout', (req, res) => {
   req.logOut();
   res.redirect('/');
   // finish with redirect to "/"
+});
+
+authRouter.get('/session', (req, res) => {
+  if (req.session.passport) {
+    console.log(req.session.passport);
+    res.status(200).json(req.session.passport);
+  } else {
+    res.status(200).json(null);
+  }
 });
 
 /* ------------------------------ Google Auth Route && Redirect --------------------------------- */
