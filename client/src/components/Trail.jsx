@@ -59,33 +59,37 @@ const trail = ({ user }) => {
   const [photoInfo, setPhotoInfo] = useState([]);
   const [userRatings, setUserRatings] = useState({});
   const [currentPhoto, setCurrentPhoto] = useState(0);
+  const [redirect, setRedirect] = useState(false);
   // Redirect if no trail info is found
-  let redirect = null;
 
   // Set all the initial data with DB calls based on id in useParams
   useEffect(() => {
     getTrailData(id, user.id)
       .then((response) => {
-        const { photoData, userRatingData, trailData } = parseTrailData(response);
-        setTrailInfo(trailData);
-        setPhotoInfo(photoData);
-        // Check if User is logged in to set User ratings
-        if (user.loggedIn) {
-          setUserRatings({
-            userLoaded: true,
-            like: {
-              value: userRatingData.like,
-              edit: false,
-            },
-            diff: {
-              value: userRatingData.diff,
-              edit: false,
-            },
-          });
+        if (!response) {
+          setRedirect(true);
+        } else {
+          const { photoData, userRatingData, trailData } = parseTrailData(response);
+          setTrailInfo(trailData);
+          setPhotoInfo(photoData);
+          // Check if User is logged in to set User ratings
+          if (user.loggedIn) {
+            setUserRatings({
+              userLoaded: true,
+              like: {
+                value: userRatingData.like,
+                edit: false,
+              },
+              diff: {
+                value: userRatingData.diff,
+                edit: false,
+              },
+            });
+          }
         }
       })
       .catch((err) => {
-        redirect = <Redirect to="/404" />;
+        setRedirect(true);
       });
   }, []);
 
@@ -197,7 +201,7 @@ const trail = ({ user }) => {
 
   return (
     <>
-      {redirect}
+      {redirect ? <Redirect to="/404" /> : null}
       <Col xs={6}>
         <Row>
           <Col xs={9}>

@@ -51,6 +51,7 @@ const app = () => {
             <Route path="/login">
               <Login />
             </Route>
+            <Route path="/404"><NoMatchPage /></Route>
             <Route path="/">
               <div className="col-12" style={{ width: '100%', height: '600px' }}>
                 <MapWrapped
@@ -61,7 +62,6 @@ const app = () => {
                 />
               </div>
             </Route>
-            <Route path="/404"><NoMatchPage /></Route>
           </Switch>
         </div>
       </div>

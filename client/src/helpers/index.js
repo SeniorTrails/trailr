@@ -77,8 +77,11 @@ export const getTrailData = (trailId, userId) => new Promise((resolve, reject) =
     },
   })
     .then((response) => {
-      console.log(response.data);
-      resolve(response.data);
+      if (Array.isArray(response.data)) {
+        resolve(false);
+      } else {
+        resolve(response.data);
+      }
     })
     .catch((err) => {
       reject(err);
