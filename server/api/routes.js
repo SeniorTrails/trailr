@@ -42,11 +42,6 @@ const router = Router();
 router.get('/trails/:id', (req, res) => {
   const { id } = req.query;
   const idT = req.params.id;
-<<<<<<< HEAD
-  console.log(id);
-  // console.log('**********REQ OBJECT**********', id, idT);
-=======
->>>>>>> 58351509644116122be0a676566a372f9d9e1890
   const trailObject = {
     id_trail: idT,
     id_user: id,
