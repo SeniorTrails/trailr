@@ -58,13 +58,21 @@ app.use(bodyParser.json());
 // utilize the urlencoder from express framework
 app.use(bodyParser.urlencoded({ extended: false }));
 
-// utilize passport middleware initialize && session authentication functionality
-
+/**
+ * utilize middleware to determine which user data should be stored in the session
+ * if login is successful then serializeUser decides what user information should get stored
+ * in the session and a cookie is sent to the browser for the same to maintain the session.
+ */
 passport.serializeUser((user, done) => {
   done(null, { id: user.id, name: user.name });
 });
+
+/**
+ * utilize middleware to retrieve persisted user data for current session
+ * deserializeUser method is called on all subsequent user requests and
+ * enables us to load additional user information on every request to session cookie
+ */
 passport.deserializeUser((id, done) => {
-  // use find user by id
   getUser(id)
     .then((user) => {
       const userInfo = {
@@ -77,29 +85,37 @@ passport.deserializeUser((id, done) => {
       done(error);
     });
 });
+
+// set express middleware to utilize passport to initialize new session
 app.use(passport.initialize());
+
+// set express middleware to utilize passport to persist user sessions
 app.use(passport.session());
+
 // configure the PORT server will listen for calls on
 const PORT = 8080;
+
 // utilize express-session middleware to read session cookies
 app.use(session({
-  secret: process.env.SECRET, // not sure if this is right
+  secret: process.env.SECRET,
   resave: false,
   saveUninitialized: true,
-  // cookie: { secure: true }, //don't know if we need this
 }));
-// direct express to certain middleware for requests on certain paths
 
+// direct express to certain middleware for requests on certain paths
 app.use('/api', router);
 
 // authentication routes
 app.use('/auth', authRouter);
 
+// serve static files from local directory
 app.use('/', express.static(path.join(__dirname, '/../client/dist')));
+
 // reroutes any route to the index.html so React Router works
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '/../client/dist/index.html'));
 });
+
 // set server to listen for requests on configured report
 app.listen(process.env.PORT || PORT, () => {
   console.log(`Server Walking The Trails on http://localhost:${PORT}`);
