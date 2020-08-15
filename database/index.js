@@ -220,7 +220,9 @@ const addUser = (userObject) => new Promise((resolve, reject) => {
                     resolve(error);
                   });
                 }
-                resolve({ id: addedUser.insertId, name: userObject.name });
+                const addUserResult = addedUser
+                  ? { id: addedUser.insertId } : { id: null, affectedRows: 0 };
+                resolve(addUserResult);
               });
             });
         }
@@ -425,7 +427,10 @@ const addTrail = (trailObject) => new Promise((resolve, reject) => {
                     resolve(error);
                   });
                 }
-                resolve({ id: addedTrail.insertId });
+
+                const addTrailResult = addedTrail
+                  ? { id: addedTrail.insertId } : { id: null, affectedRows: 0 };
+                resolve(addTrailResult);
               });
             });
         }
@@ -483,7 +488,7 @@ const updateTrail = (trailObject) => new Promise((resolve, reject) => {
                 resolve(error);
               });
             }
-            const updateTrailResult = updatedTrail || [{ affectedRows: 0 }];
+            const updateTrailResult = updatedTrail || [{ id: null, affectedRows: 0 }];
             resolve(updateTrailResult);
           });
         });
@@ -777,7 +782,7 @@ const addComment = (commentObject) => new Promise((resolve, reject) => {
               });
             }
             const addCommentResult = addedComment
-              ? { id: addedComment.insertId } : { affectedRows: 0 };
+              ? { id: addedComment.insertId } : { id: null, affectedRows: 0 };
             resolve(addCommentResult);
           });
         });
@@ -822,7 +827,8 @@ const addPhoto = (photoObject) => new Promise((resolve, reject) => {
                 resolve(error);
               });
             }
-            const addPhotoResult = addedPhoto ? { id: addedPhoto.insertId } : { affectedRows: 0 };
+            const addPhotoResult = addedPhoto
+              ? { id: addedPhoto.insertId } : { id: null, affectedRows: 0 };
             resolve(addPhotoResult);
           });
         });
@@ -963,7 +969,7 @@ const addFavorite = (favoriteObject) => new Promise((resolve, reject) => {
               });
             }
             const addFavoriteResult = addedFavorite
-              ? { id: addedFavorite.insertId } : { affectedRows: 0 };
+              ? { id: addedFavorite.insertId } : { id: null, affectedRows: 0 };
             resolve(addFavoriteResult);
           });
         });
