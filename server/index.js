@@ -1,14 +1,12 @@
 // require .env package
 require('dotenv').config();
 
-<<<<<<< HEAD
 const cors = require('cors');
-=======
+
 // require passport-setup file, to enable passport middleware
 require('../config/passport-setup');
 
 // require path module to provide utilities for working with static file and directory paths
->>>>>>> 6287a1fb9b386708c0f06371f854d2f4e91d503e
 const path = require('path');
 
 // import express framework
