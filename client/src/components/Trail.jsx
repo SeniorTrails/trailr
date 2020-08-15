@@ -123,7 +123,6 @@ const trail = ({ user }) => {
   }, []);
 
   useEffect(() => {
-    console.log('checking favorite status', user);
     if (user.loggedIn) {
       getFavoriteStatus(id, user.id)
         .then((status) => {

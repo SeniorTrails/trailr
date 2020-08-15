@@ -232,7 +232,7 @@ export const getFavoriteStatus = (trailId, userId) => new Promise((resolve, reje
   })
     .then((response) => {
       response.data.favorites.forEach((trail) => {
-        if (trail.id === trailId) {
+        if (trail.id === +trailId) {
           resolve(true);
         }
       });
