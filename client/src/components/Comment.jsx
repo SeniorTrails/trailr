@@ -2,17 +2,26 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import Button from 'react-bootstrap/Button';
 import Input from './input.jsx';
-import { deleteComment, useForm } from '../helpers';
+import { deleteComment, useForm, updateComment } from '../helpers';
 
 /**
  * A single comment with a username
  * @param {Object} info comment to be displayed
  * @param {Object} user loggedIn, name, id
  */
-const comment = ({ info, user }) => {
+const commentComponent = ({ info, user }) => {
   const [edit, setEdit] = useState(false);
-  const submitComment = (text) => {
-    console.log(text);
+  const [text, setText] = useState(info.text);
+
+  const submitComment = ({ comment }) => {
+    setEdit(false);
+    updateComment(info.id, comment)
+      .then((response) => {
+        setText(comment);
+      })
+      .catch((err) => {
+        console.error(err);
+      });
   };
   const { submitHandler, changeHandler, values } = useForm(submitComment);
   const deleteHandler = () => {
@@ -30,7 +39,7 @@ const comment = ({ info, user }) => {
     setEdit((prev) => !prev);
   };
 
-  const { text, name } = info;
+  const { name } = info;
   return (
     <>
       {!edit
@@ -58,9 +67,9 @@ const comment = ({ info, user }) => {
   );
 };
 
-export default comment;
+export default commentComponent;
 
-comment.propTypes = {
+commentComponent.propTypes = {
   info: PropTypes.shape({
     text: PropTypes.string.isRequired,
     name: PropTypes.string.isRequired,
