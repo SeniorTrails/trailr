@@ -20,6 +20,7 @@ const addComment = ({ appendComments, userId, photoId, name }) => {
     addCommentToPhoto(text, userId, photoId)
       .then(({ id }) => {
         appendComments({ text, id: +id, name, id_user: userId });
+        values.text = '';
       })
       .catch((err) => {
         console.error(err);
