@@ -20,10 +20,10 @@ const app = () => {
   useEffect(() => {
     getAuth()
       .then((response) => {
-        if (response) {
+        if (response.id) {
           setUser({
             loggedIn: true,
-            ...response.user,
+            ...response,
           });
         } else {
           setUser(loggedOut);
@@ -48,14 +48,14 @@ const app = () => {
             </Route>
             <Route path="/404"><NoMatchPage /></Route>
             <Route path="/">
-              <div className="col-12" style={{ width: '100%', height: '600px' }}>
+              {<div className="col-12" style={{ width: '100%', height: '600px' }}>
                 <MapWrapped
                   googleMapURL={`https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=geometry,drawing,places&key=${process.env.GOOGLE_MAPS_API_KEY}`}
                   containerElement={<div style={{ height: '800px' }} />}
                   mapElement={<div style={{ height: '100%' }} />}
                   loadingElement={<div style={{ height: '100%' }} />}
                 />
-              </div>
+              </div>}
             </Route>
           </Switch>
         </div>

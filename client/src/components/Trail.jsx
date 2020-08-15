@@ -277,19 +277,17 @@ const trail = ({ user }) => {
           </Col>
         </Row>
         <div style={{ width: '100%', height: '300px' }}>
-          {!photoInfo.length ? null : (
-            <Map
-              googleMapURL={`https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=geometry,drawing,places&key=${process.env.GOOGLE_MAPS_API_KEY}`}
-              containerElement={<div style={{ height: '100%' }} />}
-              mapElement={<div style={{ height: '100%' }} />}
-              loadingElement={<div style={{ height: '100%' }} />}
-              location={{ lat: trailInfo.lat, lng: trailInfo.lon }}
-              id={trailInfo.id}
-              photoInfo={photoInfo}
-              changeCurrentPhoto={changeCurrentPhoto}
-              currentPhoto={currentPhoto}
-            />
-          )}
+          <Map
+            googleMapURL={`https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=geometry,drawing,places&key=${process.env.GOOGLE_MAPS_API_KEY}`}
+            containerElement={<div style={{ height: '100%' }} />}
+            mapElement={<div style={{ height: '100%' }} />}
+            loadingElement={<div style={{ height: '100%' }} />}
+            location={{ lat: trailInfo.lat, lng: trailInfo.lon }}
+            id={trailInfo.id}
+            photoInfo={photoInfo}
+            changeCurrentPhoto={changeCurrentPhoto}
+            currentPhoto={currentPhoto}
+          />
         </div>
         <div>
           <p>{trailInfo.description}</p>

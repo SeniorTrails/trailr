@@ -103,6 +103,7 @@ router.get('/users/:id', (req, res) => {
   const { id } = req.params;
   getUser(id)
     .then((success) => {
+      console.log('SUCESSS GETING USER', success)
       res.send(success);
     })
     .catch((error) => {
