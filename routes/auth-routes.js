@@ -3,7 +3,7 @@ const { Router } = require('express');
 
 // import passport library to file
 const passport = require('passport');
-const { restart } = require('nodemon');
+//const { restart } = require('nodemon');
 
 // set local variable to  a new instance of express router
 const authRouter = Router();
@@ -25,8 +25,10 @@ authRouter.get('/logout', (req, res) => {
 });
 
 authRouter.get('/session', (req, res) => {
-  if (req.session.passport) {
-    res.status(200).json(req.session.passport);
+  console.log("REQ.SESSION", req.session);
+  console.log("REQ.USER", req.user)
+  if (req.user) {
+    res.status(200).json(req.user);
   } else {
     res.status(200).json(null);
   }

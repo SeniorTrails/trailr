@@ -83,6 +83,7 @@ const MapWithASearchBox = React.memo(() => {
 
     return () => {
       window.removeEventListener('keydown', listener);
+      document.body.removeChild(script);
     };
   }, []);
 

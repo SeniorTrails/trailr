@@ -1,6 +1,7 @@
 // require .env package
 require('dotenv').config();
 
+const cors = require('cors');
 const path = require('path');
 
 // import express framework
@@ -44,6 +45,8 @@ const multerMid = multer({
   },
 });
 
+app.use(cors());
+
 // disable the name setting feature on the app settings table
 app.disable('x-powered-by');
 // set up express middleware to work with multer
@@ -59,13 +62,21 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
 // utilize passport middleware initialize && session authentication functionality
+app.use(session({
+  secret: process.env.SECRET, // not sure if this is right
+  resave: false,
+  saveUninitialized: true,
+  // cookie: { secure: true }, //don't know if we need this
+}));
 
 passport.serializeUser((user, done) => {
+  console.log('serilize', user)
   done(null, { id: user.id, name: user.name });
 });
-passport.deserializeUser((id, done) => {
+passport.deserializeUser((sessionUser, done) => {
   // use find user by id
-  getUser(id)
+  console.log('DESERIALIZE', sessionUser)
+  getUser(sessionUser.id)
     .then((user) => {
       const userInfo = {
         id: user.id,
@@ -82,12 +93,6 @@ app.use(passport.session());
 // configure the PORT server will listen for calls on
 const PORT = 8080;
 // utilize express-session middleware to read session cookies
-app.use(session({
-  secret: process.env.SECRET, // not sure if this is right
-  resave: false,
-  saveUninitialized: true,
-  // cookie: { secure: true }, //don't know if we need this
-}));
 // direct express to certain middleware for requests on certain paths
 
 app.use('/api', router);

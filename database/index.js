@@ -26,6 +26,10 @@ if (!process.env.NODE_ENV) {
     password: process.env.DB_PASS,
     database: process.env.DB_NAME,
     host: process.env.DB_HOST,
+    connectTimeout: 10000,
+    acquireTimeout: 10000,
+    waitForConnections: true,
+    queueLimit: 0,
   });
 } else {
   poolConnection = mysql.createPool({

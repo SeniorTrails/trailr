@@ -38,6 +38,7 @@ export const getAuth = () => new Promise((resolve, reject) => {
     url: '/auth/session',
   })
     .then((response) => {
+      console.log('AUTH GET', response.data)
       resolve(response.data);
     })
     .catch((err) => {
@@ -50,6 +51,7 @@ export const getAuth = () => new Promise((resolve, reject) => {
  * @param {Number} userId a user's id number based on page params
  */
 export const getUserData = (userId) => new Promise((resolve, reject) => {
+  console.log('GET USER DTA')
   axios({
     method: 'get',
     url: `/api/users/${userId}`,
@@ -59,6 +61,7 @@ export const getUserData = (userId) => new Promise((resolve, reject) => {
       resolve(response.data);
     })
     .catch((err) => {
+      console.error("ERROR GETTING USER:", err);
       reject(err);
     });
 });
