@@ -53,6 +53,13 @@ const userPage = ({ user }) => {
       });
   }, []);
 
+  const removePhoto = (photoId) => {
+    setCurrentPhoto(0);
+    const updatedPhotos = [...photoInfo];
+    updatedPhotos.splice(photoId, 1);
+    setPhotoInfo(updatedPhotos);
+  };
+
   /**
    * After the DB call this adds the new comment to the photo for the user,
    *  so that we don't have to make additional DB calls
@@ -87,6 +94,7 @@ const userPage = ({ user }) => {
                 currentPhoto={currentPhoto}
                 changeCurrentPhoto={changeCurrentPhoto}
                 user={user}
+                removePhoto={removePhoto}
               />
               {user.loggedIn
                 ? (
