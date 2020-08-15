@@ -77,7 +77,9 @@ CREATE TABLE favorites (
   id int AUTO_INCREMENT,
   id_user int,
   id_trail int,
-  PRIMARY KEY (id)
+  PRIMARY KEY (id),
+  FOREIGN KEY (id_user) REFERENCES users(id),
+  FOREIGN KEY (id_trail) REFERENCES trails(id)
 );
 
 INSERT into users (google_id, name, profile_photo_url) VALUES ("100320448870922542711", "Daniel", "https://lh3.googleusercontent.com/a-/AOh14GgCnlLMDczQTYGKy6XfF5EeNsrbDXh4y8j3hLdNvw");
