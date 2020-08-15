@@ -1,7 +1,7 @@
 // import axios framework for http requests
 const axios = require('axios');
 
-// import express framework, destructor Router method from library
+// import & destructor Router method from express framework
 const { Router } = require('express');
 
 // import all database helper functions
@@ -99,7 +99,6 @@ router.get('/trails', (req, res) => {
 * {Param} - id - deconstructed from req.params
 * returns - an object of user information from DB containing user info, photos, and photo comments
 */
-
 router.get('/users/:id', (req, res) => {
   const { id } = req.params;
   console.log("DOING A GET USER")
@@ -123,7 +122,6 @@ router.get('/users/:id', (req, res) => {
 * {Param} - body - deconstructed from the req object, "body" is an object
 * returns - an object with newly added user id
 */
-
 router.post('/users', (req, res) => {
   const { body } = req;
   addUser(body)
@@ -211,7 +209,9 @@ router.post('/photos', (req, res) => {
 */
 router.post('/uploads', (req, res) => {
   const myFile = req.file;
-  const { latitude, longitude, userId, trailId } = req.body;
+  const {
+    latitude, longitude, userId, trailId,
+  } = req.body;
   uploadImage(myFile)
     .then((photoUrl) => {
       addPhoto({
@@ -313,7 +313,7 @@ router.put('/difficulty', (req, res) => {
 * inputs - "updateLikeability" receives an object of information:
 *        -- { id_user, id_trail, value }
 * {Param} - body - deconstructed from the req object, "body" is an object
-* returns - returns an object with new average of likes for trail
+* returns - returns an object with new average of likes for trail, "newAvgLike"
 */
 router.put('/likeability', (req, res) => {
   const { body } = req;
@@ -327,14 +327,13 @@ router.put('/likeability', (req, res) => {
     });
 });
 
-// ********* documentation not completed complete after new pull *************** //
 /*
 * route - allows user to update user comments about a trail saved in db
 * use - uses "updateComment" function to update trail comments from users
 * inputs - "updateComment" receives an object of information:
-*        -- { id_user, id_trail, value }
+*        -- { text, id }
 * {Param} - body - deconstructed from the req object, "body" is an object
-* returns - ???????????
+* returns - returns an object with new user comments for trail, "updatedComment"
 */
 router.put('/comments', (req, res) => {
   const { body } = req;
@@ -427,6 +426,7 @@ router.delete('/favorites', (req, res) => {
     });
 });
 
+// export "router" variable to be used in other project files
 module.exports = {
   router,
 };
