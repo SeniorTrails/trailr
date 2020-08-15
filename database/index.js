@@ -35,7 +35,7 @@ if (!process.env.NODE_ENV) {
     socketPath: `/cloudsql/${process.env.DB_INSTANCE_CONNECTION_NAME}`,
     connectTimeout: 10000,
     acquireTimeout: 10000,
-    waitForConnections: true,
+    waitForConnections: false,
     connectionLimit: 20,
     queueLimit: 20,
   });
@@ -95,6 +95,7 @@ const getUser = (id) => new Promise((resolve, reject) => {
                 resolve(error);
               });
             }
+            connection.release();
             resolve(gottenUser);
           });
         } else if (gottenUser.length > 0) {
@@ -409,6 +410,7 @@ const addTrail = (trailObject) => new Promise((resolve, reject) => {
                 resolve(error);
               });
             }
+            connection.release();
             resolve({
               message: 'Existing trail. Use id listed here with getTrail(id) to lookup trail or updateTrail(id) to update trail.',
               id: trailResult[0].id,
