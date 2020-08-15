@@ -194,3 +194,51 @@ export const addTrail = (trail) => new Promise((resolve, reject) => {
       reject(err);
     });
 });
+
+/**
+ * Updates the favorite table, either removing or adding a favorite based
+ *  on the remove parameter
+ * @param {Number} id_trail id of trail to effect
+ * @param {Number} id_user id of user to effect
+ * @param {Boolean} remove true if removing a favorite
+ */
+export const updateFavorite = (idTrail, idUser, remove) => new Promise((resolve, reject) => {
+  axios({
+    method: remove ? 'delete' : 'post',
+    url: '/api/favorites',
+    data: {
+      id_trail: idTrail,
+      id_user: idUser,
+    },
+  })
+    .then((response) => {
+      resolve(response);
+    })
+    .catch((err) => {
+      reject(err);
+    });
+});
+
+/**
+ * Checks if the current route is favorited, this could get a specialized database call,
+ *  but for now this works
+ * @param {Number} idTrail id of the trail to see if it is a favorite
+ * @param {Number} idUser id of the user to check
+ */
+export const getFavoriteStatus = (trailId, userId) => new Promise((resolve, reject) => {
+  axios({
+    method: 'get',
+    url: `/api/users/${userId}`,
+  })
+    .then((response) => {
+      response.data.favorites.forEach((trail) => {
+        if (trail.id === trailId) {
+          resolve(true);
+        }
+      });
+      resolve(false);
+    })
+    .catch((err) => {
+      reject(err);
+    });
+});
