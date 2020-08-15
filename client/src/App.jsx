@@ -10,10 +10,13 @@ import Login from './components/Login.jsx';
 import NoMatchPage from './components/NoMatchPage.jsx';
 import HeaderImage from './components/HeaderImage.jsx';
 
+// Logged out state
 const loggedOut = { loggedIn: false };
 
+// The app
 const app = () => {
   const [user, setUser] = useState(loggedOut);
+  // Get's the auth state and saves it to the user object
   useEffect(() => {
     getAuth()
       .then((response) => {
@@ -34,21 +37,16 @@ const app = () => {
     <BrowserRouter>
       <HeaderImage />
       <div className="container">
-        <Header loggedIn={user.loggedIn} />
+        <Header user={user} />
         <div className="row">
           <Switch>
             <Route path="/trail/:id">
-              <Trail />
+              <Trail user={user} />
             </Route>
             <Route path="/user/:id">
-              <User />
+              <User user={user} />
             </Route>
-            <Route path="/signup">
-              <Signup />
-            </Route>
-            <Route path="/login">
-              <Login />
-            </Route>
+            <Route path="/404"><NoMatchPage /></Route>
             <Route path="/">
               <div className="col-12" style={{ width: '100%', height: '600px' }}>
                 <MapWrapped
@@ -59,7 +57,6 @@ const app = () => {
                 />
               </div>
             </Route>
-            <Route path="/404"><NoMatchPage /></Route>
           </Switch>
         </div>
       </div>

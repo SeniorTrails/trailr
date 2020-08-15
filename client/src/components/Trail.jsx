@@ -1,203 +1,138 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import PropTypes from 'prop-types';
+import { Redirect, useParams } from 'react-router-dom';
+import styled from 'styled-components';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Image from 'react-bootstrap/Image';
 import Badge from 'react-bootstrap/Badge';
-import { getTrailData, updateUserRating, getAuth } from '../helpers';
+import { Heart, HeartFill } from 'react-bootstrap-icons';
+import { getTrailData, updateUserRating, updateFavorite, getFavoriteStatus, uploadPhoto } from '../helpers';
 import Input from './input.jsx';
 import Map from './TrailMap.jsx';
 import Carousel from './Carousel.jsx';
 import AddComment from './AddComment.jsx';
 import AddPicture from './AddPicture.jsx';
 
-const data = {
-  id: 279988,
-  name: 'Eagle Trail',
-  url: 'https://www.singletracks.com/bike-trails/eagle-trail-8663/',
-  description:
-    'Nice easy trail.  Smaller in width than South or North Loop. South side of trail borders the Beaver Pond.',
-  city: 'Mandeville',
-  region: 'Louisiana',
-  country: 'United States',
-  lat: 30.35324,
-  lon: -90.02715,
-  difficulty: 3,
-  likeability: 4,
-  thumbnail:
-    'https://images.singletracks.com/blog/wp-content/uploads/2014/06/et3-orig.jpg',
+const StyledHeart = styled(Heart)`
+  color: #00470F;
+  :hover {
+    color: #008a1d;
+  }
+`;
+
+const StyledFillHeart = styled(HeartFill)`
+  color: #00470F;
+  :hover {
+    color: #008a1d;
+  }
+`;
+
+// Favorite Heart Component
+const FavHeart = ({fav, ch}) => (
+  <>
+    {fav ? <StyledFillHeart onClick={ch} /> : <StyledHeart onClick={ch} />}
+  </>
+);
+FavHeart.propTypes = {
+  fav: PropTypes.bool.isRequired,
+  ch: PropTypes.func.isRequired,
 };
 
-const userData = {
-  diff: 2,
-  like: 1,
-};
-
-const photos = [
-  {
-    id: 1,
-    url:
-      'https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/Natchez_Trace_Trail.jpg/1280px-Natchez_Trace_Trail.jpg',
-    lat: 30.35121,
-    lng: -90.026479,
-    comments: [
-      {
-        id: 1,
-        text:
-          'Lorem ipsum dolor sit amet consectetur adipisicing elit. Possimus laborum voluptatem nihil ipsam placeat itaque magnam.',
-        name: 'Daniel Troyano',
-      },
-      {
-        id: 2,
-        text:
-          'Lorem ipsum dolor sit amet consectetur adipisicing elit. Possimus laborum voluptatem nihil ipsam placeat itaque magnam.',
-        name: 'Daniel Troyano',
-      },
-      {
-        id: 3,
-        text:
-          'Lorem ipsum dolor sit amet consectetur adipisicing elit. Possimus laborum voluptatem nihil ipsam placeat itaque magnam.',
-        name: 'Daniel Troyano',
-      },
-    ],
-  },
-  {
-    id: 2,
-    url:
-      'https://upload.wikimedia.org/wikipedia/commons/c/ce/North_Country_Trail_Manistee_Forest.jpg',
-    lat: 30.350458,
-    lng: -90.026045,
-    comments: [
-      {
-        id: 4,
-        text:
-          'Lorem ipsum dolor sit amet consectetur adipisicing elit. Possimus laborum voluptatem nihil ipsam placeat itaque magnam.',
-        name: 'Caylie Sadin',
-      },
-      {
-        id: 5,
-        text:
-          'Lorem ipsum dolor sit amet consectetur adipisicing elit. Possimus laborum voluptatem nihil ipsam placeat itaque magnam.',
-        name: 'Daniel Troyano',
-      },
-    ],
-  },
-  {
-    id: 5,
-    url:
-      'https://vbwsjdqd1l-flywheel.netdna-ssl.com/wp-content/uploads/2014/04/Santos-Trails-1.jpg',
-    lat: 30.352326,
-    lng: -90.02711,
-    comments: [
-      {
-        id: 4,
-        text:
-          'Lorem ipsum dolor sit amet consectetur adipisicing elit. Possimus laborum voluptatem nihil ipsam placeat itaque magnam.',
-        name: 'Caylie Sadin',
-      },
-      {
-        id: 5,
-        text:
-          'Lorem ipsum dolor sit amet consectetur adipisicing elit. Possimus laborum voluptatem nihil ipsam placeat itaque magnam.',
-        name: 'Daniel Troyano',
-      },
-    ],
-  },
-  {
-    id: 3,
-    url:
-      'https://www.pittsburghmagazine.com/content/uploads/2020/03/cb-cook-forest-trail1.jpg',
-    lat: 30.35326,
-    lng: -90.027236,
-    comments: [
-      {
-        id: 4,
-        text:
-          'Lorem ipsum dolor sit amet consectetur adipisicing elit. Possimus laborum voluptatem nihil ipsam placeat itaque magnam.',
-        name: 'Caylie Sadin',
-      },
-      {
-        id: 5,
-        text:
-          'Lorem ipsum dolor sit amet consectetur adipisicing elit. Possimus laborum voluptatem nihil ipsam placeat itaque magnam.',
-        name: 'Daniel Troyano',
-      },
-    ],
-  },
-  {
-    id: 4,
-    url: 'https://www.cliftonpark.com/images/100acretrail.jpg',
-    lat: 30.348433,
-    lng: -90.026569,
-    comments: [
-      {
-        id: 4,
-        text:
-          'Lorem ipsum dolor sit amet consectetur adipisicing elit. Possimus laborum voluptatem nihil ipsam placeat itaque magnam.',
-        name: 'Caylie Sadin',
-      },
-      {
-        id: 5,
-        text:
-          'Lorem ipsum dolor sit amet consectetur adipisicing elit. Possimus laborum voluptatem nihil ipsam placeat itaque magnam.',
-        name: 'Daniel Troyano',
-      },
-    ],
-  },
-];
-
+// Options for the ratings selector
 const ratingOptions = [
-  { value: '', label: '' },
-  { value: 1, label: '1' },
-  { value: 2, label: '2' },
-  { value: 3, label: '3' },
-  { value: 4, label: '4' },
-  { value: 5, label: '5' },
+  { value: 'Rate this trail:', label: '' },
+  { value: '1', label: '1' },
+  { value: '2', label: '2' },
+  { value: '3', label: '3' },
+  { value: '4', label: '4' },
+  { value: '5', label: '5' },
 ];
 
 /**
- * The Trail Page component
+ * Takes the server's trail data and parses it into several different variables
+ *  so that it's easier to work with
+ * @param {Object} data trail data from server to parse
+ * @returns {Object} photoData, userRatingData, trailData
  */
-const trail = () => {
+const parseTrailData = (data) => {
+  const trailData = {
+    id: data.id,
+    name: data.name,
+    url: data.url,
+    description: data.description,
+    lat: data.latitude,
+    lon: data.longitude,
+    difficulty: data.averageDifficulty,
+    likeability: data.averageLikeability,
+    thumbnail: data.thumbnail,
+  };
+  // Sorts the photos by newest closest to the picture
+  const photoData = data.photos.map((photo) => {
+    const sorted = photo.comments.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+    return { ...photo, comments: sorted };
+  });
+  const userRatingData = { diff: data.userDifficulty, like: data.userLikeability };
+  return {
+    photoData,
+    userRatingData,
+    trailData,
+  };
+};
+
+/**
+ * The Trail Page component
+ * @param {Object} user loggedIn, name, id
+ */
+const trail = ({ user }) => {
   const { id } = useParams();
   const [trailInfo, setTrailInfo] = useState({});
   const [photoInfo, setPhotoInfo] = useState([]);
   const [userRatings, setUserRatings] = useState({});
   const [currentPhoto, setCurrentPhoto] = useState(0);
+  const [favorite, setFavorite] = useState(false);
+  const [redirect, setRedirect] = useState(false);
+  // Redirect if no trail info is found
 
   // Set all the initial data with DB calls based on id in useParams
   useEffect(() => {
-    getAuth()
-      .then(response => {
-        console.log('AUTHRESPONSE')
-        console.log(response);
-      })
-      .catch(err=> {
-        console.error(err);
-      });
-    getTrailData(id)
-      .then(trailData => {
-        // setTrailInfo(trailData);
-        // setPhotoInfo(trailData.photos);
-        // Check if User is logged in to set User ratings
-        setTrailInfo(data);
-        setPhotoInfo(photos);
-        setUserRatings({
-          userLoaded: true,
-          like: {
-            value: userData.like,
-            edit: false,
-          },
-          diff: {
-            value: userData.diff,
-            edit: false,
-          },
-        });
+    getTrailData(id, user.id)
+      .then((response) => {
+        if (!response) {
+          setRedirect(true);
+        } else {
+          const { photoData, userRatingData, trailData } = parseTrailData(response);
+          setTrailInfo(trailData);
+          setPhotoInfo(photoData);
+          setUserRatings({
+            userLoaded: true,
+            like: {
+              value: userRatingData.like,
+              edit: false,
+            },
+            diff: {
+              value: userRatingData.diff,
+              edit: false,
+            },
+          });
+        }
       })
       .catch((err) => {
-        console.error(err);
+        setRedirect(true);
       });
   }, []);
+
+  useEffect(() => {
+    if (user.loggedIn) {
+      getFavoriteStatus(id, user.id)
+        .then((status) => {
+          setFavorite(status);
+        })
+        .catch((err) => {
+          console.error(err);
+        });
+    }
+  }, [user]);
 
   /**
    * Toggles wether the rating is editable based on user clicks, if it is
@@ -221,32 +156,28 @@ const trail = () => {
    * @param {Object} target input element to use to update the DB
    */
   const changeHandler = ({ target }) => {
-    // USER ID IS HARD CODED FIX THIS
-    updateUserRating(target.name, target.value, 1, id)
-      .then((newRating) => {
-        console.log('USER ID IS HARD CODED FIX THIS');
-        const updatedElement = { ...userRatings[target.name] };
-        updatedElement.value = target.value;
-        updatedElement.edit = false;
-        setUserRatings((prev) => ({ ...prev, [target.name]: updatedElement }));
-        setTrailInfo((prev) => {
-          const updatedTrailInfo = { ...prev };
-          if (target.name === 'like') {
-            updatedTrailInfo.likeability = newRating;
-          } else {
-            updatedTrailInfo.difficulty = newRating;
-          }
-          return updatedTrailInfo;
+    if (target.value !== 'Rate this trail:') {
+      const numValue = +target.value;
+      updateUserRating(target.name, numValue, user.id, id)
+        .then((newRating) => {
+          const updatedElement = { ...userRatings[target.name] };
+          updatedElement.value = numValue.toString();
+          updatedElement.edit = false;
+          setUserRatings((prev) => ({ ...prev, [target.name]: updatedElement }));
+          setTrailInfo((prev) => {
+            const updatedTrailInfo = { ...prev };
+            if (target.name === 'like') {
+              updatedTrailInfo.likeability = +newRating.averageLikeability;
+            } else {
+              updatedTrailInfo.difficulty = +newRating.averageDifficulty;
+            }
+            return updatedTrailInfo;
+          });
+        })
+        .catch((err) => {
+          console.error(err);
         });
-      })
-      .catch((err) => {
-        console.error(err);
-      });
-    // THIS IS WHERE WE CHANGE THE RATING IN THE DB
-    const updatedElement = { ...userRatings[target.name] };
-    updatedElement.value = target.value;
-    updatedElement.edit = false;
-    setUserRatings((prev) => ({ ...prev, [target.name]: updatedElement }));
+    }
   };
 
   /**
@@ -257,15 +188,22 @@ const trail = () => {
     setCurrentPhoto(photoId);
   };
 
+  const removePhoto = (photoId) => {
+    setCurrentPhoto(0);
+    const updatedPhotos = [...photoInfo];
+    updatedPhotos.splice(photoId, 1);
+    setPhotoInfo(updatedPhotos);
+  };
+
   /**
-   * After the DB call this appends the new comment to the photo for the user,
+   * After the DB call this adds the new comment to the photo for the user,
    *  so that we don't have to make additional DB calls
    * @param {Object} newComment comment to add to the photo
    */
   const appendComments = (newComment) => {
     const updatedInfo = [...photoInfo];
     const updatedPhoto = { ...updatedInfo[currentPhoto] };
-    updatedPhoto.comments.push({ ...newComment });
+    updatedPhoto.comments.unshift({ ...newComment });
     updatedInfo[currentPhoto] = updatedPhoto;
     setPhotoInfo(updatedInfo);
   };
@@ -277,11 +215,10 @@ const trail = () => {
    */
   const appendPhoto = (newPhotos) => {
     const updatedInfo = [...photoInfo];
-    Object.keys(newPhotos).forEach((key) => {
+    newPhotos.forEach((item) => {
       updatedInfo.push({
-        ...newPhotos[key],
+        ...item,
         comments: [],
-        id: photoInfo.length + 1,
       });
     });
     setPhotoInfo(updatedInfo);
@@ -305,18 +242,38 @@ const trail = () => {
     }
   };
 
+  const toggleFavorite = () => {
+    updateFavorite(id, user.id, favorite)
+      .then((response) => {
+        setFavorite((prev) => !prev);
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  };
+
   return (
     <>
+      {redirect ? <Redirect to="/404" /> : null}
       <Col xs={6}>
         <Row>
-          <Col xs={9}>
-            <h2>{trailInfo.name}</h2>
+          <Col xs={8}>
+            <h2>{trailInfo.name} {!user.loggedIn
+              ? null
+              : <FavHeart fav={favorite} ch={toggleFavorite} />}
+            </h2>
           </Col>
           <Col xs={3}>
-            <AddPicture
-              appendPhoto={appendPhoto}
-              center={{ lat: trailInfo.lat, lng: trailInfo.lon }}
-            />
+            {!user.loggedIn
+              ? null
+              : (
+                <AddPicture
+                  appendPhoto={appendPhoto}
+                  center={{ lat: trailInfo.lat, lng: trailInfo.lon }}
+                  userId={user.id}
+                  trailId={+id}
+                />
+              )}
           </Col>
         </Row>
         <div style={{ width: '100%', height: '300px' }}>
@@ -352,7 +309,7 @@ const trail = () => {
                 </Badge>
               </h3>
             </Col>
-            {!userRatings.userLoaded ? null : (
+            {!user.loggedIn || !userRatings.userLoaded ? null : (
               <Col xs={8}>
                 <div
                   onClick={(e) => editable(e, 'diff')}
@@ -407,13 +364,19 @@ const trail = () => {
               photos={photoInfo}
               currentPhoto={currentPhoto}
               changeCurrentPhoto={changeCurrentPhoto}
+              user={user}
+              removePhoto={removePhoto}
             />
-            <AddComment
-              appendComments={appendComments}
-              userId={1}
-              photoId={photoInfo[currentPhoto].id}
-              username={'Danny'}
-            />
+            {!user.loggedIn
+              ? null
+              : (
+                <AddComment
+                  appendComments={appendComments}
+                  userId={user.id}
+                  photoId={photoInfo[currentPhoto].id}
+                  name={user.name}
+                />
+              )}
           </>
         )}
       </Col>
@@ -422,3 +385,11 @@ const trail = () => {
 };
 
 export default trail;
+
+trail.propTypes = {
+  user: PropTypes.shape({
+    loggedIn: PropTypes.bool.isRequired,
+    name: PropTypes.string,
+    id: PropTypes.number,
+  }),
+};

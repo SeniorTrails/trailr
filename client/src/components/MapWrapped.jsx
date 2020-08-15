@@ -10,6 +10,14 @@ import SearchBox from './SearchBox.jsx';
 import transparentMarker from '../../assets/imgs/transparentMarker.png';
 import * as trailData from '../data/trail-data.json';
 
+/**
+ * MapWithASearchBox is an Google Map with an auto-completing search bar that searches
+ * suggested locations from Google Maps API. After a certain range
+ * @param {Array} photos an array of photo information
+ * @param {Number} currentPhoto a number representing the location of the current photo
+ * @param {Function} changeCurrentPhoto a function that changes the current photo
+ */
+
 const MapWithASearchBox = React.memo(() => {
   const [mapApiLoaded, setMapApiLoaded] = useState(false);
   const [mapInstance, setMapInstance] = useState(null);
@@ -17,8 +25,8 @@ const MapWithASearchBox = React.memo(() => {
   const [places, setPlaces] = useState(trailData.data);
   const [geolocation, setGeolocation] = useState(false);
   const [userLocation, setUserLocation] = useState({
-    lat: 30.33735,
-    lng: -90.03733,
+    lat: 30.0766974,
+    lng: -89.8788793,
   });
   const [selectedTrail, setSelectedTrail] = useState(null);
   const [selectedTrailIndex, setSelectedTrailIndex] = useState(null);
@@ -67,33 +75,34 @@ const MapWithASearchBox = React.memo(() => {
     };
     window.addEventListener('keydown', listener);
 
-    if (!geolocation) {
-      navigator.geolocation.getCurrentPosition((position) => {
-        const { latitude, longitude } = position.coords;
-        setUserLocation({ lat: latitude, lng: longitude });
-        setGeolocation(true);
-      });
-    }
+    navigator.geolocation.getCurrentPosition((position) => {
+      const { latitude, longitude } = position.coords;
+      setUserLocation({ lat: latitude, lng: longitude });
+      setGeolocation(true);
+    });
+
     return () => {
       window.removeEventListener('keydown', listener);
     };
   }, []);
 
+  /**
+   * setGoogleMapRef creates listeners on the current map, so that when the bounds
+   * of the map are moved far enough away from the last search call, it creates
+   * new search call based on the map's new current center. Also, prepares sets up
+   * MarkerClusterer given the last trails retrieved from the last search call.
+   */
   const setGoogleMapRef = (map, maps) => {
     if (map && maps) {
-      let currentZoom = currentZoom || 10;
       let lastSearchedCenter = lastSearchedCenter || userLocation;
-      map.addListener('zoom_changed', () => {
-        currentZoom = map.getZoom();
-      });
       map.addListener('bounds_changed', () => {
         const currentBounds = map.getBounds();
         const currentCenter = {
           lat: (currentBounds.Za.i + currentBounds.Za.j) / 2,
           lng: (currentBounds.Va.i + currentBounds.Va.j) / 2,
         };
-        const range = 0.6; // degrees change, approx 69 miles per 1 latitude/longitude
-        const radius = 100; // miles
+        const range = 0.6; // lat/lon degrees needed to change in order to search again
+        const radius = 100; // search radius in miles
         if (
           Math.abs(+currentCenter.lat - +lastSearchedCenter.lat) > range ||
           Math.abs(+currentCenter.lng - +lastSearchedCenter.lng) > range
@@ -102,7 +111,6 @@ const MapWithASearchBox = React.memo(() => {
           updateTrails(radius, currentCenter.lat, currentCenter.lng);
         }
       });
-
       setMapInstance(map);
       setMapApi(maps);
       setMapApiLoaded(true);
@@ -147,8 +155,8 @@ const MapWithASearchBox = React.memo(() => {
       <GoogleMap
         defaultZoom={10}
         defaultCenter={{
-          lat: 30.33735,
-          lng: -90.03733,
+          lat: 30.0648498,
+          lng: -89.8788793,
         }}
         center={userLocation}
         bootstrapURLKeys={{
@@ -165,6 +173,7 @@ const MapWithASearchBox = React.memo(() => {
               color={i === selectedTrailIndex ? 'green' : 'blue'}
               key={place.id}
               text={place.name}
+              size={28}
               lat={place.lat || place.geometry.location.lat()}
               lng={place.lon || place.geometry.location.lng()}
               clickHandler={() => {

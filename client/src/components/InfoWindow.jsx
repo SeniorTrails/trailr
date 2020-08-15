@@ -1,30 +1,59 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import {
-  OverlayTrigger,
-  Popover,
-  Button,
-  Image,
-} from 'react-bootstrap';
+import React, { useState } from 'react';
+import { Redirect } from 'react-router-dom';
+import { OverlayTrigger, Popover, Button, Image } from 'react-bootstrap';
+import styled from 'styled-components';
+import { addTrail } from '../helpers';
+
+const LinkDiv = styled.div`
+  :hover {
+    color: blue
+  }
+`;
+
+/**
+ * InfoWindow is small pop-up window that displays a clickable title of the currently selected
+ * trail, along with a thumbnail, trail length, and truncated description. The title is clickable,
+ * and directs the user to the trail page for that selected trail.
+ * @param {Object} selectedTrail an object with information specific to the currently selected trail
+ * @param {Function} onCloseClick a function that changes the current photo
+ */
 
 const InfoWindow = React.memo(({ selectedTrail, onCloseClick }) => {
+  const [redirect, setRedirect] = useState(false);
   const place = selectedTrail;
-  const thumbnail = place.thumbnail;
+  const { thumbnail } = place;
   const infoWindowStyle = {
     position: 'relative',
-    bottom: 200,
-    left: '0px',
-    width: 0,
+    bottom: 150,
+    left: 0,
+    width: 220,
     backgroundColor: 'rgba(0, 0, 0, 0)',
     boxShadow: '0 0px 0px 0px rgba(0, 0, 0, 0)',
-    padding: 10,
+    padding: 0,
     fontSize: 14,
     zIndex: 0,
+  };
+
+  const clickHandler = () => {
+    const trailData = {
+      ...place,
+      api_id: place.id,
+      latitude: +place.lat,
+      longitude: +place.lon,
+    };
+    addTrail(trailData)
+      .then((response) => {
+        setRedirect(`/trail/${response.id}`);
+      })
+      .catch((err) => {
+        setRedirect('/404');
+      });
   };
 
   return (
     <div style={infoWindowStyle}>
       <>
+        {!redirect ? null : <Redirect to={redirect} />}
         {['top'].map((placement) => (
           <OverlayTrigger
             trigger="click"
@@ -46,9 +75,7 @@ const InfoWindow = React.memo(({ selectedTrail, onCloseClick }) => {
                 X
               </div>
               <div>
-                <Link to={`/trail/${place.id}`} activeclassname="active">
-                  <h4>{place.name}</h4>
-                </Link>
+                <LinkDiv onClick={clickHandler}><h4>{place.name}</h4></LinkDiv>
               </div>
               <div>
                 <Image
@@ -58,23 +85,12 @@ const InfoWindow = React.memo(({ selectedTrail, onCloseClick }) => {
                   style={{ width: '130px' }}
                 />
               </div>
-              <div style={{ fontSize: 14 }}>
-                <span style={{ color: 'black' }}>{place.rating} </span>
-                <span style={{ color: 'orange' }}>
-                  {String.fromCharCode(9733).repeat(Math.floor(place.rating))}
-                </span>
-                <span style={{ color: 'grey' }}>
-                  {String.fromCharCode(9733).repeat(
-                    5 - Math.floor(place.rating)
-                  )}
-                </span>
-              </div>
-              <div style={{ fontSize: 14, color: 'black' }}>
+              <div style={{ fontSize: 14, color: 'white' }}>
                 {place.length} miles
               </div>
               <div
                 className="text-truncate"
-                style={{ fontSize: 14, color: 'black', width: '14rem' }}
+                style={{ fontSize: 14, color: 'white', width: '14rem' }}
               >
                 {place.description}
                 <br />

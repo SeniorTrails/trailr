@@ -1,201 +1,74 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams, Redirect } from 'react-router-dom';
+import PropTypes from 'prop-types';
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
 import Accordion from 'react-bootstrap/Accordion';
 import Card from 'react-bootstrap/Card';
 import Badge from 'react-bootstrap/Badge';
 import Image from 'react-bootstrap/Image';
-import { getUserData } from '../helpers';
+import { getUserData, getAuth } from '../helpers';
 import Carousel from './Carousel.jsx';
 import AddComment from './AddComment.jsx';
 
-const savedTrails = [
-  {
-    id: 279988,
-    name: 'Eagle Trail',
-    url: 'https://www.singletracks.com/bike-trails/eagle-trail-8663/',
-    description: 'Nice easy trail.  Smaller in width than South or North Loop. South side of trail borders the Beaver Pond.',
-    city: 'Mandeville',
-    region: 'Louisiana',
-    country: 'United States',
-    lat: 30.35324,
-    lon: -90.02715,
-    difficulty: 3,
-    likeability: 4,
-    thumbnail: 'https://images.singletracks.com/blog/wp-content/uploads/2014/06/et3-orig.jpg',
-    myRatings: {
-      diff: 3,
-      like: 3,
-    },
-  },
-  {
-    id: 287665,
-    name: 'The Tammany Trace',
-    url: 'https://www.singletracks.com/bike-trails/the-tammany-trace/',
-    description: 'This 31-mile asphalted trail and parallel equestrian trail connects five communities--Covington, Abita Springs, Mandeville, Lacombe, and Slidell.\r\nThe Trace also serves as a wildlife conservation corridor, linking isolated parks, creating greenways, and preserving historic landmarks and wetlands. You can observe the natural habitat, bayous, streams and rivers from the vantage point of 31 bridges built on the original railroad trestles.\r\nThis is a truly beautiful trail.\r\n\r\n\r\n',
-    city: 'Mandeville',
-    region: 'Louisiana',
-    country: 'United States',
-    lat: 30.30120,
-    lon: -89.82637,
-    difficulty: 5,
-    likeability: 2,
-    thumbnail: 'https://images.singletracks.com/blog/wp-content/uploads/2018/08/IMG_2498-orig-scaled.jpg',
-    myRatings: {
-      diff: 3,
-      like: 3,
-    },
-  },
-  {
-    id: 284061,
-    name: 'Fontainebleau State Park',
-    url: 'https://www.singletracks.com/bike-trails/fontainebleau-state-park/',
-    description: "It's a hiking trail, but I saw bike trail marks on it. And it's compact enough of a surface to do. Not bad for something different. Very easy. Bring insect repellant.",
-    city: 'Mandeville',
-    region: 'Louisiana',
-    country: 'United States',
-    lat: 30.33735,
-    lon: -90.03733,
-    difficulty: 3,
-    likeablity: 5,
-    thumbnail: 'https://images.singletracks.com/blog/wp-content/uploads/2018/08/IMG_2642-orig-scaled.jpg',
-    myRatings: {
-      diff: 3,
-      like: 3,
-    },
-  },
-];
-
-const photos = [
-  {
-    id: 1,
-    url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/Natchez_Trace_Trail.jpg/1280px-Natchez_Trace_Trail.jpg',
-    lat: 30.35121,
-    lng: -90.026479,
-    comments: [
-      {
-        id: 1,
-        text: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Possimus laborum voluptatem nihil ipsam placeat itaque magnam.',
-        username: 'Daniel Troyano',
-      },
-      {
-        id: 2,
-        text: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Possimus laborum voluptatem nihil ipsam placeat itaque magnam.',
-        username: 'Daniel Troyano',
-      },
-      {
-        id: 3,
-        text: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Possimus laborum voluptatem nihil ipsam placeat itaque magnam.',
-        username: 'Daniel Troyano',
-      },
-    ],
-  },
-  {
-    id: 2,
-    url: 'https://upload.wikimedia.org/wikipedia/commons/c/ce/North_Country_Trail_Manistee_Forest.jpg',
-    lat: 30.350458,
-    lng: -90.026045,
-    comments: [
-      {
-        id: 4,
-        text: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Possimus laborum voluptatem nihil ipsam placeat itaque magnam.',
-        username: 'Caylie Sadin',
-      },
-      {
-        id: 5,
-        text: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Possimus laborum voluptatem nihil ipsam placeat itaque magnam.',
-        username: 'Daniel Troyano',
-      },
-    ],
-  },
-  {
-    id: 5,
-    url: 'https://vbwsjdqd1l-flywheel.netdna-ssl.com/wp-content/uploads/2014/04/Santos-Trails-1.jpg',
-    lat: 30.352326,
-    lng: -90.027110,
-    comments: [
-      {
-        id: 4,
-        text: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Possimus laborum voluptatem nihil ipsam placeat itaque magnam.',
-        username: 'Caylie Sadin',
-      },
-      {
-        id: 5,
-        text: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Possimus laborum voluptatem nihil ipsam placeat itaque magnam.',
-        username: 'Daniel Troyano',
-      },
-    ],
-  },
-  {
-    id: 3,
-    url: 'https://www.pittsburghmagazine.com/content/uploads/2020/03/cb-cook-forest-trail1.jpg',
-    lat: 30.353260,
-    lng: -90.027236,
-    comments: [
-      {
-        id: 4,
-        text: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Possimus laborum voluptatem nihil ipsam placeat itaque magnam.',
-        username: 'Caylie Sadin',
-      },
-      {
-        id: 5,
-        text: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Possimus laborum voluptatem nihil ipsam placeat itaque magnam.',
-        username: 'Daniel Troyano',
-      },
-    ],
-  },
-  {
-    id: 4,
-    url: 'https://www.cliftonpark.com/images/100acretrail.jpg',
-    lat: 30.348433,
-    lng: -90.026569,
-    comments: [
-      {
-        id: 4,
-        text: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Possimus laborum voluptatem nihil ipsam placeat itaque magnam.',
-        username: 'Caylie Sadin',
-      },
-      {
-        id: 5,
-        text: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Possimus laborum voluptatem nihil ipsam placeat itaque magnam.',
-        username: 'Daniel Troyano',
-      },
-    ],
-  },
-];
 /**
  * Displays the indiviual user page with their saved trails and all their photos
+ * @param user loggedIn, id, name
  */
-const user = () => {
+const userPage = ({ user }) => {
   const { id } = useParams();
   const [photoInfo, setPhotoInfo] = useState([]);
   const [currentPhoto, setCurrentPhoto] = useState(0);
   const [myTrails, setMyTrails] = useState([]);
+  const [redirect, setRedirect] = useState(false);
+  const [userInfo, setUserInfo] = useState({});
 
   // Set all the initial data with DB calls based on id in useParams
+  // You can only see your user page
   useEffect(() => {
-    getUserData(id)
-      .then((userData) => {
-        setPhotoInfo(userData.photos);
-        // setMyTrails(userData.savedTrails);
-        //setPhotoInfo(photos);
-        setMyTrails(savedTrails);
+    getAuth()
+      .then((response) => {
+        if (id == response.user.id) {
+          getUserData(id)
+            .then((userData) => {
+              if (Array.isArray(userData)) {
+                setRedirect(true);
+              } else {
+                setPhotoInfo(userData.photos);
+                setMyTrails(userData.favorites);
+                setUserInfo({ name: userData.name, url: userData.profile_photo_url });
+              }
+            })
+            .catch((err) => {
+              console.error(err);
+              setRedirect(true);
+            });
+        } else {
+          setRedirect(true);
+        }
       })
       .catch((err) => {
         console.error(err);
+        setRedirect(true);
       });
   }, []);
 
+  const removePhoto = (photoId) => {
+    setCurrentPhoto(0);
+    const updatedPhotos = [...photoInfo];
+    updatedPhotos.splice(photoId, 1);
+    setPhotoInfo(updatedPhotos);
+  };
+
   /**
-   * After the DB call this appends the new comment to the photo for the user,
+   * After the DB call this adds the new comment to the photo for the user,
    *  so that we don't have to make additional DB calls
    * @param {Object} newComment comment to add to the photo
    */
   const appendComments = (newComment) => {
     const updatedInfo = [...photoInfo];
     const updatedPhoto = { ...updatedInfo[currentPhoto] };
-    updatedPhoto.comments.push({ ...newComment });
+    updatedPhoto.comments.unshift({ ...newComment });
     updatedInfo[currentPhoto] = updatedPhoto;
     setPhotoInfo(updatedInfo);
   };
@@ -210,6 +83,7 @@ const user = () => {
 
   return (
     <>
+      {redirect ? <Redirect to='/404' /> : null}
       <Col xs={6}>
         {!photoInfo.length
           ? null
@@ -219,18 +93,25 @@ const user = () => {
                 photos={photoInfo}
                 currentPhoto={currentPhoto}
                 changeCurrentPhoto={changeCurrentPhoto}
+                user={user}
+                removePhoto={removePhoto}
               />
-              <AddComment
-                appendComments={appendComments}
-                userId={2}
-                photoId={photoInfo[currentPhoto].id}
-                name='DANNY'
-              />
+              {user.loggedIn
+                ? (
+                  <AddComment
+                    appendComments={appendComments}
+                    userId={user.id}
+                    photoId={photoInfo[currentPhoto].id}
+                    name={user.name}
+                  />
+                )
+                : null}
             </>
           )}
       </Col>
       <Col xs={6}>
-        <h2>Saved Trails</h2>
+        <Image thumbnail src={userInfo.url} />
+        <h2>{userInfo.name}'s Saved Trails</h2>
         {!myTrails.length
           ? null
           : myTrails.map((trail) => (
@@ -266,4 +147,12 @@ const user = () => {
   );
 };
 
-export default user;
+export default userPage;
+
+userPage.propTypes = {
+  user: PropTypes.shape({
+    loggedIn: PropTypes.bool.isRequired,
+    name: PropTypes.string,
+    id: PropTypes.number,
+  }).isRequired,
+};

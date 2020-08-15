@@ -4,11 +4,17 @@
 const mysql = require('mysql');
 
 /**
+ * Establishes database connection based on environment:
+ * Development --> local MySQL connection --> $ npm run start:dev --> $ mysql -uroot < trailr.sql
+ * Production --> connected to Cloud SQL Instance --> $ npm run start:prod
+ * Deployment --> connected to Cloud SQL Instance
  *
-*/
+ * For Cloud SQL connection, user's ip address must be
+ * set up in Google Cloud Developer Tools.
+ */
 let poolConnection;
 if (!process.env.NODE_ENV) {
-  poolConnection = mysql.createConnection({
+  poolConnection = mysql.createPool({
     host: 'localhost',
     user: 'root',
     password: '',
@@ -19,20 +25,26 @@ if (!process.env.NODE_ENV) {
     user: process.env.DB_USER,
     password: process.env.DB_PASS,
     database: process.env.DB_NAME,
-    host: '34.70.176.46',
+    host: process.env.DB_HOST,
   });
-  // console.log('POOL CONNECTION: ', poolConnection);
 } else {
   poolConnection = mysql.createPool({
     user: process.env.DB_USER,
     password: process.env.DB_PASS,
     database: process.env.DB_NAME,
     socketPath: `/cloudsql/${process.env.DB_INSTANCE_CONNECTION_NAME}`,
+    connectTimeout: 10000,
+    acquireTimeout: 10000,
+    waitForConnections: true,
+    queueLimit: 0,
   });
 }
 
+/**
+ * Searches database for user by db id. If found, returns a user object with associated photos,
+ * photo comments, and favorite trails. If not found, returns an empty array.
+ */
 const getUser = (id) => new Promise((resolve, reject) => {
-  console.log('GET USER INVOKED');
   poolConnection.getConnection((error, connection) => {
     if (error) reject(error);
 
@@ -47,7 +59,7 @@ const getUser = (id) => new Promise((resolve, reject) => {
       WHERE id_user = ?
     `;
     const getCommentsCommand = `
-      SELECT comments.*, users.*
+      SELECT users.*, comments.*
       FROM comments
       LEFT JOIN users ON comments.id_user = users.id
       WHERE id_photo = ?
@@ -64,22 +76,22 @@ const getUser = (id) => new Promise((resolve, reject) => {
       if (error) {
         connection.rollback(() => {
           connection.release();
-          return reject(error);
+          resolve(error);
         });
       }
       connection.query(getUserCommand, [id], (error, gottenUser) => {
         if (error) {
           connection.rollback(() => {
             connection.release();
-            return reject(error);
+            resolve(error);
           });
         }
-        if (gottenUser.length === 0) {
+        if (!gottenUser.length) {
           connection.commit((error) => {
             if (error) {
               connection.rollback(() => {
                 connection.release();
-                return reject(error);
+                resolve(error);
               });
             }
             resolve(gottenUser);
@@ -90,7 +102,7 @@ const getUser = (id) => new Promise((resolve, reject) => {
             if (error) {
               connection.rollback(() => {
                 connection.release();
-                return reject(error);
+                resolve(error);
               });
             }
             user.favorites = gottenFavorites;
@@ -98,7 +110,7 @@ const getUser = (id) => new Promise((resolve, reject) => {
               if (error) {
                 connection.rollback(() => {
                   connection.release();
-                  return reject(error);
+                  resolve(error);
                 });
               }
               user.photos = gottenPhotos;
@@ -107,7 +119,7 @@ const getUser = (id) => new Promise((resolve, reject) => {
                   if (error) {
                     connection.rollback(() => {
                       connection.release();
-                      return reject(error);
+                      resolve(error);
                     });
                   }
                   resolve(user);
@@ -119,7 +131,7 @@ const getUser = (id) => new Promise((resolve, reject) => {
                   if (error) {
                     connection.rollback(() => {
                       connection.release();
-                      return reject(error);
+                      resolve(error);
                     });
                   }
                   user.photos[i].comments = gottenComments;
@@ -128,7 +140,7 @@ const getUser = (id) => new Promise((resolve, reject) => {
                       if (error) {
                         connection.rollback(() => {
                           connection.release();
-                          return reject(error);
+                          resolve(error);
                         });
                       }
                       resolve(user);
@@ -144,13 +156,14 @@ const getUser = (id) => new Promise((resolve, reject) => {
   });
 });
 
+/**
+ * Searches db for user by google id and, if found, returns db id;
+ * otherwise adds user to database and returns db id.
+ */
 const addUser = (userObject) => new Promise((resolve, reject) => {
   poolConnection.getConnection((error, connection) => {
     if (error) reject(error);
 
-    console.log('ADD USER INVOKED');
-    // Probably don't destructure because will error if undefined
-    // const { google_id, name, profile_photo_url } = userObject;
     const checkUserCommand = `
       SELECT *
       FROM users
@@ -165,14 +178,14 @@ const addUser = (userObject) => new Promise((resolve, reject) => {
       if (error) {
         connection.rollback(() => {
           connection.release();
-          return reject(error);
+          resolve(error);
         });
       }
       connection.query(checkUserCommand, [userObject.google_id], (error, userResult) => {
         if (error) {
           connection.rollback(() => {
             connection.release();
-            return reject(error);
+            resolve(error);
           });
         }
         if (userResult.length > 0) {
@@ -180,7 +193,7 @@ const addUser = (userObject) => new Promise((resolve, reject) => {
             if (error) {
               connection.rollback(() => {
                 connection.release();
-                return reject(error);
+                resolve(error);
               });
             }
             resolve({
@@ -189,24 +202,24 @@ const addUser = (userObject) => new Promise((resolve, reject) => {
               name: userResult[0].name,
             });
           });
-        } else if (userResult.length === 0) {
+        } else if (!userResult.length) {
           connection.query(addUserCommand,
             [userObject.google_id, userObject.name, userObject.profile_photo_url],
             (error, addedUser) => {
               if (error) {
                 connection.rollback(() => {
                   connection.release();
-                  return reject(error);
+                  resolve(error);
                 });
               }
               connection.commit((error) => {
                 if (error) {
                   connection.rollback(() => {
                     connection.release();
-                    return reject(error);
+                    resolve(error);
                   });
                 }
-                resolve({ id: addedUser.insertId, name: userObject.name }, console.log('USER ADDED'));
+                resolve({ id: addedUser.insertId, name: userObject.name });
               });
             });
         }
@@ -215,13 +228,16 @@ const addUser = (userObject) => new Promise((resolve, reject) => {
   });
 });
 
+/**
+ * Searches db for trail by id. If found, returns associated average ratings (as a string), photos,
+ * and photo comments. If user is logged in, provides user's ratings for selected trail, otherwise
+ * returns string of 'Rate this trail:'. If trail is not found, returns an empty array.
+ */
 const getTrail = (trailObject) => new Promise((resolve, reject) => {
   poolConnection.getConnection((error, connection) => {
     if (error) reject(error);
 
-    console.log('GET TRAIL INVOKED');
-
-    const { id_trail, id_user } = trailObject; // TO CHANGE TO OBJ PARAMETERS
+    const { id_trail, id_user } = trailObject;
 
     const getTrailCommand = `
       SELECT *,
@@ -260,7 +276,7 @@ const getTrail = (trailObject) => new Promise((resolve, reject) => {
     `;
 
     const getCommentsCommand = `
-      SELECT comments.*, users.*
+      SELECT users.*, comments.*
       FROM comments
       LEFT JOIN users ON comments.id_user = users.id
       WHERE id_photo = ?
@@ -270,7 +286,7 @@ const getTrail = (trailObject) => new Promise((resolve, reject) => {
       if (error) {
         connection.rollback(() => {
           connection.release();
-          return reject(error);
+          resolve(error);
         });
       }
       connection.query(getTrailCommand,
@@ -279,15 +295,15 @@ const getTrail = (trailObject) => new Promise((resolve, reject) => {
           if (error) {
             connection.rollback(() => {
               connection.release();
-              return reject(error);
+              resolve(error);
             });
           }
-          if (gottenTrail.length === 0) {
+          if (!gottenTrail.length) {
             connection.commit((error) => {
               if (error) {
                 connection.rollback(() => {
                   connection.release();
-                  return reject(error);
+                  resolve(error);
                 });
               }
               resolve(gottenTrail);
@@ -299,7 +315,7 @@ const getTrail = (trailObject) => new Promise((resolve, reject) => {
               if (error) {
                 connection.rollback(() => {
                   connection.release();
-                  return reject(error);
+                  resolve(error);
                 });
               }
               if (!gottenPhotos.length) {
@@ -307,7 +323,7 @@ const getTrail = (trailObject) => new Promise((resolve, reject) => {
                   if (error) {
                     connection.rollback(() => {
                       connection.release();
-                      return reject(error);
+                      resolve(error);
                     });
                   }
                   resolve(trail);
@@ -320,7 +336,7 @@ const getTrail = (trailObject) => new Promise((resolve, reject) => {
                   if (error) {
                     connection.rollback(() => {
                       connection.release();
-                      return reject(error);
+                      resolve(error);
                     });
                   }
                   trail.photos[i].comments = gottenComments;
@@ -329,7 +345,7 @@ const getTrail = (trailObject) => new Promise((resolve, reject) => {
                       if (error) {
                         connection.rollback(() => {
                           connection.release();
-                          return reject(error);
+                          resolve(error);
                         });
                       }
                       resolve(trail);
@@ -344,14 +360,13 @@ const getTrail = (trailObject) => new Promise((resolve, reject) => {
   });
 });
 
+/**
+ * Searches db for trail by api id and, if found, returns db id;
+ * otherwise adds trail to database and returns db id.
+ */
 const addTrail = (trailObject) => new Promise((resolve, reject) => {
   poolConnection.getConnection((error, connection) => {
     if (error) reject(error);
-
-    console.log('ADD TRAIL INVOKED');
-    // probably don't descructure because will error if undefined
-    // const { id, name, city, region, country, latitude,
-    // longitude, url, thumbnail, description } = trailObject;
 
     const checkTrailCommand = `
       SELECT *
@@ -367,14 +382,14 @@ const addTrail = (trailObject) => new Promise((resolve, reject) => {
       if (error) {
         connection.rollback(() => {
           connection.release();
-          return reject(error);
+          resolve(error);
         });
       }
       connection.query(checkTrailCommand, [trailObject.api_id], (error, trailResult) => {
         if (error) {
           connection.rollback(() => {
             connection.release();
-            return reject(error);
+            resolve(error);
           });
         }
         if (trailResult.length > 0) {
@@ -382,7 +397,7 @@ const addTrail = (trailObject) => new Promise((resolve, reject) => {
             if (error) {
               connection.rollback(() => {
                 connection.release();
-                return reject(error);
+                resolve(error);
               });
             }
             resolve({
@@ -390,7 +405,7 @@ const addTrail = (trailObject) => new Promise((resolve, reject) => {
               id: trailResult[0].id,
             });
           });
-        } else if (trailResult.length === 0) {
+        } else if (!trailResult.length) {
           connection.query(addTrailCommand,
             [trailObject.api_id, trailObject.name, trailObject.city, trailObject.region,
               trailObject.country, trailObject.latitude, trailObject.longitude,
@@ -399,17 +414,17 @@ const addTrail = (trailObject) => new Promise((resolve, reject) => {
               if (error) {
                 connection.rollback(() => {
                   connection.release();
-                  return reject(error);
+                  resolve(error);
                 });
               }
               connection.commit((error) => {
                 if (error) {
                   connection.rollback(() => {
                     connection.release();
-                    return reject(error);
+                    resolve(error);
                   });
                 }
-                resolve({ id: addedTrail.insertId }, console.log('TRAIL ADDED'));
+                resolve({ id: addedTrail.insertId });
               });
             });
         }
@@ -418,11 +433,13 @@ const addTrail = (trailObject) => new Promise((resolve, reject) => {
   });
 });
 
+/**
+ * Updates all trail fields by provided id.
+ */
 const updateTrail = (trailObject) => new Promise((resolve, reject) => {
   poolConnection.getConnection((error, connection) => {
     if (error) reject(error);
 
-    console.log('UPDATE TRAIL INVOKED');
     const updateTrailCommand = `
       UPDATE trails
       SET
@@ -444,7 +461,7 @@ const updateTrail = (trailObject) => new Promise((resolve, reject) => {
       if (error) {
         connection.rollback(() => {
           connection.release();
-          return reject(error);
+          resolve(error);
         });
       }
       connection.query(updateTrailCommand,
@@ -455,28 +472,31 @@ const updateTrail = (trailObject) => new Promise((resolve, reject) => {
           if (error) {
             connection.rollback(() => {
               connection.release();
-              return reject(error);
+              resolve(error);
             });
           }
           connection.commit((error) => {
             if (error) {
               connection.rollback(() => {
                 connection.release();
-                return reject(error);
+                resolve(error);
               });
             }
-            resolve(updatedTrail, console.log('TRAIL UPDATED'));
+            const updateTrailResult = updatedTrail || [{ affectedRows: 0 }];
+            resolve(updateTrailResult);
           });
         });
     });
   });
 });
 
+/**
+ * Deletes trail by id.
+ */
 const deleteTrail = (id) => new Promise((resolve, reject) => {
   poolConnection.getConnection((error, connection) => {
     if (error) reject(error);
 
-    console.log('DELETE TRAIL INVOKED');
     const deleteTrailCommand = `
       DELETE FROM trails
       WHERE id = ?
@@ -485,35 +505,37 @@ const deleteTrail = (id) => new Promise((resolve, reject) => {
       if (error) {
         connection.rollback(() => {
           connection.release();
-          return reject(error);
+          resolve(error);
         });
       }
       connection.query(deleteTrailCommand, [id], (error, deletedTrailData) => {
         if (error) {
           connection.rollback(() => {
             connection.release();
-            return reject(error);
+            resolve(error);
           });
         }
         connection.commit((error) => {
           if (error) {
             connection.rollback(() => {
               connection.release();
-              return reject(error);
+              resolve(error);
             });
           }
-          resolve(deletedTrailData, console.log('TRAIL DELETED'));
+          resolve(deletedTrailData);
         });
       });
     });
   });
 });
 
+/**
+ * Searches for user's difficulty rating for a specified trail. Adds difficulty rating if not found.
+ * Updates difficulty rating if found.
+ */
 const updateDifficulty = (difficultyObject) => new Promise((resolve, reject) => {
   poolConnection.getConnection((error, connection) => {
     if (error) reject(error);
-
-    console.log('UPDATE DIFFICULTY INVOKED');
 
     const { id_user, id_trail, value } = difficultyObject;
 
@@ -544,7 +566,7 @@ const updateDifficulty = (difficultyObject) => new Promise((resolve, reject) => 
       if (error) {
         connection.rollback(() => {
           connection.release();
-          return reject(error);
+          resolve(error);
         });
       }
       connection.query(checkDifficultyCommand,
@@ -553,50 +575,57 @@ const updateDifficulty = (difficultyObject) => new Promise((resolve, reject) => 
           if (error) {
             connection.rollback(() => {
               connection.release();
-              return reject(error);
+              resolve(error);
             });
           }
-          if (difficultyResult.length === 0) {
+          let affectedRows;
+          let message;
+          if (!difficultyResult.length) {
             connection.query(addDifficultyCommand,
-              [id_user, id_trail, value], (error, addedDifficulty) => {
+              [id_user, id_trail, value], (error, addDiffMessage) => {
                 if (error) {
                   connection.rollback(() => {
                     connection.release();
-                    return reject(error);
+                    resolve(error);
                   });
                 }
-                console.log('DIFFICULTY RATING ADDED: ', addedDifficulty);
+                affectedRows = addDiffMessage ? addDiffMessage.affectedRows : 0;
+                message = addDiffMessage ? addDiffMessage.message : 0;
               });
           } else if (difficultyResult.length > 0) {
             connection.query(updateDifficultyCommand,
               [value, id_user, id_trail],
-              (error, updatedDifficulty) => {
+              (error, updateDiffMessage) => {
                 if (error) {
                   connection.rollback(() => {
                     connection.release();
-                    return reject(error);
+                    resolve(error);
                   });
                 }
-                console.log('DIFFICULTY RATING UPDATED: ', updatedDifficulty);
+                affectedRows = updateDiffMessage ? updateDiffMessage.affectedRows : 0;
+                message = updateDiffMessage ? updateDiffMessage.message : 0;
               });
           }
           connection.query(getAvgDiffCommand,
             [id_trail],
-            (error, newAvgDiff) => {
+            (error, newDiffAverage) => {
               if (error) {
                 connection.rollback(() => {
                   connection.release();
-                  return reject(error);
+                  resolve(error);
                 });
               }
               connection.commit((error) => {
                 if (error) {
                   connection.rollback(() => {
                     connection.release();
-                    return reject(error);
+                    resolve(error);
                   });
                 }
-                resolve(newAvgDiff);
+                const newDiffReturn = newDiffAverage[0] ? newDiffAverage : [{}];
+                newDiffReturn[0].affectedRows = affectedRows;
+                newDiffReturn[0].queryMessage = message;
+                resolve(newDiffReturn);
               });
             });
         });
@@ -604,11 +633,13 @@ const updateDifficulty = (difficultyObject) => new Promise((resolve, reject) => 
   });
 });
 
+/**
+ * Searches for user's likeability rating for a specified trail. Adds likeability rating if not
+ * found. Updates difficulty rating if found.
+ */
 const updateLikeability = (likeabilityObject) => new Promise((resolve, reject) => {
   poolConnection.getConnection((error, connection) => {
     if (error) reject(error);
-
-    console.log('UPDATE LIKEABILITY INVOKED');
 
     const { id_user, id_trail, value } = likeabilityObject;
 
@@ -639,7 +670,7 @@ const updateLikeability = (likeabilityObject) => new Promise((resolve, reject) =
       if (error) {
         connection.rollback(() => {
           connection.release();
-          return reject(error);
+          resolve(error);
         });
       }
       connection.query(checkLikeabilityCommand,
@@ -648,50 +679,57 @@ const updateLikeability = (likeabilityObject) => new Promise((resolve, reject) =
           if (error) {
             connection.rollback(() => {
               connection.release();
-              return reject(error);
+              resolve(error);
             });
           }
-          if (likeabilityResult.length === 0) {
+          let affectedRows;
+          let message;
+          if (!likeabilityResult.length) {
             connection.query(addLikeabilityCommand,
-              [id_user, id_trail, value], (error, addedLikeability) => {
+              [id_user, id_trail, value], (error, addLikeMessage) => {
                 if (error) {
                   connection.rollback(() => {
                     connection.release();
-                    return reject(error);
+                    resolve(error);
                   });
                 }
-                console.log('LIKEABILITY RATING ADDED: ', addedLikeability);
+                affectedRows = addLikeMessage ? addLikeMessage.affectedRows : 0;
+                message = addLikeMessage ? addLikeMessage.message : 0;
               });
           } else if (likeabilityResult.length > 0) {
             connection.query(updateLikeabilityCommand,
               [value, id_user, id_trail],
-              (error, updatedLikeability) => {
+              (error, updateLikeMessage) => {
                 if (error) {
                   connection.rollback(() => {
                     connection.release();
-                    return reject(error);
+                    resolve(error);
                   });
                 }
-                console.log('LIKEABILITY RATING UPDATED: ', updatedLikeability);
+                affectedRows = updateLikeMessage ? updateLikeMessage.affectedRows : 0;
+                message = updateLikeMessage ? updateLikeMessage.message : 0;
               });
           }
           connection.query(getAvgLikeCommand,
             [id_trail],
-            (error, newAvgLike) => {
+            (error, newLikeAverage) => {
               if (error) {
                 connection.rollback(() => {
                   connection.release();
-                  return reject(error);
+                  resolve(error);
                 });
               }
               connection.commit((error) => {
                 if (error) {
                   connection.rollback(() => {
                     connection.release();
-                    return reject(error);
+                    resolve(error);
                   });
                 }
-                resolve(newAvgLike);
+                const newLikeReturn = newLikeAverage[0] ? newLikeAverage : [{}];
+                newLikeReturn[0].affectedRows = affectedRows;
+                newLikeReturn[0].message = message;
+                resolve(newLikeReturn);
               });
             });
         });
@@ -699,11 +737,13 @@ const updateLikeability = (likeabilityObject) => new Promise((resolve, reject) =
   });
 });
 
+/**
+ * Adds photo comment. If successful, returns an object containing inserted comment's id. Otherwise,
+ * returns error message or object containing affectedRows: 0.
+ */
 const addComment = (commentObject) => new Promise((resolve, reject) => {
   poolConnection.getConnection((error, connection) => {
     if (error) reject(error);
-
-    console.log('ADD COMMENT INVOKED');
 
     const { text, id_user, id_photo } = commentObject;
 
@@ -716,7 +756,7 @@ const addComment = (commentObject) => new Promise((resolve, reject) => {
       if (error) {
         connection.rollback(() => {
           connection.release();
-          return reject(error);
+          resolve(error);
         });
       }
       connection.query(addCommentCommand,
@@ -725,29 +765,32 @@ const addComment = (commentObject) => new Promise((resolve, reject) => {
           if (error) {
             connection.rollback(() => {
               connection.release();
-              return reject(error);
+              resolve(error);
             });
           }
           connection.commit((error) => {
             if (error) {
               connection.rollback(() => {
                 connection.release();
-                return reject(error);
+                resolve(error);
               });
             }
-            console.log('COMMENT ADDED');
-            resolve({ id: `${addedComment.insertId}` });
+            const addCommentResult = addedComment
+              ? { id: addedComment.insertId } : { affectedRows: 0 };
+            resolve(addCommentResult);
           });
         });
     });
   });
 });
 
+/**
+ * Adds photo after photo is uploaded to storage bucket. If successful, returns an object containing
+ * inserted photo's id. Otherwise, returns error message or object containing affectedRows: 0.
+ */
 const addPhoto = (photoObject) => new Promise((resolve, reject) => {
   poolConnection.getConnection((error, connection) => {
     if (error) reject(error);
-
-    console.log('ADD PHOTO INVOKED');
 
     const addPhotoCommand = `
       INSERT INTO photos (url, description, lat, lng, id_user, id_trail)
@@ -758,7 +801,7 @@ const addPhoto = (photoObject) => new Promise((resolve, reject) => {
       if (error) {
         connection.rollback(() => {
           connection.release();
-          return reject(error);
+          resolve(error);
         });
       }
       connection.query(addPhotoCommand,
@@ -768,29 +811,30 @@ const addPhoto = (photoObject) => new Promise((resolve, reject) => {
           if (error) {
             connection.rollback(() => {
               connection.release();
-              return reject(error);
+              resolve(error);
             });
           }
           connection.commit((error) => {
             if (error) {
               connection.rollback(() => {
                 connection.release();
-                return reject(error);
+                resolve(error);
               });
             }
-            console.log('PHOTO ADDED');
-            resolve({ id: `${addedPhoto.insertId}` });
+            const addPhotoResult = addedPhoto ? { id: addedPhoto.insertId } : { affectedRows: 0 };
+            resolve(addPhotoResult);
           });
         });
     });
   });
 });
 
+/**
+ * Deletes comment by id.
+ */
 const deleteComment = (id) => new Promise((resolve, reject) => {
   poolConnection.getConnection((error, connection) => {
     if (error) reject(error);
-
-    console.log('DELETE COMMENT INVOKED');
 
     const deleteCommentCommand = `
       DELETE FROM comments
@@ -800,35 +844,36 @@ const deleteComment = (id) => new Promise((resolve, reject) => {
       if (error) {
         connection.rollback(() => {
           connection.release();
-          return reject(error);
+          resolve(error);
         });
       }
       connection.query(deleteCommentCommand, [id], (error, deletedCommentData) => {
         if (error) {
           connection.rollback(() => {
             connection.release();
-            return reject(error);
+            resolve(error);
           });
         }
         connection.commit((error) => {
           if (error) {
             connection.rollback(() => {
               connection.release();
-              return reject(error);
+              resolve(error);
             });
           }
-          resolve(deletedCommentData, console.log('COMMENT DELETED'));
+          resolve(deletedCommentData);
         });
       });
     });
   });
 });
 
+/**
+ * Deletes photo and all associated comments by photo id.
+ */
 const deletePhoto = (id) => new Promise((resolve, reject) => {
   poolConnection.getConnection((error, connection) => {
     if (error) reject(error);
-
-    console.log('DELETE PHOTO INVOKED');
 
     const deleteCommentsCommand = `
       DELETE FROM comments
@@ -843,33 +888,33 @@ const deletePhoto = (id) => new Promise((resolve, reject) => {
       if (error) {
         connection.rollback(() => {
           connection.release();
-          return reject(error);
+          resolve(error);
         });
       }
       connection.query(deleteCommentsCommand, [id], (error, deletedCommentData) => {
         if (error) {
           connection.rollback(() => {
             connection.release();
-            return reject(error);
+            resolve(error);
           });
         }
         connection.query(deletePhotoCommand, [id], (error, deletedPhotoData) => {
           if (error) {
             connection.rollback(() => {
               connection.release();
-              return reject(error);
+              resolve(error);
             });
           }
           connection.commit((error) => {
             if (error) {
               connection.rollback(() => {
                 connection.release();
-                return reject(error);
+                resolve(error);
               });
             }
             const deletionResults = deletedPhotoData;
             deletionResults.deletedComments = deletedCommentData;
-            resolve(deletionResults, console.log('PHOTO DELETED'));
+            resolve(deletionResults);
           });
         });
       });
@@ -877,11 +922,14 @@ const deletePhoto = (id) => new Promise((resolve, reject) => {
   });
 });
 
+/**
+ * Adds favorite trail by user id and trail id. If successful, returns an object containing
+ * inserted favorite's id. Otherwise, returns error message or object containing affectedRows: 0.
+ */
+
 const addFavorite = (favoriteObject) => new Promise((resolve, reject) => {
   poolConnection.getConnection((error, connection) => {
     if (error) reject(error);
-
-    console.log('ADD FAVORITE INVOKED');
 
     const { id_user, id_trail } = favoriteObject;
 
@@ -894,7 +942,7 @@ const addFavorite = (favoriteObject) => new Promise((resolve, reject) => {
       if (error) {
         connection.rollback(() => {
           connection.release();
-          return reject(error);
+          resolve(error);
         });
       }
       connection.query(addFavoriteCommand,
@@ -903,29 +951,31 @@ const addFavorite = (favoriteObject) => new Promise((resolve, reject) => {
           if (error) {
             connection.rollback(() => {
               connection.release();
-              return reject(error);
+              resolve(error);
             });
           }
           connection.commit((error) => {
             if (error) {
               connection.rollback(() => {
                 connection.release();
-                return reject(error);
+                resolve(error);
               });
             }
-            console.log('FAVORITE ADDED');
-            resolve({ id: `${addedFavorite.insertId}` });
+            const addFavoriteResult = addedFavorite
+              ? { id: addedFavorite.insertId } : { affectedRows: 0 };
+            resolve(addFavoriteResult);
           });
         });
     });
   });
 });
 
+/**
+ * Deletes favorite trail by user id and trail id.
+ */
 const deleteFavorite = (favoriteObject) => new Promise((resolve, reject) => {
   poolConnection.getConnection((error, connection) => {
     if (error) reject(error);
-
-    console.log('DELETE FAVORITE INVOKED');
 
     const { id_user, id_trail } = favoriteObject;
 
@@ -937,7 +987,7 @@ const deleteFavorite = (favoriteObject) => new Promise((resolve, reject) => {
       if (error) {
         connection.rollback(() => {
           connection.release();
-          return reject(error);
+          resolve(error);
         });
       }
       connection.query(deleteFavoriteCommand,
@@ -946,28 +996,30 @@ const deleteFavorite = (favoriteObject) => new Promise((resolve, reject) => {
           if (error) {
             connection.rollback(() => {
               connection.release();
-              return reject(error);
+              resolve(error);
             });
           }
           connection.commit((error) => {
             if (error) {
               connection.rollback(() => {
                 connection.release();
-                return reject(error);
+                resolve(error);
               });
             }
-            resolve(deletedFavoriteData, console.log('FAVORITE DELETED'));
+            resolve(deletedFavoriteData);
           });
         });
     });
   });
 });
 
+/**
+ * Updates comment by id to reflect provided text.
+ */
 const updateComment = (commentObject) => new Promise((resolve, reject) => {
   poolConnection.getConnection((error, connection) => {
     if (error) reject(error);
 
-    console.log('UPDATE COMMENT INVOKED');
     const updateCommentCommand = `
       UPDATE comments
       SET text = ?
@@ -978,7 +1030,7 @@ const updateComment = (commentObject) => new Promise((resolve, reject) => {
       if (error) {
         connection.rollback(() => {
           connection.release();
-          return reject(error);
+          resolve(error);
         });
       }
       connection.query(updateCommentCommand,
@@ -987,17 +1039,17 @@ const updateComment = (commentObject) => new Promise((resolve, reject) => {
           if (error) {
             connection.rollback(() => {
               connection.release();
-              return reject(error);
+              resolve(error);
             });
           }
           connection.commit((error) => {
             if (error) {
               connection.rollback(() => {
                 connection.release();
-                return reject(error);
+                resolve(error);
               });
             }
-            resolve(updatedComment, console.log('COMMENT UPDATED'));
+            resolve(updatedComment);
           });
         });
     });
@@ -1022,5 +1074,4 @@ module.exports = {
   updateComment,
 };
 
-// mysql -uroot < server/index.js
-// mysql.server start
+// mysql -uroot < trailr.sql

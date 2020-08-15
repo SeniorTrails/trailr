@@ -77,7 +77,9 @@ CREATE TABLE favorites (
   id int AUTO_INCREMENT,
   id_user int,
   id_trail int,
-  PRIMARY KEY (id)
+  PRIMARY KEY (id),
+  FOREIGN KEY (id_user) REFERENCES users(id),
+  FOREIGN KEY (id_trail) REFERENCES trails(id)
 );
 
 INSERT into users (google_id, name, profile_photo_url) VALUES ("100320448870922542711", "Daniel", "https://lh3.googleusercontent.com/a-/AOh14GgCnlLMDczQTYGKy6XfF5EeNsrbDXh4y8j3hLdNvw");
@@ -114,9 +116,7 @@ INSERT into comments (text, id_user, id_photo) VALUES ("So if they open a drawbr
 INSERT into rating_difficulty (value, id_user, id_trail) VALUES ("3", "2", "1");
 INSERT into rating_difficulty (value, id_user, id_trail) VALUES ("2", "1", "1");
 INSERT into rating_difficulty (value, id_user, id_trail) VALUES ("5", "3", "1");
-
 INSERT into rating_difficulty (value, id_user, id_trail) VALUES ("3", "2", "2");
-
 INSERT into rating_difficulty (value, id_user, id_trail) VALUES ("4", "1", "3");
 INSERT into rating_difficulty (value, id_user, id_trail) VALUES ("5", "2", "3");
 INSERT into rating_difficulty (value, id_user, id_trail) VALUES ("5", "3", "3");
@@ -127,9 +127,7 @@ INSERT into rating_likeability (value, id_user, id_trail) VALUES ("5", "1", "1")
 INSERT into rating_likeability (value, id_user, id_trail) VALUES ("5", "2", "1");
 INSERT into rating_likeability (value, id_user, id_trail) VALUES ("5", "3", "1");
 INSERT into rating_likeability (value, id_user, id_trail) VALUES ("4", "4", "1");
-
 INSERT into rating_likeability (value, id_user, id_trail) VALUES ("2", "2", "2");
-
 INSERT into rating_likeability (value, id_user, id_trail) VALUES ("3", "2", "3");
 INSERT into rating_likeability (value, id_user, id_trail) VALUES ("2", "1", "3");
 INSERT into rating_likeability (value, id_user, id_trail) VALUES ("5", "3", "3");

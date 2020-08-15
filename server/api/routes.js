@@ -40,7 +40,7 @@ const router = Router();
 * returns - object containing all trail information in DB
 */
 router.get('/trails/:id', (req, res) => {
-  const { id } = req.body;
+  const { id } = req.query;
   const idT = req.params.id;
   const trailObject = {
     id_trail: idT,
@@ -208,22 +208,34 @@ router.post('/photos', (req, res) => {
 */
 router.post('/uploads', (req, res) => {
   const myFile = req.file;
+  const { latitude, longitude, userId, trailId } = req.body;
   uploadImage(myFile)
     .then((photoUrl) => {
       addPhoto({
         url: photoUrl,
+        lat: +latitude,
+        lng: +longitude,
+        id_user: +userId,
+        id_trail: +trailId,
       })
         .then((success) => {
           console.log('addPhoto in uploadImage worked', success);
+          res.json({
+            message: 'Upload was successful',
+            img: {
+              url: `${photoUrl}`,
+              id: success.id,
+              lat: +latitude,
+              lng: +longitude,
+              id_user: +userId,
+              id_trail: +trailId,
+            },
+          });
+          res.send();
         })
         .catch((error) => {
           throw error;
         });
-      res.json({
-        message: 'Upload was successful',
-        data: `${photoUrl}`,
-      });
-      res.send();
     })
     .catch((error) => {
       throw error;
