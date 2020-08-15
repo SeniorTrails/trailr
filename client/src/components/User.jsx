@@ -28,9 +28,7 @@ const userPage = ({ user }) => {
   useEffect(() => {
     getAuth()
       .then((response) => {
-        console.log("GOT BACK A RESPONSE", response)
         if (+id === response.id) {
-          console.log('MATCH')
           getUserData(id)
             .then((userData) => {
               if (Array.isArray(userData)) {
