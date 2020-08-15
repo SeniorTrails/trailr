@@ -131,6 +131,7 @@ const addPicture = ({ appendPhoto, center, userId, trailId }) => {
       .then((response) => {
         const newImages = response.map(i => i.img);
         appendPhoto(newImages);
+        setImages({});
       })
       .catch((err) => {
         console.error(err);

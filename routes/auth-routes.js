@@ -32,8 +32,6 @@ authRouter.get('/logout', (req, res) => {
 
 // use passport sessions method to keep track of a logged in user associated with a given session
 authRouter.get('/session', (req, res) => {
-  console.log("REQ.SESSION", req.session);
-  console.log("REQ.USER", req.user)
   if (req.user) {
     res.status(200).json(req.user);
   } else {

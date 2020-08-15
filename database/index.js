@@ -266,13 +266,13 @@ const getTrail = (trailObject) => new Promise((resolve, reject) => {
         SELECT IFNULL((SELECT value
           FROM rating_difficulty
           WHERE id_user = ?
-          AND id_trail = ?), 'Rate this trail:')
+          AND id_trail = ?), 0)
       ) as userDifficulty,
       (
         SELECT IFNULL((SELECT value
           FROM rating_likeability
           WHERE id_user = ?
-          AND id_trail = ?), 'Rate this trail:')
+          AND id_trail = ?), 0)
       ) as userLikeability
       FROM trails
       WHERE id = ?

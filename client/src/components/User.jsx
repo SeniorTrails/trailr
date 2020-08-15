@@ -28,9 +28,7 @@ const userPage = ({ user }) => {
   useEffect(() => {
     getAuth()
       .then((response) => {
-        console.log("GOT BACK A RESPONSE", response)
         if (+id === response.id) {
-          console.log('MATCH')
           getUserData(id)
             .then((userData) => {
               if (Array.isArray(userData)) {
@@ -70,7 +68,7 @@ const userPage = ({ user }) => {
   const appendComments = (newComment) => {
     const updatedInfo = [...photoInfo];
     const updatedPhoto = { ...updatedInfo[currentPhoto] };
-    updatedPhoto.comments.unshift({ ...newComment });
+    updatedPhoto.comments.push({ ...newComment });
     updatedInfo[currentPhoto] = updatedPhoto;
     setPhotoInfo(updatedInfo);
   };
