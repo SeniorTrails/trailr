@@ -33,6 +33,10 @@ if (!process.env.NODE_ENV) {
     password: process.env.DB_PASS,
     database: process.env.DB_NAME,
     socketPath: `/cloudsql/${process.env.DB_INSTANCE_CONNECTION_NAME}`,
+    connectTimeout: 10000,
+    acquireTimeout: 10000,
+    waitForConnections: true,
+    queueLimit: 0,
   });
 }
 

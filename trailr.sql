@@ -116,9 +116,7 @@ INSERT into comments (text, id_user, id_photo) VALUES ("So if they open a drawbr
 INSERT into rating_difficulty (value, id_user, id_trail) VALUES ("3", "2", "1");
 INSERT into rating_difficulty (value, id_user, id_trail) VALUES ("2", "1", "1");
 INSERT into rating_difficulty (value, id_user, id_trail) VALUES ("5", "3", "1");
-
 INSERT into rating_difficulty (value, id_user, id_trail) VALUES ("3", "2", "2");
-
 INSERT into rating_difficulty (value, id_user, id_trail) VALUES ("4", "1", "3");
 INSERT into rating_difficulty (value, id_user, id_trail) VALUES ("5", "2", "3");
 INSERT into rating_difficulty (value, id_user, id_trail) VALUES ("5", "3", "3");
@@ -129,9 +127,7 @@ INSERT into rating_likeability (value, id_user, id_trail) VALUES ("5", "1", "1")
 INSERT into rating_likeability (value, id_user, id_trail) VALUES ("5", "2", "1");
 INSERT into rating_likeability (value, id_user, id_trail) VALUES ("5", "3", "1");
 INSERT into rating_likeability (value, id_user, id_trail) VALUES ("4", "4", "1");
-
 INSERT into rating_likeability (value, id_user, id_trail) VALUES ("2", "2", "2");
-
 INSERT into rating_likeability (value, id_user, id_trail) VALUES ("3", "2", "3");
 INSERT into rating_likeability (value, id_user, id_trail) VALUES ("2", "1", "3");
 INSERT into rating_likeability (value, id_user, id_trail) VALUES ("5", "3", "3");
