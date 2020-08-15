@@ -1,16 +1,32 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Redirect, useParams } from 'react-router-dom';
+import styled from 'styled-components';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Image from 'react-bootstrap/Image';
 import Badge from 'react-bootstrap/Badge';
+import { Heart, HeartFill } from 'react-bootstrap-icons';
 import { getTrailData, updateUserRating } from '../helpers';
 import Input from './input.jsx';
 import Map from './TrailMap.jsx';
 import Carousel from './Carousel.jsx';
 import AddComment from './AddComment.jsx';
 import AddPicture from './AddPicture.jsx';
+
+const StyledHeart = styled(Heart)`
+  color: #00470F;
+  :hover {
+    color: #008a1d;
+  }
+`;
+
+const StyledFillHeart = styled(HeartFill)`
+  color: #00470F;
+  :hover {
+    color: #008a1d;
+  }
+`;
 
 // Options for the ratings selector
 const ratingOptions = [
@@ -199,13 +215,17 @@ const trail = ({ user }) => {
     }
   };
 
+  const toggleFavorite = () => {
+
+  };
+
   return (
     <>
       {redirect ? <Redirect to="/404" /> : null}
       <Col xs={6}>
         <Row>
-          <Col xs={9}>
-            <h2>{trailInfo.name}</h2>
+          <Col xs={8}>
+            <h2>{trailInfo.name} <StyledHeart onClick={toggleFavorite} /></h2>
           </Col>
           <Col xs={3}>
             {!user.loggedIn
