@@ -23,7 +23,6 @@ const MapWithASearchBox = React.memo(() => {
   const [mapInstance, setMapInstance] = useState(null);
   const [mapApi, setMapApi] = useState(null);
   const [places, setPlaces] = useState(trailData.data);
-  const [geolocation, setGeolocation] = useState(false);
   const [userLocation, setUserLocation] = useState({
     lat: 30.0766974,
     lng: -89.8788793,
@@ -53,7 +52,9 @@ const MapWithASearchBox = React.memo(() => {
         },
       })
       .then(({ data }) => {
-        setPlaces(data);
+        if (places) {
+          setPlaces(data);
+        }
       })
       .catch((err) => {
         console.error(err);
@@ -78,7 +79,6 @@ const MapWithASearchBox = React.memo(() => {
     navigator.geolocation.getCurrentPosition((position) => {
       const { latitude, longitude } = position.coords;
       setUserLocation({ lat: latitude, lng: longitude });
-      setGeolocation(true);
     });
 
     return () => {
