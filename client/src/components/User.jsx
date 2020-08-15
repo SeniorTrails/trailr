@@ -68,7 +68,7 @@ const userPage = ({ user }) => {
   const appendComments = (newComment) => {
     const updatedInfo = [...photoInfo];
     const updatedPhoto = { ...updatedInfo[currentPhoto] };
-    updatedPhoto.comments.unshift({ ...newComment });
+    updatedPhoto.comments.push({ ...newComment });
     updatedInfo[currentPhoto] = updatedPhoto;
     setPhotoInfo(updatedInfo);
   };

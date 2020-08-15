@@ -69,7 +69,7 @@ const parseTrailData = (data) => {
   };
   // Sorts the photos by newest closest to the picture
   const photoData = data.photos.map((photo) => {
-    const sorted = photo.comments.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+    const sorted = photo.comments.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
     return { ...photo, comments: sorted };
   });
   const userRatingData = { diff: data.userDifficulty, like: data.userLikeability };
@@ -203,7 +203,7 @@ const trail = ({ user }) => {
   const appendComments = (newComment) => {
     const updatedInfo = [...photoInfo];
     const updatedPhoto = { ...updatedInfo[currentPhoto] };
-    updatedPhoto.comments.unshift({ ...newComment });
+    updatedPhoto.comments.push({ ...newComment });
     updatedInfo[currentPhoto] = updatedPhoto;
     setPhotoInfo(updatedInfo);
   };
