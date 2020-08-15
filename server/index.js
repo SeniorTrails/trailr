@@ -1,6 +1,10 @@
 // require .env package
 require('dotenv').config();
 
+// require passport-setup file, to enable passport middleware
+require('../config/passport-setup');
+
+// require path module to provide utilities for working with static file and directory paths
 const path = require('path');
 
 // import express framework
@@ -20,9 +24,6 @@ const cookieParser = require('cookie-parser');
 
 // import express-session middleware from express framework
 const session = require('express-session');
-
-// require passport-setup file, to enable passport middleware
-const passportSetup = require('../config/passport-setup');
 
 // import "router" variable from routes.js file
 const { router } = require('./api/routes');

@@ -208,7 +208,9 @@ router.post('/photos', (req, res) => {
 */
 router.post('/uploads', (req, res) => {
   const myFile = req.file;
-  const { latitude, longitude, userId, trailId } = req.body;
+  const {
+    latitude, longitude, userId, trailId,
+  } = req.body;
   uploadImage(myFile)
     .then((photoUrl) => {
       addPhoto({
