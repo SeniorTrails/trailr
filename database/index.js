@@ -39,7 +39,7 @@ if (!process.env.NODE_ENV) {
     socketPath: `/cloudsql/${process.env.DB_INSTANCE_CONNECTION_NAME}`,
     connectTimeout: 10000,
     acquireTimeout: 10000,
-    waitForConnections: false,
+    waitForConnections: true,
     connectionLimit: 20,
     queueLimit: 20,
   });
