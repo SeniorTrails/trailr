@@ -17,11 +17,9 @@ const addComment = ({ appendComments, userId, photoId, name }) => {
    * @param {String} text extracted from a values object
    */
   const commentSubmit = ({ text }) => {
-    console.log(text, userId, photoId)
     addCommentToPhoto(text, userId, photoId)
       .then(({ id }) => {
-        console.log('USERNAME IS HARD CODED FIX THIS');
-        appendComments({ text, id, name });
+        appendComments({ text, id: +id, name });
       })
       .catch((err) => {
         console.error(err);
