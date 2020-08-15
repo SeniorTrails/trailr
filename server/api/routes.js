@@ -101,7 +101,6 @@ router.get('/trails', (req, res) => {
 */
 router.get('/users/:id', (req, res) => {
   const { id } = req.params;
-  console.log("DOING A GET USER")
   getUser(id)
     .then((success) => {
       console.log('SUCESSS GETING USER', success)

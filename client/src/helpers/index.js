@@ -38,7 +38,6 @@ export const getAuth = () => new Promise((resolve, reject) => {
     url: '/auth/session',
   })
     .then((response) => {
-      console.log('AUTH GET', response.data)
       resolve(response.data);
     })
     .catch((err) => {
@@ -51,13 +50,11 @@ export const getAuth = () => new Promise((resolve, reject) => {
  * @param {Number} userId a user's id number based on page params
  */
 export const getUserData = (userId) => new Promise((resolve, reject) => {
-  console.log('GET USER DTA')
   axios({
     method: 'get',
     url: `/api/users/${userId}`,
   })
     .then((response) => {
-      console.log(response.data);
       resolve(response.data);
     })
     .catch((err) => {
@@ -109,7 +106,6 @@ export const updateUserRating = (type, value, idUser, idTrail) => new Promise((r
     },
   })
     .then((response) => {
-      console.log(response.data);
       resolve(response.data[0]);
     })
     .catch((err) => {
@@ -134,7 +130,6 @@ export const addCommentToPhoto = (text, idUser, idPhoto) => new Promise((resolve
     },
   })
     .then((response) => {
-      console.log(response.data);
       resolve(response.data);
     })
     .catch((err) => {
@@ -183,11 +178,16 @@ export const deleteComment = (commentId) => new Promise((resolve, reject) => {
  * @param {Object} trail contains api trail info
  */
 export const addTrail = (trail) => new Promise((resolve, reject) => {
+  let { description } = trail;
+  if (description.length >= 1499) {
+    description = description.substring(0, 1499);
+  }
   axios({
     method: 'post',
     url: '/api/trails',
     data: {
       ...trail,
+      description,
     },
   })
     .then((response) => {
