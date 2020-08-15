@@ -22,7 +22,7 @@ const StyledImage = styled(Image)`
  * @param {Function} changeCurrentPhoto a function that changes the current photo
  * @param {Object} user loggedIn, id, name
  */
-const carousel = ({ photos, currentPhoto, changeCurrentPhoto, user }) => {
+const carousel = ({ photos, currentPhoto, changeCurrentPhoto, user, removePhoto }) => {
   const [photo, setPhoto] = useState({});
   const [comments, setComments] = useState([]);
 
@@ -34,7 +34,7 @@ const carousel = ({ photos, currentPhoto, changeCurrentPhoto, user }) => {
   const deleteHandler = (id) => {
     deletePhoto(photos[id].id)
       .then((response) => {
-        console.log(response);
+        removePhoto(id);
       })
       .catch((err) => {
         console.error(err);
@@ -108,4 +108,5 @@ carousel.propTypes = {
     id: PropTypes.number,
     name: PropTypes.string,
   }),
+  removePhoto: PropTypes.func.isRequired,
 };

@@ -7,7 +7,7 @@ import Col from 'react-bootstrap/Col';
 import Image from 'react-bootstrap/Image';
 import Badge from 'react-bootstrap/Badge';
 import { Heart, HeartFill } from 'react-bootstrap-icons';
-import { getTrailData, updateUserRating, updateFavorite, getFavoriteStatus } from '../helpers';
+import { getTrailData, updateUserRating, updateFavorite, getFavoriteStatus, uploadPhoto } from '../helpers';
 import Input from './input.jsx';
 import Map from './TrailMap.jsx';
 import Carousel from './Carousel.jsx';
@@ -188,6 +188,13 @@ const trail = ({ user }) => {
     setCurrentPhoto(photoId);
   };
 
+  const removePhoto = (photoId) => {
+    setCurrentPhoto(0);
+    const updatedPhotos = [...photoInfo];
+    updatedPhotos.splice(photoId, 1);
+    setPhotoInfo(updatedPhotos);
+  };
+
   /**
    * After the DB call this adds the new comment to the photo for the user,
    *  so that we don't have to make additional DB calls
@@ -208,11 +215,10 @@ const trail = ({ user }) => {
    */
   const appendPhoto = (newPhotos) => {
     const updatedInfo = [...photoInfo];
-    Object.keys(newPhotos).forEach((key) => {
+    newPhotos.forEach((item) => {
       updatedInfo.push({
-        ...newPhotos[key],
+        ...item,
         comments: [],
-        id: photoInfo.length + 1,
       });
     });
     setPhotoInfo(updatedInfo);
@@ -264,6 +270,8 @@ const trail = ({ user }) => {
                 <AddPicture
                   appendPhoto={appendPhoto}
                   center={{ lat: trailInfo.lat, lng: trailInfo.lon }}
+                  userId={user.id}
+                  trailId={+id}
                 />
               )}
           </Col>
@@ -357,6 +365,7 @@ const trail = ({ user }) => {
               currentPhoto={currentPhoto}
               changeCurrentPhoto={changeCurrentPhoto}
               user={user}
+              removePhoto={removePhoto}
             />
             {!user.loggedIn
               ? null

@@ -10,6 +10,7 @@ import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import Image from 'react-bootstrap/Image';
 import Marker from './Marker.jsx';
+import { uploadPhoto } from '../helpers';
 
 const GoogleMapWrapper = styled.div`
   height: 300px;
@@ -27,7 +28,7 @@ const maxImageSize = 5 * 1024 * 1024; // 5MBs
  * @param {Function} appendPhoto function that adds photos to the trail
  * @param {Object} center contains a lat and lng to center the maps on if no gps data
  */
-const addPicture = ({ appendPhoto, center }) => {
+const addPicture = ({ appendPhoto, center, userId, trailId }) => {
   const [show, setShow] = useState(false);
   const [images, setImages] = useState({});
   const toggleModal = () => setShow(!show);
@@ -61,6 +62,7 @@ const addPicture = ({ appendPhoto, center }) => {
               url: URL.createObjectURL(e.target.files[i]),
               lat: loc.lat,
               lng: loc.lng,
+              file: e.target.files[i],
             };
             // If the image is a heic convert it
             if (newImage.key.match(/.heic$|.HEIC$/)) {
@@ -103,13 +105,36 @@ const addPicture = ({ appendPhoto, center }) => {
     });
   };
 
+  const imagePromiseUploader = (file) => new Promise((resolve, reject) => {
+    const formData = new FormData();
+    formData.append('file', file.file);
+    formData.append('latitude', file.lat);
+    formData.append('longitude', file.lng);
+    formData.append('userId', userId);
+    formData.append('trailId', trailId);
+    uploadPhoto(formData)
+      .then((url) => {
+        resolve(url);
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
+
   /**
    * Uploads the images to the database, and calls appendPhoto
    */
   const submitHandler = () => {
-    console.log(images);
     toggleModal();
-    appendPhoto(images);
+    const filesArray = Object.keys(images).map((key) => images[key]);
+    Promise.all(filesArray.map((file) => imagePromiseUploader(file)))
+      .then((response) => {
+        const newImages = response.map(i => i.img);
+        appendPhoto(newImages);
+      })
+      .catch((err) => {
+        console.error(err);
+      });
   };
 
   return (
@@ -158,4 +183,6 @@ addPicture.propTypes = {
     lat: PropTypes.number,
     lng: PropTypes.number,
   }).isRequired,
+  userId: PropTypes.number.isRequired,
+  trailId: PropTypes.number.isRequired,
 };
