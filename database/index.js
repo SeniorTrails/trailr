@@ -4,11 +4,17 @@
 const mysql = require('mysql');
 
 /**
+ * Establishes database connection based on environment:
+ * Development --> local MySQL connection --> $ npm run start:dev --> $ mysql -uroot < trailr.sql
+ * Production --> connected to Cloud SQL Instance --> $ npm run start:prod
+ * Deployment --> connected to Cloud SQL Instance
  *
-*/
+ * For Cloud SQL connection, user's ip address must be
+ * set up in Google Cloud Developer Tools.
+ */
 let poolConnection;
 if (!process.env.NODE_ENV) {
-  poolConnection = mysql.createConnection({
+  poolConnection = mysql.createPool({
     host: 'localhost',
     user: 'root',
     password: '',
@@ -19,7 +25,7 @@ if (!process.env.NODE_ENV) {
     user: process.env.DB_USER,
     password: process.env.DB_PASS,
     database: process.env.DB_NAME,
-    host: '34.70.176.46',
+    host: process.env.DB_HOST,
   });
 } else {
   poolConnection = mysql.createPool({
@@ -30,6 +36,10 @@ if (!process.env.NODE_ENV) {
   });
 }
 
+/**
+ * Searches database for user by db id. If found, returns a user object with associated photos,
+ * photo comments, and favorite trails. If not found, returns an empty array.
+ */
 const getUser = (id) => new Promise((resolve, reject) => {
   poolConnection.getConnection((error, connection) => {
     if (error) reject(error);
@@ -142,6 +152,10 @@ const getUser = (id) => new Promise((resolve, reject) => {
   });
 });
 
+/**
+ * Searches db for user by google id and, if found, returns db id;
+ * otherwise adds user to database and returns db id.
+ */
 const addUser = (userObject) => new Promise((resolve, reject) => {
   poolConnection.getConnection((error, connection) => {
     if (error) reject(error);
@@ -210,6 +224,11 @@ const addUser = (userObject) => new Promise((resolve, reject) => {
   });
 });
 
+/**
+ * Searches db for trail by id. If found, returns associated average ratings (as a string), photos,
+ * and photo comments. If user is logged in, provides user's ratings for selected trail, otherwise
+ * returns string of 'Rate this trail:'. If trail is not found, returns an empty array.
+ */
 const getTrail = (trailObject) => new Promise((resolve, reject) => {
   poolConnection.getConnection((error, connection) => {
     if (error) reject(error);
@@ -337,6 +356,10 @@ const getTrail = (trailObject) => new Promise((resolve, reject) => {
   });
 });
 
+/**
+ * Searches db for trail by api id and, if found, returns db id;
+ * otherwise adds trail to database and returns db id.
+ */
 const addTrail = (trailObject) => new Promise((resolve, reject) => {
   poolConnection.getConnection((error, connection) => {
     if (error) reject(error);
@@ -406,6 +429,9 @@ const addTrail = (trailObject) => new Promise((resolve, reject) => {
   });
 });
 
+/**
+ * Updates all trail fields by provided id.
+ */
 const updateTrail = (trailObject) => new Promise((resolve, reject) => {
   poolConnection.getConnection((error, connection) => {
     if (error) reject(error);
@@ -452,7 +478,6 @@ const updateTrail = (trailObject) => new Promise((resolve, reject) => {
                 resolve(error);
               });
             }
-            console.log('UPDATED TRAIL: ', updatedTrail);
             const updateTrailResult = updatedTrail || [{ affectedRows: 0 }];
             resolve(updateTrailResult);
           });
@@ -461,11 +486,13 @@ const updateTrail = (trailObject) => new Promise((resolve, reject) => {
   });
 });
 
+/**
+ * Deletes trail by id.
+ */
 const deleteTrail = (id) => new Promise((resolve, reject) => {
   poolConnection.getConnection((error, connection) => {
     if (error) reject(error);
 
-    console.log('DELETE TRAIL INVOKED');
     const deleteTrailCommand = `
       DELETE FROM trails
       WHERE id = ?
@@ -498,6 +525,10 @@ const deleteTrail = (id) => new Promise((resolve, reject) => {
   });
 });
 
+/**
+ * Searches for user's difficulty rating for a specified trail. Adds difficulty rating if not found.
+ * Updates difficulty rating if found.
+ */
 const updateDifficulty = (difficultyObject) => new Promise((resolve, reject) => {
   poolConnection.getConnection((error, connection) => {
     if (error) reject(error);
@@ -598,6 +629,10 @@ const updateDifficulty = (difficultyObject) => new Promise((resolve, reject) => 
   });
 });
 
+/**
+ * Searches for user's likeability rating for a specified trail. Adds likeability rating if not
+ * found. Updates difficulty rating if found.
+ */
 const updateLikeability = (likeabilityObject) => new Promise((resolve, reject) => {
   poolConnection.getConnection((error, connection) => {
     if (error) reject(error);
@@ -698,6 +733,10 @@ const updateLikeability = (likeabilityObject) => new Promise((resolve, reject) =
   });
 });
 
+/**
+ * Adds photo comment. If successful, returns an object containing inserted comment's id. Otherwise,
+ * returns error message or object containing affectedRows: 0.
+ */
 const addComment = (commentObject) => new Promise((resolve, reject) => {
   poolConnection.getConnection((error, connection) => {
     if (error) reject(error);
@@ -732,13 +771,19 @@ const addComment = (commentObject) => new Promise((resolve, reject) => {
                 resolve(error);
               });
             }
-            resolve({ id: `${addedComment.insertId}` });
+            const addCommentResult = addedComment
+              ? { id: addedComment.insertId } : { affectedRows: 0 };
+            resolve(addCommentResult);
           });
         });
     });
   });
 });
 
+/**
+ * Adds photo after photo is uploaded to storage bucket. If successful, returns an object containing
+ * inserted photo's id. Otherwise, returns error message or object containing affectedRows: 0.
+ */
 const addPhoto = (photoObject) => new Promise((resolve, reject) => {
   poolConnection.getConnection((error, connection) => {
     if (error) reject(error);
@@ -772,13 +817,17 @@ const addPhoto = (photoObject) => new Promise((resolve, reject) => {
                 resolve(error);
               });
             }
-            resolve({ id: `${addedPhoto.insertId}` });
+            const addPhotoResult = addedPhoto ? { id: addedPhoto.insertId } : { affectedRows: 0 };
+            resolve(addPhotoResult);
           });
         });
     });
   });
 });
 
+/**
+ * Deletes comment by id.
+ */
 const deleteComment = (id) => new Promise((resolve, reject) => {
   poolConnection.getConnection((error, connection) => {
     if (error) reject(error);
@@ -815,6 +864,9 @@ const deleteComment = (id) => new Promise((resolve, reject) => {
   });
 });
 
+/**
+ * Deletes photo and all associated comments by photo id.
+ */
 const deletePhoto = (id) => new Promise((resolve, reject) => {
   poolConnection.getConnection((error, connection) => {
     if (error) reject(error);
@@ -866,6 +918,11 @@ const deletePhoto = (id) => new Promise((resolve, reject) => {
   });
 });
 
+/**
+ * Adds favorite trail by user id and trail id. If successful, returns an object containing
+ * inserted favorite's id. Otherwise, returns error message or object containing affectedRows: 0.
+ */
+
 const addFavorite = (favoriteObject) => new Promise((resolve, reject) => {
   poolConnection.getConnection((error, connection) => {
     if (error) reject(error);
@@ -900,13 +957,18 @@ const addFavorite = (favoriteObject) => new Promise((resolve, reject) => {
                 resolve(error);
               });
             }
-            resolve({ id: `${addedFavorite.insertId}` });
+            const addFavoriteResult = addedFavorite
+              ? { id: addedFavorite.insertId } : { affectedRows: 0 };
+            resolve(addFavoriteResult);
           });
         });
     });
   });
 });
 
+/**
+ * Deletes favorite trail by user id and trail id.
+ */
 const deleteFavorite = (favoriteObject) => new Promise((resolve, reject) => {
   poolConnection.getConnection((error, connection) => {
     if (error) reject(error);
@@ -947,6 +1009,9 @@ const deleteFavorite = (favoriteObject) => new Promise((resolve, reject) => {
   });
 });
 
+/**
+ * Updates comment by id to reflect provided text.
+ */
 const updateComment = (commentObject) => new Promise((resolve, reject) => {
   poolConnection.getConnection((error, connection) => {
     if (error) reject(error);
@@ -1005,5 +1070,4 @@ module.exports = {
   updateComment,
 };
 
-// mysql -uroot < server/index.js
-// mysql.server start
+// mysql -uroot < trailr.sql
