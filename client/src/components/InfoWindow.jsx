@@ -85,12 +85,12 @@ const InfoWindow = React.memo(({ selectedTrail, onCloseClick }) => {
                   style={{ width: '130px' }}
                 />
               </div>
-              <div style={{ fontSize: 14, color: 'black' }}>
+              <div style={{ fontSize: 14, color: 'white' }}>
                 {place.length} miles
               </div>
               <div
                 className="text-truncate"
-                style={{ fontSize: 14, color: 'black', width: '14rem' }}
+                style={{ fontSize: 14, color: 'white', width: '14rem' }}
               >
                 {place.description}
                 <br />
