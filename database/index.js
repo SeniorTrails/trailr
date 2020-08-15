@@ -39,7 +39,7 @@ if (!process.env.NODE_ENV) {
     socketPath: `/cloudsql/${process.env.DB_INSTANCE_CONNECTION_NAME}`,
     connectTimeout: 10000,
     acquireTimeout: 10000,
-    waitForConnections: true,
+    waitForConnections: false,
     connectionLimit: 20,
     queueLimit: 20,
   });
@@ -78,7 +78,6 @@ const getUser = (id) => new Promise((resolve, reject) => {
     `;
 
     connection.beginTransaction((error) => {
-      console.log('STEP1')
       if (error) {
         connection.rollback(() => {
           connection.release();
@@ -86,7 +85,6 @@ const getUser = (id) => new Promise((resolve, reject) => {
         });
       }
       connection.query(getUserCommand, [id], (error, gottenUser) => {
-        console.log('STEP2')
         if (error) {
           connection.rollback(() => {
             connection.release();
@@ -94,7 +92,6 @@ const getUser = (id) => new Promise((resolve, reject) => {
           });
         }
         if (!gottenUser.length) {
-          console.log('NO LENGTH')
           connection.commit((error) => {
             if (error) {
               connection.rollback(() => {
@@ -102,13 +99,12 @@ const getUser = (id) => new Promise((resolve, reject) => {
                 resolve(error);
               });
             }
+            connection.release();
             resolve(gottenUser);
           });
         } else if (gottenUser.length > 0) {
-          console.log('STEP3')
           const user = gottenUser[0];
           connection.query(getFavoritesCommand, [id], (error, gottenFavorites) => {
-            console.log('STEP4')
             if (error) {
               connection.rollback(() => {
                 connection.release();
@@ -117,7 +113,6 @@ const getUser = (id) => new Promise((resolve, reject) => {
             }
             user.favorites = gottenFavorites;
             connection.query(getPhotosCommand, [id], (error, gottenPhotos) => {
-              console.log('STEP5')
               if (error) {
                 connection.rollback(() => {
                   connection.release();
@@ -133,11 +128,11 @@ const getUser = (id) => new Promise((resolve, reject) => {
                       resolve(error);
                     });
                   }
+                  connection.release();
                   resolve(user);
                 });
               }
               user.photos.forEach((photo, i) => {
-                console.log('STEP6')
                 const { id } = photo;
                 connection.query(getCommentsCommand, [id], (error, gottenComments) => {
                   if (error) {
@@ -155,10 +150,8 @@ const getUser = (id) => new Promise((resolve, reject) => {
                           resolve(error);
                         });
                       }
-                      console.log('STEP7')
                       connection.release();
                       resolve(user);
-                      connection.release();
                     });
                   }
                 });
@@ -236,6 +229,7 @@ const addUser = (userObject) => new Promise((resolve, reject) => {
                 }
                 const addUserResult = addedUser
                   ? { id: addedUser.insertId } : { id: null, affectedRows: 0 };
+                connection.release();
                 resolve(addUserResult);
               });
             });
@@ -323,6 +317,7 @@ const getTrail = (trailObject) => new Promise((resolve, reject) => {
                   resolve(error);
                 });
               }
+              connection.release();
               resolve(gottenTrail);
             });
           } else if (gottenTrail.length > 0) {
@@ -343,6 +338,7 @@ const getTrail = (trailObject) => new Promise((resolve, reject) => {
                       resolve(error);
                     });
                   }
+                  connection.release();
                   resolve(trail);
                 });
               }
@@ -365,6 +361,7 @@ const getTrail = (trailObject) => new Promise((resolve, reject) => {
                           resolve(error);
                         });
                       }
+                      connection.release();
                       resolve(trail);
                     });
                   }
@@ -417,6 +414,7 @@ const addTrail = (trailObject) => new Promise((resolve, reject) => {
                 resolve(error);
               });
             }
+            connection.release();
             resolve({
               message: 'Existing trail. Use id listed here with getTrail(id) to lookup trail or updateTrail(id) to update trail.',
               id: trailResult[0].id,
@@ -444,6 +442,7 @@ const addTrail = (trailObject) => new Promise((resolve, reject) => {
 
                 const addTrailResult = addedTrail
                   ? { id: addedTrail.insertId } : { id: null, affectedRows: 0 };
+                connection.release();
                 resolve(addTrailResult);
               });
             });
@@ -503,6 +502,7 @@ const updateTrail = (trailObject) => new Promise((resolve, reject) => {
               });
             }
             const updateTrailResult = updatedTrail || [{ id: null, affectedRows: 0 }];
+            connection.release();
             resolve(updateTrailResult);
           });
         });
@@ -542,6 +542,7 @@ const deleteTrail = (id) => new Promise((resolve, reject) => {
               resolve(error);
             });
           }
+          connection.release();
           resolve(deletedTrailData);
         });
       });
@@ -645,6 +646,7 @@ const updateDifficulty = (difficultyObject) => new Promise((resolve, reject) => 
                 const newDiffReturn = newDiffAverage[0] ? newDiffAverage : [{}];
                 newDiffReturn[0].affectedRows = affectedRows;
                 newDiffReturn[0].queryMessage = message;
+                connection.release();
                 resolve(newDiffReturn);
               });
             });
@@ -749,6 +751,7 @@ const updateLikeability = (likeabilityObject) => new Promise((resolve, reject) =
                 const newLikeReturn = newLikeAverage[0] ? newLikeAverage : [{}];
                 newLikeReturn[0].affectedRows = affectedRows;
                 newLikeReturn[0].message = message;
+                connection.release();
                 resolve(newLikeReturn);
               });
             });
@@ -797,6 +800,7 @@ const addComment = (commentObject) => new Promise((resolve, reject) => {
             }
             const addCommentResult = addedComment
               ? { id: addedComment.insertId } : { id: null, affectedRows: 0 };
+            connection.release();
             resolve(addCommentResult);
           });
         });
@@ -843,6 +847,7 @@ const addPhoto = (photoObject) => new Promise((resolve, reject) => {
             }
             const addPhotoResult = addedPhoto
               ? { id: addedPhoto.insertId } : { id: null, affectedRows: 0 };
+            connection.release();
             resolve(addPhotoResult);
           });
         });
@@ -882,6 +887,7 @@ const deleteComment = (id) => new Promise((resolve, reject) => {
               resolve(error);
             });
           }
+          connection.release();
           resolve(deletedCommentData);
         });
       });
@@ -935,6 +941,7 @@ const deletePhoto = (id) => new Promise((resolve, reject) => {
             }
             const deletionResults = deletedPhotoData;
             deletionResults.deletedComments = deletedCommentData;
+            connection.release();
             resolve(deletionResults);
           });
         });
@@ -984,6 +991,7 @@ const addFavorite = (favoriteObject) => new Promise((resolve, reject) => {
             }
             const addFavoriteResult = addedFavorite
               ? { id: addedFavorite.insertId } : { id: null, affectedRows: 0 };
+            connection.release();
             resolve(addFavoriteResult);
           });
         });
@@ -1027,6 +1035,7 @@ const deleteFavorite = (favoriteObject) => new Promise((resolve, reject) => {
                 resolve(error);
               });
             }
+            connection.release();
             resolve(deletedFavoriteData);
           });
         });
@@ -1070,6 +1079,7 @@ const updateComment = (commentObject) => new Promise((resolve, reject) => {
                 resolve(error);
               });
             }
+            connection.release();
             resolve(updatedComment);
           });
         });
