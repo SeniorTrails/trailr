@@ -78,6 +78,7 @@ const getUser = (id) => new Promise((resolve, reject) => {
     `;
 
     connection.beginTransaction((error) => {
+      console.log('STEP1')
       if (error) {
         connection.rollback(() => {
           connection.end();
@@ -85,6 +86,7 @@ const getUser = (id) => new Promise((resolve, reject) => {
         });
       }
       connection.query(getUserCommand, [id], (error, gottenUser) => {
+        console.log('STEP2')
         if (error) {
           connection.rollback(() => {
             connection.end();
@@ -92,6 +94,7 @@ const getUser = (id) => new Promise((resolve, reject) => {
           });
         }
         if (!gottenUser.length) {
+          console.log('NO LENGTH')
           connection.commit((error) => {
             if (error) {
               connection.rollback(() => {
@@ -102,8 +105,10 @@ const getUser = (id) => new Promise((resolve, reject) => {
             resolve(gottenUser);
           });
         } else if (gottenUser.length > 0) {
+          console.log('STEP3')
           const user = gottenUser[0];
           connection.query(getFavoritesCommand, [id], (error, gottenFavorites) => {
+            console.log('STEP4')
             if (error) {
               connection.rollback(() => {
                 connection.end();
@@ -112,6 +117,7 @@ const getUser = (id) => new Promise((resolve, reject) => {
             }
             user.favorites = gottenFavorites;
             connection.query(getPhotosCommand, [id], (error, gottenPhotos) => {
+              console.log('STEP5')
               if (error) {
                 connection.rollback(() => {
                   connection.end();
@@ -131,6 +137,7 @@ const getUser = (id) => new Promise((resolve, reject) => {
                 });
               }
               user.photos.forEach((photo, i) => {
+                console.log('STEP6')
                 const { id } = photo;
                 connection.query(getCommentsCommand, [id], (error, gottenComments) => {
                   if (error) {
@@ -148,6 +155,8 @@ const getUser = (id) => new Promise((resolve, reject) => {
                           resolve(error);
                         });
                       }
+                      console.log('STEP7')
+                      connection.release();
                       resolve(user);
                     });
                   }

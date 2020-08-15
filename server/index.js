@@ -86,8 +86,8 @@ passport.serializeUser((user, done) => {
  * deserializeUser method is called on all subsequent user requests and
  * enables us to load additional user information on every request to session cookie
  */
-passport.deserializeUser((id, done) => {
-  getUser(id)
+passport.deserializeUser((userSession, done) => {
+  getUser(userSession.id)
     .then((user) => {
       const userInfo = {
         id: user.id,

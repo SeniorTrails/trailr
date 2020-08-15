@@ -20,7 +20,7 @@ const app = () => {
   useEffect(() => {
     getAuth()
       .then((response) => {
-        if (response) {
+        if (response.id) {
           setUser({
             loggedIn: true,
             ...response,

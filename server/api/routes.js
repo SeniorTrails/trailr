@@ -104,6 +104,7 @@ router.get('/users/:id', (req, res) => {
   console.log("DOING A GET USER")
   getUser(id)
     .then((success) => {
+      console.log('SUCESSS GETING USER', success)
       res.send(success);
     })
     .catch((error) => {
