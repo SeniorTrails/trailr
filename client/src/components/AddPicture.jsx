@@ -10,6 +10,7 @@ import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import Image from 'react-bootstrap/Image';
 import Marker from './Marker.jsx';
+import { uploadPhoto } from '../helpers';
 
 const GoogleMapWrapper = styled.div`
   height: 300px;
@@ -61,6 +62,7 @@ const addPicture = ({ appendPhoto, center }) => {
               url: URL.createObjectURL(e.target.files[i]),
               lat: loc.lat,
               lng: loc.lng,
+              file: e.target.files[i],
             };
             // If the image is a heic convert it
             if (newImage.key.match(/.heic$|.HEIC$/)) {
@@ -107,10 +109,31 @@ const addPicture = ({ appendPhoto, center }) => {
    * Uploads the images to the database, and calls appendPhoto
    */
   const submitHandler = () => {
-    console.log(images);
+    const filesArray = Object.keys(images).map((key) => images[key]);
+    Promise.all(filesArray.map((file) => imagePromiseUploader(file)))
+      .then((urls) => {
+        console.log(urls);
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+
     toggleModal();
     appendPhoto(images);
   };
+
+  const imagePromiseUploader = (file) => new Promise((resolve, reject) => {
+    const formData = new FormData();
+    console.log(file);
+    formData.append('file', file.file);
+    uploadPhoto(formData)
+      .then((url) => {
+        resolve(url);
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
 
   return (
     <>

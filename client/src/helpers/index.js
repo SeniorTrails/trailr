@@ -243,6 +243,11 @@ export const getFavoriteStatus = (trailId, userId) => new Promise((resolve, reje
     });
 });
 
+/**
+ * Updates a comment's text by its id
+ * @param {Number} id the id of the comment to update
+ * @param {String} text the text to replace it with
+ */
 export const updateComment = (id, text) => new Promise((resolve, reject) => {
   axios({
     method: 'put',
@@ -258,4 +263,19 @@ export const updateComment = (id, text) => new Promise((resolve, reject) => {
     .catch((err) => {
       reject(err);
     });
-})
+});
+
+export const uploadPhoto = (data) => new Promise((resolve, reject) => {
+  axios({
+    method: 'post',
+    url: '/api/uploads',
+    data,
+    headers: { 'Content-Type': 'multipart/form-data' }
+  })
+    .then((response) => {
+      resolve(response.data);
+    })
+    .catch((err) => {
+      reject(err);
+    });
+});
