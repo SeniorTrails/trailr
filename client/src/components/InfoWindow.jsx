@@ -68,7 +68,7 @@ const InfoWindow = React.memo(({ selectedTrail, onCloseClick }) => {
                   fontSize: 12,
                   position: 'relative',
                   left: '50%',
-                  color: 'black',
+                  color: 'white',
                 }}
                 onClick={onCloseClick}
               >
