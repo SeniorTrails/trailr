@@ -41,12 +41,12 @@ FavHeart.propTypes = {
 
 // Options for the ratings selector
 const ratingOptions = [
-  { value: 'Rate this trail:', label: '' },
-  { value: '1', label: '1' },
-  { value: '2', label: '2' },
-  { value: '3', label: '3' },
-  { value: '4', label: '4' },
-  { value: '5', label: '5' },
+  { value: 0, label: '' },
+  { value: 1, label: '1' },
+  { value: 2, label: '2' },
+  { value: 3, label: '3' },
+  { value: 4, label: '4' },
+  { value: 5, label: '5' },
 ];
 
 /**
@@ -107,11 +107,11 @@ const trail = ({ user }) => {
           setUserRatings({
             userLoaded: true,
             like: {
-              value: userRatingData.like,
+              value: +userRatingData.like,
               edit: false,
             },
             diff: {
-              value: userRatingData.diff,
+              value: +userRatingData.diff,
               edit: false,
             },
           });
@@ -156,7 +156,7 @@ const trail = ({ user }) => {
    * @param {Object} target input element to use to update the DB
    */
   const changeHandler = ({ target }) => {
-    if (target.value !== 'Rate this trail:') {
+    if (target.value !== 0) {
       const numValue = +target.value;
       updateUserRating(target.name, numValue, user.id, id)
         .then((newRating) => {

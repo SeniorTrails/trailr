@@ -40,7 +40,10 @@ const router = Router();
 * returns - object containing all trail information in DB
 */
 router.get('/trails/:id', (req, res) => {
-  const { id } = req.query;
+  let { id } = req.query;
+  if (!id && req.user) {
+    id = req.user.id;
+  }
   const idT = req.params.id;
   const trailObject = {
     id_trail: idT,
