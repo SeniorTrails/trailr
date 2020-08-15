@@ -35,7 +35,7 @@ if (!process.env.NODE_ENV) {
     socketPath: `/cloudsql/${process.env.DB_INSTANCE_CONNECTION_NAME}`,
     connectTimeout: 10000,
     acquireTimeout: 10000,
-    waitForConnections: false,
+    waitForConnections: true,
     connectionLimit: 20,
     queueLimit: 20,
   });
@@ -76,14 +76,14 @@ const getUser = (id) => new Promise((resolve, reject) => {
     connection.beginTransaction((error) => {
       if (error) {
         connection.rollback(() => {
-          connection.end();
+          connection.release();
           resolve(error);
         });
       }
       connection.query(getUserCommand, [id], (error, gottenUser) => {
         if (error) {
           connection.rollback(() => {
-            connection.end();
+            connection.release();
             resolve(error);
           });
         }
@@ -91,7 +91,7 @@ const getUser = (id) => new Promise((resolve, reject) => {
           connection.commit((error) => {
             if (error) {
               connection.rollback(() => {
-                connection.end();
+                connection.release();
                 resolve(error);
               });
             }
@@ -102,7 +102,7 @@ const getUser = (id) => new Promise((resolve, reject) => {
           connection.query(getFavoritesCommand, [id], (error, gottenFavorites) => {
             if (error) {
               connection.rollback(() => {
-                connection.end();
+                connection.release();
                 resolve(error);
               });
             }
@@ -110,7 +110,7 @@ const getUser = (id) => new Promise((resolve, reject) => {
             connection.query(getPhotosCommand, [id], (error, gottenPhotos) => {
               if (error) {
                 connection.rollback(() => {
-                  connection.end();
+                  connection.release();
                   resolve(error);
                 });
               }
@@ -119,7 +119,7 @@ const getUser = (id) => new Promise((resolve, reject) => {
                 connection.commit((error) => {
                   if (error) {
                     connection.rollback(() => {
-                      connection.end();
+                      connection.release();
                       resolve(error);
                     });
                   }
@@ -131,7 +131,7 @@ const getUser = (id) => new Promise((resolve, reject) => {
                 connection.query(getCommentsCommand, [id], (error, gottenComments) => {
                   if (error) {
                     connection.rollback(() => {
-                      connection.end();
+                      connection.release();
                       resolve(error);
                     });
                   }
@@ -140,11 +140,12 @@ const getUser = (id) => new Promise((resolve, reject) => {
                     connection.commit((error) => {
                       if (error) {
                         connection.rollback(() => {
-                          connection.end();
+                          connection.release();
                           resolve(error);
                         });
                       }
                       resolve(user);
+                      connection.release();
                     });
                   }
                 });
@@ -178,14 +179,14 @@ const addUser = (userObject) => new Promise((resolve, reject) => {
     connection.beginTransaction((error) => {
       if (error) {
         connection.rollback(() => {
-          connection.end();
+          connection.release();
           resolve(error);
         });
       }
       connection.query(checkUserCommand, [userObject.google_id], (error, userResult) => {
         if (error) {
           connection.rollback(() => {
-            connection.end();
+            connection.release();
             resolve(error);
           });
         }
@@ -193,7 +194,7 @@ const addUser = (userObject) => new Promise((resolve, reject) => {
           connection.commit((error) => {
             if (error) {
               connection.rollback(() => {
-                connection.end();
+                connection.release();
                 resolve(error);
               });
             }
@@ -209,14 +210,14 @@ const addUser = (userObject) => new Promise((resolve, reject) => {
             (error, addedUser) => {
               if (error) {
                 connection.rollback(() => {
-                  connection.end();
+                  connection.release();
                   resolve(error);
                 });
               }
               connection.commit((error) => {
                 if (error) {
                   connection.rollback(() => {
-                    connection.end();
+                    connection.release();
                     resolve(error);
                   });
                 }
@@ -288,7 +289,7 @@ const getTrail = (trailObject) => new Promise((resolve, reject) => {
     connection.beginTransaction((error) => {
       if (error) {
         connection.rollback(() => {
-          connection.end();
+          connection.release();
           resolve(error);
         });
       }
@@ -297,7 +298,7 @@ const getTrail = (trailObject) => new Promise((resolve, reject) => {
         (error, gottenTrail) => {
           if (error) {
             connection.rollback(() => {
-              connection.end();
+              connection.release();
               resolve(error);
             });
           }
@@ -305,7 +306,7 @@ const getTrail = (trailObject) => new Promise((resolve, reject) => {
             connection.commit((error) => {
               if (error) {
                 connection.rollback(() => {
-                  connection.end();
+                  connection.release();
                   resolve(error);
                 });
               }
@@ -317,7 +318,7 @@ const getTrail = (trailObject) => new Promise((resolve, reject) => {
             connection.query(getPhotosCommand, [id], (error, gottenPhotos) => {
               if (error) {
                 connection.rollback(() => {
-                  connection.end();
+                  connection.release();
                   resolve(error);
                 });
               }
@@ -325,7 +326,7 @@ const getTrail = (trailObject) => new Promise((resolve, reject) => {
                 connection.commit((error) => {
                   if (error) {
                     connection.rollback(() => {
-                      connection.end();
+                      connection.release();
                       resolve(error);
                     });
                   }
@@ -338,7 +339,7 @@ const getTrail = (trailObject) => new Promise((resolve, reject) => {
                 connection.query(getCommentsCommand, [id], (error, gottenComments) => {
                   if (error) {
                     connection.rollback(() => {
-                      connection.end();
+                      connection.release();
                       resolve(error);
                     });
                   }
@@ -347,7 +348,7 @@ const getTrail = (trailObject) => new Promise((resolve, reject) => {
                     connection.commit((error) => {
                       if (error) {
                         connection.rollback(() => {
-                          connection.end();
+                          connection.release();
                           resolve(error);
                         });
                       }
@@ -384,14 +385,14 @@ const addTrail = (trailObject) => new Promise((resolve, reject) => {
     connection.beginTransaction((error) => {
       if (error) {
         connection.rollback(() => {
-          connection.end();
+          connection.release();
           resolve(error);
         });
       }
       connection.query(checkTrailCommand, [trailObject.api_id], (error, trailResult) => {
         if (error) {
           connection.rollback(() => {
-            connection.end();
+            connection.release();
             resolve(error);
           });
         }
@@ -399,7 +400,7 @@ const addTrail = (trailObject) => new Promise((resolve, reject) => {
           connection.commit((error) => {
             if (error) {
               connection.rollback(() => {
-                connection.end();
+                connection.release();
                 resolve(error);
               });
             }
@@ -416,14 +417,14 @@ const addTrail = (trailObject) => new Promise((resolve, reject) => {
             (error, addedTrail) => {
               if (error) {
                 connection.rollback(() => {
-                  connection.end();
+                  connection.release();
                   resolve(error);
                 });
               }
               connection.commit((error) => {
                 if (error) {
                   connection.rollback(() => {
-                    connection.end();
+                    connection.release();
                     resolve(error);
                   });
                 }
@@ -466,7 +467,7 @@ const updateTrail = (trailObject) => new Promise((resolve, reject) => {
     connection.beginTransaction((error) => {
       if (error) {
         connection.rollback(() => {
-          connection.end();
+          connection.release();
           resolve(error);
         });
       }
@@ -477,14 +478,14 @@ const updateTrail = (trailObject) => new Promise((resolve, reject) => {
         (error, updatedTrail) => {
           if (error) {
             connection.rollback(() => {
-              connection.end();
+              connection.release();
               resolve(error);
             });
           }
           connection.commit((error) => {
             if (error) {
               connection.rollback(() => {
-                connection.end();
+                connection.release();
                 resolve(error);
               });
             }
@@ -510,21 +511,21 @@ const deleteTrail = (id) => new Promise((resolve, reject) => {
     connection.beginTransaction((error) => {
       if (error) {
         connection.rollback(() => {
-          connection.end();
+          connection.release();
           resolve(error);
         });
       }
       connection.query(deleteTrailCommand, [id], (error, deletedTrailData) => {
         if (error) {
           connection.rollback(() => {
-            connection.end();
+            connection.release();
             resolve(error);
           });
         }
         connection.commit((error) => {
           if (error) {
             connection.rollback(() => {
-              connection.end();
+              connection.release();
               resolve(error);
             });
           }
@@ -571,7 +572,7 @@ const updateDifficulty = (difficultyObject) => new Promise((resolve, reject) => 
     connection.beginTransaction((error) => {
       if (error) {
         connection.rollback(() => {
-          connection.end();
+          connection.release();
           resolve(error);
         });
       }
@@ -580,7 +581,7 @@ const updateDifficulty = (difficultyObject) => new Promise((resolve, reject) => 
         (error, difficultyResult) => {
           if (error) {
             connection.rollback(() => {
-              connection.end();
+              connection.release();
               resolve(error);
             });
           }
@@ -591,7 +592,7 @@ const updateDifficulty = (difficultyObject) => new Promise((resolve, reject) => 
               [id_user, id_trail, value], (error, addDiffMessage) => {
                 if (error) {
                   connection.rollback(() => {
-                    connection.end();
+                    connection.release();
                     resolve(error);
                   });
                 }
@@ -604,7 +605,7 @@ const updateDifficulty = (difficultyObject) => new Promise((resolve, reject) => 
               (error, updateDiffMessage) => {
                 if (error) {
                   connection.rollback(() => {
-                    connection.end();
+                    connection.release();
                     resolve(error);
                   });
                 }
@@ -617,14 +618,14 @@ const updateDifficulty = (difficultyObject) => new Promise((resolve, reject) => 
             (error, newDiffAverage) => {
               if (error) {
                 connection.rollback(() => {
-                  connection.end();
+                  connection.release();
                   resolve(error);
                 });
               }
               connection.commit((error) => {
                 if (error) {
                   connection.rollback(() => {
-                    connection.end();
+                    connection.release();
                     resolve(error);
                   });
                 }
@@ -675,7 +676,7 @@ const updateLikeability = (likeabilityObject) => new Promise((resolve, reject) =
     connection.beginTransaction((error) => {
       if (error) {
         connection.rollback(() => {
-          connection.end();
+          connection.release();
           resolve(error);
         });
       }
@@ -684,7 +685,7 @@ const updateLikeability = (likeabilityObject) => new Promise((resolve, reject) =
         (error, likeabilityResult) => {
           if (error) {
             connection.rollback(() => {
-              connection.end();
+              connection.release();
               resolve(error);
             });
           }
@@ -695,7 +696,7 @@ const updateLikeability = (likeabilityObject) => new Promise((resolve, reject) =
               [id_user, id_trail, value], (error, addLikeMessage) => {
                 if (error) {
                   connection.rollback(() => {
-                    connection.end();
+                    connection.release();
                     resolve(error);
                   });
                 }
@@ -708,7 +709,7 @@ const updateLikeability = (likeabilityObject) => new Promise((resolve, reject) =
               (error, updateLikeMessage) => {
                 if (error) {
                   connection.rollback(() => {
-                    connection.end();
+                    connection.release();
                     resolve(error);
                   });
                 }
@@ -721,14 +722,14 @@ const updateLikeability = (likeabilityObject) => new Promise((resolve, reject) =
             (error, newLikeAverage) => {
               if (error) {
                 connection.rollback(() => {
-                  connection.end();
+                  connection.release();
                   resolve(error);
                 });
               }
               connection.commit((error) => {
                 if (error) {
                   connection.rollback(() => {
-                    connection.end();
+                    connection.release();
                     resolve(error);
                   });
                 }
@@ -761,7 +762,7 @@ const addComment = (commentObject) => new Promise((resolve, reject) => {
     connection.beginTransaction((error) => {
       if (error) {
         connection.rollback(() => {
-          connection.end();
+          connection.release();
           resolve(error);
         });
       }
@@ -770,14 +771,14 @@ const addComment = (commentObject) => new Promise((resolve, reject) => {
         (error, addedComment) => {
           if (error) {
             connection.rollback(() => {
-              connection.end();
+              connection.release();
               resolve(error);
             });
           }
           connection.commit((error) => {
             if (error) {
               connection.rollback(() => {
-                connection.end();
+                connection.release();
                 resolve(error);
               });
             }
@@ -806,7 +807,7 @@ const addPhoto = (photoObject) => new Promise((resolve, reject) => {
     connection.beginTransaction((error) => {
       if (error) {
         connection.rollback(() => {
-          connection.end();
+          connection.release();
           resolve(error);
         });
       }
@@ -816,14 +817,14 @@ const addPhoto = (photoObject) => new Promise((resolve, reject) => {
         (error, addedPhoto) => {
           if (error) {
             connection.rollback(() => {
-              connection.end();
+              connection.release();
               resolve(error);
             });
           }
           connection.commit((error) => {
             if (error) {
               connection.rollback(() => {
-                connection.end();
+                connection.release();
                 resolve(error);
               });
             }
@@ -850,21 +851,21 @@ const deleteComment = (id) => new Promise((resolve, reject) => {
     connection.beginTransaction((error) => {
       if (error) {
         connection.rollback(() => {
-          connection.end();
+          connection.release();
           resolve(error);
         });
       }
       connection.query(deleteCommentCommand, [id], (error, deletedCommentData) => {
         if (error) {
           connection.rollback(() => {
-            connection.end();
+            connection.release();
             resolve(error);
           });
         }
         connection.commit((error) => {
           if (error) {
             connection.rollback(() => {
-              connection.end();
+              connection.release();
               resolve(error);
             });
           }
@@ -894,28 +895,28 @@ const deletePhoto = (id) => new Promise((resolve, reject) => {
     connection.beginTransaction((error) => {
       if (error) {
         connection.rollback(() => {
-          connection.end();
+          connection.release();
           resolve(error);
         });
       }
       connection.query(deleteCommentsCommand, [id], (error, deletedCommentData) => {
         if (error) {
           connection.rollback(() => {
-            connection.end();
+            connection.release();
             resolve(error);
           });
         }
         connection.query(deletePhotoCommand, [id], (error, deletedPhotoData) => {
           if (error) {
             connection.rollback(() => {
-              connection.end();
+              connection.release();
               resolve(error);
             });
           }
           connection.commit((error) => {
             if (error) {
               connection.rollback(() => {
-                connection.end();
+                connection.release();
                 resolve(error);
               });
             }
@@ -948,7 +949,7 @@ const addFavorite = (favoriteObject) => new Promise((resolve, reject) => {
     connection.beginTransaction((error) => {
       if (error) {
         connection.rollback(() => {
-          connection.end();
+          connection.release();
           resolve(error);
         });
       }
@@ -957,14 +958,14 @@ const addFavorite = (favoriteObject) => new Promise((resolve, reject) => {
         (error, addedFavorite) => {
           if (error) {
             connection.rollback(() => {
-              connection.end();
+              connection.release();
               resolve(error);
             });
           }
           connection.commit((error) => {
             if (error) {
               connection.rollback(() => {
-                connection.end();
+                connection.release();
                 resolve(error);
               });
             }
@@ -993,7 +994,7 @@ const deleteFavorite = (favoriteObject) => new Promise((resolve, reject) => {
     connection.beginTransaction((error) => {
       if (error) {
         connection.rollback(() => {
-          connection.end();
+          connection.release();
           resolve(error);
         });
       }
@@ -1002,14 +1003,14 @@ const deleteFavorite = (favoriteObject) => new Promise((resolve, reject) => {
         (error, deletedFavoriteData) => {
           if (error) {
             connection.rollback(() => {
-              connection.end();
+              connection.release();
               resolve(error);
             });
           }
           connection.commit((error) => {
             if (error) {
               connection.rollback(() => {
-                connection.end();
+                connection.release();
                 resolve(error);
               });
             }
@@ -1036,7 +1037,7 @@ const updateComment = (commentObject) => new Promise((resolve, reject) => {
     connection.beginTransaction((error) => {
       if (error) {
         connection.rollback(() => {
-          connection.end();
+          connection.release();
           resolve(error);
         });
       }
@@ -1045,14 +1046,14 @@ const updateComment = (commentObject) => new Promise((resolve, reject) => {
         (error, updatedComment) => {
           if (error) {
             connection.rollback(() => {
-              connection.end();
+              connection.release();
               resolve(error);
             });
           }
           connection.commit((error) => {
             if (error) {
               connection.rollback(() => {
-                connection.end();
+                connection.release();
                 resolve(error);
               });
             }
