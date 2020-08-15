@@ -3,7 +3,6 @@ const { Router } = require('express');
 
 // import passport library to file
 const passport = require('passport');
-// const { restart } = require('nodemon');
 
 // set local variable to a new instance of express router
 const authRouter = Router();
