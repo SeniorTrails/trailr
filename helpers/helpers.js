@@ -31,6 +31,13 @@ const uploadImage = (file) => new Promise((resolve, reject) => {
     .end(buffer);
 });
 
+/**
+ * Checks to see if a user is logged in to protect api routes
+ * @param {Object} user req.user
+ */
+const authChecker = (user) => !!user;
+
 module.exports = {
   uploadImage,
+  authChecker,
 };
