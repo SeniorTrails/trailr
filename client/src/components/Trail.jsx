@@ -1,16 +1,43 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Redirect, useParams } from 'react-router-dom';
+import styled from 'styled-components';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Image from 'react-bootstrap/Image';
 import Badge from 'react-bootstrap/Badge';
-import { getTrailData, updateUserRating } from '../helpers';
+import { Heart, HeartFill } from 'react-bootstrap-icons';
+import { getTrailData, updateUserRating, updateFavorite, getFavoriteStatus } from '../helpers';
 import Input from './input.jsx';
 import Map from './TrailMap.jsx';
 import Carousel from './Carousel.jsx';
 import AddComment from './AddComment.jsx';
 import AddPicture from './AddPicture.jsx';
+
+const StyledHeart = styled(Heart)`
+  color: #00470F;
+  :hover {
+    color: #008a1d;
+  }
+`;
+
+const StyledFillHeart = styled(HeartFill)`
+  color: #00470F;
+  :hover {
+    color: #008a1d;
+  }
+`;
+
+// Favorite Heart Component
+const FavHeart = ({fav, ch}) => (
+  <>
+    {fav ? <StyledFillHeart onClick={ch} /> : <StyledHeart onClick={ch} />}
+  </>
+);
+FavHeart.propTypes = {
+  fav: PropTypes.bool.isRequired,
+  ch: PropTypes.func.isRequired,
+};
 
 // Options for the ratings selector
 const ratingOptions = [
@@ -40,7 +67,11 @@ const parseTrailData = (data) => {
     likeability: data.averageLikeability,
     thumbnail: data.thumbnail,
   };
-  const photoData = data.photos;
+  // Sorts the photos by newest closest to the picture
+  const photoData = data.photos.map((photo) => {
+    const sorted = photo.comments.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+    return { ...photo, comments: sorted };
+  });
   const userRatingData = { diff: data.userDifficulty, like: data.userLikeability };
   return {
     photoData,
@@ -59,6 +90,7 @@ const trail = ({ user }) => {
   const [photoInfo, setPhotoInfo] = useState([]);
   const [userRatings, setUserRatings] = useState({});
   const [currentPhoto, setCurrentPhoto] = useState(0);
+  const [favorite, setFavorite] = useState(false);
   const [redirect, setRedirect] = useState(false);
   // Redirect if no trail info is found
 
@@ -72,8 +104,6 @@ const trail = ({ user }) => {
           const { photoData, userRatingData, trailData } = parseTrailData(response);
           setTrailInfo(trailData);
           setPhotoInfo(photoData);
-          // console.log(user.loggedIn)
-          // Check if User is logged in to set User ratings
           setUserRatings({
             userLoaded: true,
             like: {
@@ -91,6 +121,18 @@ const trail = ({ user }) => {
         setRedirect(true);
       });
   }, []);
+
+  useEffect(() => {
+    if (user.loggedIn) {
+      getFavoriteStatus(id, user.id)
+        .then((status) => {
+          setFavorite(status);
+        })
+        .catch((err) => {
+          console.error(err);
+        });
+    }
+  }, [user]);
 
   /**
    * Toggles wether the rating is editable based on user clicks, if it is
@@ -114,7 +156,6 @@ const trail = ({ user }) => {
    * @param {Object} target input element to use to update the DB
    */
   const changeHandler = ({ target }) => {
-    // USER ID IS HARD CODED FIX THIS
     if (target.value !== 'Rate this trail:') {
       const numValue = +target.value;
       updateUserRating(target.name, numValue, user.id, id)
@@ -136,7 +177,7 @@ const trail = ({ user }) => {
         .catch((err) => {
           console.error(err);
         });
-      }
+    }
   };
 
   /**
@@ -195,13 +236,26 @@ const trail = ({ user }) => {
     }
   };
 
+  const toggleFavorite = () => {
+    updateFavorite(id, user.id, favorite)
+      .then((response) => {
+        setFavorite((prev) => !prev);
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  };
+
   return (
     <>
       {redirect ? <Redirect to="/404" /> : null}
       <Col xs={6}>
         <Row>
-          <Col xs={9}>
-            <h2>{trailInfo.name}</h2>
+          <Col xs={8}>
+            <h2>{trailInfo.name} {!user.loggedIn
+              ? null
+              : <FavHeart fav={favorite} ch={toggleFavorite} />}
+            </h2>
           </Col>
           <Col xs={3}>
             {!user.loggedIn
