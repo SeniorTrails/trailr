@@ -75,13 +75,12 @@ const MapWithASearchBox = React.memo(() => {
     };
     window.addEventListener('keydown', listener);
 
-    if (!geolocation) {
-      navigator.geolocation.getCurrentPosition((position) => {
-        const { latitude, longitude } = position.coords;
-        setUserLocation({ lat: latitude, lng: longitude });
-        setGeolocation(true);
-      });
-    }
+    navigator.geolocation.getCurrentPosition((position) => {
+      const { latitude, longitude } = position.coords;
+      setUserLocation({ lat: latitude, lng: longitude });
+      setGeolocation(true);
+    });
+
     return () => {
       window.removeEventListener('keydown', listener);
     };
