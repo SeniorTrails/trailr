@@ -24,7 +24,7 @@ const {
 } = require('../../database/index.js');
 
 // import GCS functions
-const { uploadImage } = require('../../helpers/helpers');
+const { uploadImage, authChecker } = require('../../helpers/helpers');
 
 // set local variable to  a new instance of express router
 const router = Router();
@@ -167,14 +167,19 @@ router.post('/trails', (req, res) => {
 */
 router.post('/comments', (req, res) => {
   const { body } = req;
-  addComment(body)
-    .then((success) => {
-      res.send(success);
-    })
-    .catch((error) => {
-      res.sendStatus(500);
-      throw error;
-    });
+  if (authChecker(req.user)) {
+    addComment(body)
+      .then((success) => {
+        res.send(success);
+      })
+      .catch((error) => {
+        res.sendStatus(500);
+        throw error;
+      });
+  } else {
+    // Not Authorized
+    res.sendStatus(401);
+  }
 });
 
 /*
@@ -187,14 +192,19 @@ router.post('/comments', (req, res) => {
 */
 router.post('/photos', (req, res) => {
   const { body } = req;
-  addPhoto(body)
-    .then((success) => {
-      res.send(success);
-    })
-    .catch((error) => {
-      res.sendStatus(500);
-      throw error;
-    });
+  if (authChecker(req.user)) {
+    addPhoto(body)
+      .then((success) => {
+        res.send(success);
+      })
+      .catch((error) => {
+        res.sendStatus(500);
+        throw error;
+      });
+  } else {
+    // Not Authorized
+    res.sendStatus(401);
+  }
 });
 
 /*
@@ -211,41 +221,46 @@ router.post('/photos', (req, res) => {
 * returns - an object with newly added photo id
 */
 router.post('/uploads', (req, res) => {
-  const myFile = req.file;
-  const {
-    latitude, longitude, userId, trailId,
-  } = req.body;
-  uploadImage(myFile)
-    .then((photoUrl) => {
-      addPhoto({
-        url: photoUrl,
-        lat: +latitude,
-        lng: +longitude,
-        id_user: +userId,
-        id_trail: +trailId,
-      })
-        .then((success) => {
-          console.log('addPhoto in uploadImage worked', success);
-          res.json({
-            message: 'Upload was successful',
-            img: {
-              url: `${photoUrl}`,
-              id: success.id,
-              lat: +latitude,
-              lng: +longitude,
-              id_user: +userId,
-              id_trail: +trailId,
-            },
-          });
-          res.send();
+  if (authChecker(req.user)) {
+    const myFile = req.file;
+    const {
+      latitude, longitude, userId, trailId,
+    } = req.body;
+    uploadImage(myFile)
+      .then((photoUrl) => {
+        addPhoto({
+          url: photoUrl,
+          lat: +latitude,
+          lng: +longitude,
+          id_user: +userId,
+          id_trail: +trailId,
         })
-        .catch((error) => {
-          throw error;
-        });
-    })
-    .catch((error) => {
-      throw error;
-    });
+          .then((success) => {
+            console.log('addPhoto in uploadImage worked', success);
+            res.json({
+              message: 'Upload was successful',
+              img: {
+                url: `${photoUrl}`,
+                id: success.id,
+                lat: +latitude,
+                lng: +longitude,
+                id_user: +userId,
+                id_trail: +trailId,
+              },
+            });
+            res.send();
+          })
+          .catch((error) => {
+            throw error;
+          });
+      })
+      .catch((error) => {
+        throw error;
+      });
+  } else {
+    // Not Authorized
+    res.sendStatus(401);
+  }
 });
 
 /*
@@ -257,15 +272,20 @@ router.post('/uploads', (req, res) => {
 * returns - returns an object with id of newly added favorite trail
 */
 router.post('/favorites', (req, res) => {
-  const { body } = req;
-  addFavorite(body)
-    .then((success) => {
-      res.send(success);
-    })
-    .catch((error) => {
-      res.sendStatus(500);
-      throw error;
-    });
+  if (authChecker(req.user)) {
+    const { body } = req;
+    addFavorite(body)
+      .then((success) => {
+        res.send(success);
+      })
+      .catch((error) => {
+        res.sendStatus(500);
+        throw error;
+      });
+  } else {
+    // Not Authorized
+    res.sendStatus(401);
+  }
 });
 
 /* PUT Requests Handlers */
@@ -279,15 +299,20 @@ router.post('/favorites', (req, res) => {
 * returns - ??????????????
 */
 router.put('/trails', (req, res) => {
-  const { body } = req;
-  updateTrail(body)
-    .then((success) => {
-      res.send(success);
-    })
-    .catch((error) => {
-      res.sendStatus(500);
-      throw error;
-    });
+  if (authChecker(req.user)) {
+    const { body } = req;
+    updateTrail(body)
+      .then((success) => {
+        res.send(success);
+      })
+      .catch((error) => {
+        res.sendStatus(500);
+        throw error;
+      });
+  } else {
+    // Not Authorized
+    res.sendStatus(401);
+  }
 });
 
 /*
@@ -299,15 +324,20 @@ router.put('/trails', (req, res) => {
 * returns - returns an object with new average of difficulty ratings for trail
 */
 router.put('/difficulty', (req, res) => {
-  const { body } = req;
-  updateDifficulty(body)
-    .then((success) => {
-      res.send(success);
-    })
-    .catch((error) => {
-      res.sendStatus(500);
-      throw error;
-    });
+  if (authChecker(req.user)) {
+    const { body } = req;
+    updateDifficulty(body)
+      .then((success) => {
+        res.send(success);
+      })
+      .catch((error) => {
+        res.sendStatus(500);
+        throw error;
+      });
+  } else {
+    // Not Authorized
+    res.sendStatus(401);
+  }
 });
 
 /*
@@ -320,14 +350,19 @@ router.put('/difficulty', (req, res) => {
 */
 router.put('/likeability', (req, res) => {
   const { body } = req;
-  updateLikeability(body)
-    .then((success) => {
-      res.send(success);
-    })
-    .catch((error) => {
-      res.sendStatus(500);
-      throw error;
-    });
+  if (authChecker(req.user)) {
+    updateLikeability(body)
+      .then((success) => {
+        res.send(success);
+      })
+      .catch((error) => {
+        res.sendStatus(500);
+        throw error;
+      });
+  } else {
+    // Not Authorized
+    res.sendStatus(401);
+  }
 });
 
 /*
@@ -339,15 +374,20 @@ router.put('/likeability', (req, res) => {
 * returns - returns an object with new user comments for trail, "updatedComment"
 */
 router.put('/comments', (req, res) => {
-  const { body } = req;
-  updateComment(body)
-    .then((success) => {
-      res.send(success);
-    })
-    .catch((error) => {
-      res.sendStatus(500);
-      throw error;
-    });
+  if (authChecker(req.user)) {
+    const { body } = req;
+    updateComment(body)
+      .then((success) => {
+        res.send(success);
+      })
+      .catch((error) => {
+        res.sendStatus(500);
+        throw error;
+      });
+  } else {
+    // Not Authorized
+    res.sendStatus(401);
+  }
 });
 
 /*  DELETE Requests Handlers */
@@ -360,15 +400,20 @@ router.put('/comments', (req, res) => {
 * returns - sends back table information for affected rows, "deletedTrailData"
 */
 router.delete('/trails/:id', (req, res) => {
-  const { id } = req.params;
-  deleteTrail(id)
-    .then((success) => {
-      res.send(success);
-    })
-    .catch((error) => {
-      res.sendStatus(500);
-      throw error;
-    });
+  if (authChecker(req.user)) {
+    const { id } = req.params;
+    deleteTrail(id)
+      .then((success) => {
+        res.send(success);
+      })
+      .catch((error) => {
+        res.sendStatus(500);
+        throw error;
+      });
+  } else {
+    // Not Authorized
+    res.sendStatus(401);
+  }
 });
 
 /*
@@ -379,15 +424,20 @@ router.delete('/trails/:id', (req, res) => {
 * returns - sends back table information for affected rows, "deletionResults"
 */
 router.delete('/photos/:id', (req, res) => {
-  const { id } = req.params;
-  deletePhoto(id)
-    .then((success) => {
-      res.send(success);
-    })
-    .catch((error) => {
-      res.sendStatus(500);
-      throw error;
-    });
+  if (authChecker(req.user)) {
+    const { id } = req.params;
+    deletePhoto(id)
+      .then((success) => {
+        res.send(success);
+      })
+      .catch((error) => {
+        res.sendStatus(500);
+        throw error;
+      });
+  } else {
+    // Not Authorized
+    res.sendStatus(401);
+  }
 });
 
 /*
@@ -398,15 +448,20 @@ router.delete('/photos/:id', (req, res) => {
 * returns - sends back table information for affected rows, "deletedCommentData"
 */
 router.delete('/comments/:id', (req, res) => {
-  const { id } = req.params;
-  deleteComment(id)
-    .then((success) => {
-      res.send(success);
-    })
-    .catch((error) => {
-      res.sendStatus(500);
-      throw error;
-    });
+  if (authChecker(req.user)) {
+    const { id } = req.params;
+    deleteComment(id)
+      .then((success) => {
+        res.send(success);
+      })
+      .catch((error) => {
+        res.sendStatus(500);
+        throw error;
+      });
+  } else {
+    // Not Authorized
+    res.sendStatus(401);
+  }
 });
 
 /*
@@ -418,15 +473,20 @@ router.delete('/comments/:id', (req, res) => {
 * returns - sends back table information for affected rows, "deletedFavoriteData"
 */
 router.delete('/favorites', (req, res) => {
-  const { body } = req;
-  deleteFavorite(body)
-    .then((success) => {
-      res.send(success);
-    })
-    .catch((error) => {
-      res.sendStatus(500);
-      throw error;
-    });
+  if (authChecker(req.user)) {
+    const { body } = req;
+    deleteFavorite(body)
+      .then((success) => {
+        res.send(success);
+      })
+      .catch((error) => {
+        res.sendStatus(500);
+        throw error;
+      });
+  } else {
+    // Not Authorized
+    res.sendStatus(401);
+  }
 });
 
 // export "router" variable to be used in other project files
