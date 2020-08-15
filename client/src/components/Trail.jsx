@@ -208,11 +208,10 @@ const trail = ({ user }) => {
    */
   const appendPhoto = (newPhotos) => {
     const updatedInfo = [...photoInfo];
-    Object.keys(newPhotos).forEach((key) => {
+    newPhotos.forEach((item) => {
       updatedInfo.push({
-        ...newPhotos[key],
+        ...item,
         comments: [],
-        id: photoInfo.length + 1,
       });
     });
     setPhotoInfo(updatedInfo);
@@ -264,6 +263,8 @@ const trail = ({ user }) => {
                 <AddPicture
                   appendPhoto={appendPhoto}
                   center={{ lat: trailInfo.lat, lng: trailInfo.lon }}
+                  userId={user.id}
+                  trailId={+id}
                 />
               )}
           </Col>

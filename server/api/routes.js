@@ -210,22 +210,34 @@ router.post('/photos', (req, res) => {
 */
 router.post('/uploads', (req, res) => {
   const myFile = req.file;
+  const { latitude, longitude, userId, trailId } = req.body;
   uploadImage(myFile)
     .then((photoUrl) => {
       addPhoto({
         url: photoUrl,
+        lat: +latitude,
+        lng: +longitude,
+        id_user: +userId,
+        id_trail: +trailId,
       })
         .then((success) => {
           console.log('addPhoto in uploadImage worked', success);
+          res.json({
+            message: 'Upload was successful',
+            img: {
+              url: `${photoUrl}`,
+              id: success.id,
+              lat: +latitude,
+              lng: +longitude,
+              id_user: +userId,
+              id_trail: +trailId,
+            },
+          });
+          res.send();
         })
         .catch((error) => {
           throw error;
         });
-      res.json({
-        message: 'Upload was successful',
-        data: `${photoUrl}`,
-      });
-      res.send();
     })
     .catch((error) => {
       throw error;

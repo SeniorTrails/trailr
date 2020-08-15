@@ -28,7 +28,7 @@ const maxImageSize = 5 * 1024 * 1024; // 5MBs
  * @param {Function} appendPhoto function that adds photos to the trail
  * @param {Object} center contains a lat and lng to center the maps on if no gps data
  */
-const addPicture = ({ appendPhoto, center }) => {
+const addPicture = ({ appendPhoto, center, userId, trailId }) => {
   const [show, setShow] = useState(false);
   const [images, setImages] = useState({});
   const toggleModal = () => setShow(!show);
@@ -105,27 +105,13 @@ const addPicture = ({ appendPhoto, center }) => {
     });
   };
 
-  /**
-   * Uploads the images to the database, and calls appendPhoto
-   */
-  const submitHandler = () => {
-    const filesArray = Object.keys(images).map((key) => images[key]);
-    Promise.all(filesArray.map((file) => imagePromiseUploader(file)))
-      .then((urls) => {
-        console.log(urls);
-      })
-      .catch((err) => {
-        console.error(err);
-      });
-
-    toggleModal();
-    appendPhoto(images);
-  };
-
   const imagePromiseUploader = (file) => new Promise((resolve, reject) => {
     const formData = new FormData();
-    console.log(file);
     formData.append('file', file.file);
+    formData.append('latitude', file.lat);
+    formData.append('longitude', file.lng);
+    formData.append('userId', userId);
+    formData.append('trailId', trailId);
     uploadPhoto(formData)
       .then((url) => {
         resolve(url);
@@ -134,6 +120,22 @@ const addPicture = ({ appendPhoto, center }) => {
         reject(err);
       });
   });
+
+  /**
+   * Uploads the images to the database, and calls appendPhoto
+   */
+  const submitHandler = () => {
+    toggleModal();
+    const filesArray = Object.keys(images).map((key) => images[key]);
+    Promise.all(filesArray.map((file) => imagePromiseUploader(file)))
+      .then((response) => {
+        const newImages = response.map(i => i.img);
+        appendPhoto(newImages);
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  };
 
   return (
     <>
@@ -181,4 +183,6 @@ addPicture.propTypes = {
     lat: PropTypes.number,
     lng: PropTypes.number,
   }).isRequired,
+  userId: PropTypes.number.isRequired,
+  trailId: PropTypes.number.isRequired,
 };
