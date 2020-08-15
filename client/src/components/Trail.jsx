@@ -189,14 +189,14 @@ const trail = ({ user }) => {
   };
 
   /**
-   * After the DB call this appends the new comment to the photo for the user,
+   * After the DB call this adds the new comment to the photo for the user,
    *  so that we don't have to make additional DB calls
    * @param {Object} newComment comment to add to the photo
    */
   const appendComments = (newComment) => {
     const updatedInfo = [...photoInfo];
     const updatedPhoto = { ...updatedInfo[currentPhoto] };
-    updatedPhoto.comments.push({ ...newComment });
+    updatedPhoto.comments.unshift({ ...newComment });
     updatedInfo[currentPhoto] = updatedPhoto;
     setPhotoInfo(updatedInfo);
   };
