@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import Button from 'react-bootstrap/Button';
-import { deleteComment } from '../helpers';
+import Input from './input.jsx';
+import { deleteComment, useForm } from '../helpers';
 
 /**
  * A single comment with a username
@@ -9,6 +10,11 @@ import { deleteComment } from '../helpers';
  * @param {Object} user loggedIn, name, id
  */
 const comment = ({ info, user }) => {
+  const [edit, setEdit] = useState(false);
+  const submitComment = (text) => {
+    console.log(text);
+  };
+  const { submitHandler, changeHandler, values } = useForm(submitComment);
   const deleteHandler = () => {
     deleteComment(info.id)
       .then((response) => {
@@ -18,18 +24,33 @@ const comment = ({ info, user }) => {
         console.error(err);
       });
   };
+
+  const editToggle = () => {
+    values.comment = info.text;
+    setEdit((prev) => !prev);
+  };
+
   const { text, name } = info;
   return (
     <>
-      <blockquote className="blockquote">
-        <p className="mb-0">{text}</p>
-        <footer className="blockquote-footer">{name}</footer>
-      </blockquote>
+      {!edit
+        ? (
+          <blockquote className="blockquote">
+            <p className="mb-0">{text}</p>
+            <footer className="blockquote-footer">{name}</footer>
+          </blockquote>
+        )
+        : (
+          <>
+            <Input value={values.comment} changeHandler={changeHandler} name="comment" label="" type="textarea" />
+            <Button variant="success" onClick={submitHandler}>Submit</Button>
+          </>
+        )}
       {user.loggedIn && user.id === info.id_user
         ? (
           <>
             <Button variant="danger" onClick={deleteHandler}>Delete Comment</Button>
-            <Button variant="info">Update Comment</Button>
+            <Button variant="info" onClick={editToggle}>{edit ? 'Cancel' : 'Update Comment'}</Button>
           </>
         )
         : null}
