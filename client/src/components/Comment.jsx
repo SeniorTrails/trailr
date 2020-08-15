@@ -9,7 +9,7 @@ import { deleteComment, useForm, updateComment } from '../helpers';
  * @param {Object} info comment to be displayed
  * @param {Object} user loggedIn, name, id
  */
-const commentComponent = ({ info, user }) => {
+const commentComponent = ({ info, user, removeComment }) => {
   const [edit, setEdit] = useState(false);
   const [text, setText] = useState(info.text);
 
@@ -27,7 +27,7 @@ const commentComponent = ({ info, user }) => {
   const deleteHandler = () => {
     deleteComment(info.id)
       .then((response) => {
-        console.log(response);
+        removeComment();
       })
       .catch((err) => {
         console.error(err);
@@ -81,4 +81,5 @@ commentComponent.propTypes = {
     name: PropTypes.string,
     id: PropTypes.number,
   }).isRequired,
+  removeComment: PropTypes.func.isRequired,
 };

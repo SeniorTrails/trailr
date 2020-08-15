@@ -19,7 +19,7 @@ const addComment = ({ appendComments, userId, photoId, name }) => {
   const commentSubmit = ({ text }) => {
     addCommentToPhoto(text, userId, photoId)
       .then(({ id }) => {
-        appendComments({ text, id: +id, name });
+        appendComments({ text, id: +id, name, id_user: userId });
       })
       .catch((err) => {
         console.error(err);
