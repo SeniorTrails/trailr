@@ -3,27 +3,35 @@ const { Router } = require('express');
 
 // import passport library to file
 const passport = require('passport');
-const { restart } = require('nodemon');
+// const { restart } = require('nodemon');
 
-// set local variable to  a new instance of express router
+// set local variable to a new instance of express router
 const authRouter = Router();
 
-// create login route
+/**
+ * login route for users to begin a new session
+ * sends Login.jsx to DOM
+ * finish by redirecting user to homepage "/"
+ */
 authRouter.get('/login', (req, res) => {
-  // add in passport handler for logout here
-  res.send('Login'); // sends Login.jsx to DOM
-  // finish with redirect to "/"
+  res.send('Login');
+  res.redirect('/');
 });
 
-// create logout route
+/**
+ * logout route for users to end current session
+ * terminate current user session & remove the req.user property
+ * perform logout operation by destroying current user session
+ * finish by redirecting user to homepage "/"
+ */
+
 authRouter.get('/logout', (req, res) => {
-  // add in passport handler for logout here
   req.logOut();
   req.session.destroy();
   res.redirect('/');
-  // finish with redirect to "/"
 });
 
+// use passport sessions method to keep track of a logged in user associated with a given session
 authRouter.get('/session', (req, res) => {
   if (req.session.passport) {
     res.status(200).json(req.session.passport);
@@ -33,18 +41,27 @@ authRouter.get('/session', (req, res) => {
 });
 
 /* ------------------------------ Google Auth Route && Redirect --------------------------------- */
-// authenticate user with google 3rd party
+
+/**
+ * authenticate users with google 3rd party authentication
+ * redirect users to google authenticate screen
+ * retrieve the users profile information
+ */
+
 authRouter.get('/google',
-// redirect users to google authenticate screen
   passport.authenticate('google', {
-    // retrieve the users profile information
     scope: ['profile'],
   }));
 
-// callback route for google to redirect to homepage "/"
+/**
+ * google callback route returns users to home screen following google authentication
+ * utilize passport.authenticate function to authenticate  user via google
+ * retrieve the users profile information
+ * finish by redirecting user back to homepage "/"
+ */
+
 authRouter.get('/google/redirect', passport.authenticate('google'), (req, res) => {
-  res.redirect('/'); // this works sending back to home screen
-  // res.send('You reached the callback URI'); // this works
+  res.redirect('/');
 });
 
 // export "authRouter" variable to be used in other project files
