@@ -145,6 +145,7 @@ const getUser = (id) => new Promise((resolve, reject) => {
                         });
                       }
                       resolve(user);
+                      connection.release();
                     });
                   }
                 });
@@ -154,7 +155,6 @@ const getUser = (id) => new Promise((resolve, reject) => {
         }
       });
     });
-    connection.release();
   });
 });
 
@@ -229,7 +229,6 @@ const addUser = (userObject) => new Promise((resolve, reject) => {
         }
       });
     });
-    connection.release();
   });
 });
 
@@ -362,7 +361,6 @@ const getTrail = (trailObject) => new Promise((resolve, reject) => {
           }
         });
     });
-    connection.release();
   });
 });
 
@@ -439,7 +437,6 @@ const addTrail = (trailObject) => new Promise((resolve, reject) => {
         }
       });
     });
-    connection.release();
   });
 });
 
@@ -497,7 +494,6 @@ const updateTrail = (trailObject) => new Promise((resolve, reject) => {
           });
         });
     });
-    connection.release();
   });
 });
 
@@ -537,7 +533,6 @@ const deleteTrail = (id) => new Promise((resolve, reject) => {
         });
       });
     });
-    connection.release();
   });
 });
 
@@ -642,7 +637,6 @@ const updateDifficulty = (difficultyObject) => new Promise((resolve, reject) => 
             });
         });
     });
-    connection.release();
   });
 });
 
@@ -747,7 +741,6 @@ const updateLikeability = (likeabilityObject) => new Promise((resolve, reject) =
             });
         });
     });
-    connection.release();
   });
 });
 
@@ -795,7 +788,6 @@ const addComment = (commentObject) => new Promise((resolve, reject) => {
           });
         });
     });
-    connection.release();
   });
 });
 
@@ -842,7 +834,6 @@ const addPhoto = (photoObject) => new Promise((resolve, reject) => {
           });
         });
     });
-    connection.release();
   });
 });
 
@@ -882,7 +873,6 @@ const deleteComment = (id) => new Promise((resolve, reject) => {
         });
       });
     });
-    connection.release();
   });
 });
 
@@ -937,7 +927,6 @@ const deletePhoto = (id) => new Promise((resolve, reject) => {
         });
       });
     });
-    connection.release();
   });
 });
 
@@ -986,7 +975,6 @@ const addFavorite = (favoriteObject) => new Promise((resolve, reject) => {
           });
         });
     });
-    connection.release();
   });
 });
 
@@ -1030,7 +1018,6 @@ const deleteFavorite = (favoriteObject) => new Promise((resolve, reject) => {
           });
         });
     });
-    connection.release();
   });
 });
 
@@ -1074,7 +1061,6 @@ const updateComment = (commentObject) => new Promise((resolve, reject) => {
           });
         });
     });
-    connection.release();
   });
 });
 
