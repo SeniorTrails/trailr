@@ -41,6 +41,12 @@ const carousel = ({ photos, currentPhoto, changeCurrentPhoto, user }) => {
       });
   };
 
+  const deleteComment = (index) => {
+    const updatedComments = [...comments];
+    updatedComments.splice(index, 1);
+    setComments(updatedComments);
+  };
+
   return (
     <div>
       {!photo.url ? null : <Photo info={photo} />}
@@ -66,7 +72,14 @@ const carousel = ({ photos, currentPhoto, changeCurrentPhoto, user }) => {
       </Row>
       {!comments
         ? null
-        : comments.map((i) => <Comment key={i.id} info={i} user={user} />)}
+        : comments.map((comment, i) => (
+          <Comment
+            key={comment.id}
+            removeComment={() => deleteComment(i)}
+            info={comment}
+            user={user}
+          />
+        ))}
 
     </div>
   );

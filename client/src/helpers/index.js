@@ -242,3 +242,20 @@ export const getFavoriteStatus = (trailId, userId) => new Promise((resolve, reje
       reject(err);
     });
 });
+
+export const updateComment = (id, text) => new Promise((resolve, reject) => {
+  axios({
+    method: 'put',
+    url: '/api/comments',
+    data: {
+      id,
+      text,
+    },
+  })
+    .then((response) => {
+      resolve(response);
+    })
+    .catch((err) => {
+      reject(err);
+    });
+})
