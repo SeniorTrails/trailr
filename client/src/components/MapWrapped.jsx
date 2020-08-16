@@ -116,6 +116,10 @@ const MapWithASearchBox = React.memo(() => {
       setMapApi(maps);
       setMapApiLoaded(true);
       const googleRef = maps;
+      /**
+       * Uses @google/markerclusterer. We use current locations of trails
+       * with lat/lng instead of lat/lon and create Marker Clusters.
+       */
       if (places) {
         const locations = places.reduce((coordinates, currentTrail) => {
           coordinates.push({ lat: +currentTrail.lat, lng: +currentTrail.lon });
