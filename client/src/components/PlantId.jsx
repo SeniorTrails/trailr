@@ -13,7 +13,7 @@ const PlantId = ({ trailId, userId }) => {
 
   useEffect(() => {
     postToServer(plantScientificName, plantCommonName, plantWikiUrl, plantPhoto);
-  }), [plantPhoto];
+  }, [plantPhoto]);
 
   const handleInput = (files) => {
     setPlantFile(files);
@@ -39,72 +39,45 @@ const PlantId = ({ trailId, userId }) => {
   };
 
   const postPlantIdPic = () => {
-    const data = {
-      api_key: process.env.PLANT_ID_API_KEY,
-      images: [plantFile.base64.slice(23)],
-      modifiers: ['crops_fast', 'similar_images'],
-      plant_language: 'en',
-      plant_details: ['common_names',
-        'url',
-        'name_authority',
-        'wiki_description',
-        'taxonomy',
-        'synonyms'],
-    };
-    fetch('https://api.plant.id/v2/identify', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
-    })
-      .then((response) => response.json())
-      .then((responseData) => {
-        // console.log('Success:', JSON.stringify(responseData));
-        // console.log('this is responsedata', responseData);
-        const { url, scientific_name, common_names } = responseData.suggestions[0].plant_details;
-        setScientificName(scientific_name);
-        setCommonName(common_names[0]);
-        setWikiUrl(url);
-        setPlantPhoto(responseData.images[0].url);
-      })
-      .catch((err) => console.log('no dice', err));
-    // .catch((error) => {
-    //   console.error('Error:', error);
-    // });
+    // const data = {
+    //   api_key: process.env.PLANT_ID_API_KEY,
+    //   images: [plantFile.base64.slice(23)],
+    //   modifiers: ['crops_fast', 'similar_images'],
+    //   plant_language: 'en',
+    //   plant_details: ['common_names',
+    //     'url',
+    //     'name_authority',
+    //     'wiki_description',
+    //     'taxonomy',
+    //     'synonyms'],
+    // };
+    // fetch('https://api.plant.id/v2/identify', {
+    //   method: 'POST',
+    //   headers: {
+    //     'Content-Type': 'application/json',
+    //   },
+    //   body: JSON.stringify(data),
+    // })
+    //   .then((response) => response.json())
+    //   .then((responseData) => {
+    //     // console.log('Success:', JSON.stringify(responseData));
+    //     // console.log('this is responsedata', responseData);
+    //     const { url, scientific_name, common_names } = responseData.suggestions[0].plant_details;
+    //     setScientificName(scientific_name);
+    //     setCommonName(common_names[0]);
+    //     setWikiUrl(url);
+    //     setPlantPhoto(responseData.images[0].url);
+    //   })
+    //   .catch((err) => console.log('no dice', err));
     // console.log(PlantIdData);
     // console.log(PlantIdData.default.suggestions[0].plant_details.url);
     // const { url, scientific_name, common_names } = PlantIdData.default.suggestions[0].plant_details;
 
     // setScientificName(scientific_name);
-    // setCommonName(common_names[0]);
-    // setWikiUrl(url);
-    // setPlantPhoto(PlantIdData.default.images[0].url);
-    // console.log('userId', userId);
-
-    // const data = {
-    //   id_user: userId,
-    //   id_trail: trailId,
-    //   plant_scientific_name: plantScientificName,
-    //   plant_common_name: plantCommonName,
-    //   plant_wiki_url: plantWikiUrl,
-    //   plantId_photo: plantPhoto,
-    // }
-    // console.log('this is data', data)
-    // axios({
-    //   method: 'post',
-    //   url: '/api/plantId',
-    //   data: {
-    //     id_user: userId,
-    //     id_trail: trailId,
-    //     plant_scientific_name: plantScientificName,
-    //     plant_common_name: plantCommonName,
-    //     plant_wiki_url: plantWikiUrl,
-    //     plantId_photo: plantPhoto,
-    //   }
-    // })
-    // .then((response) => console.log('this is response in client', response))
-    // .catch((err) => console.log('no dice', err));
+    setCommonName(common_names[0]);
+    setWikiUrl(url);
+    setPlantPhoto(PlantIdData.default.images[0].url);
+    console.log('userId', userId);
   };
 
   return (

@@ -7,13 +7,21 @@ import Col from 'react-bootstrap/Col';
 import Image from 'react-bootstrap/Image';
 import Badge from 'react-bootstrap/Badge';
 import { Heart, HeartFill } from 'react-bootstrap-icons';
-import { getTrailData, updateUserRating, updateFavorite, getFavoriteStatus, uploadPhoto } from '../helpers';
+import {
+  getTrailData,
+  updateUserRating,
+  updateFavorite,
+  getFavoriteStatus,
+  uploadPhoto,
+  getTrailPlantIdData,
+} from '../helpers';
 import Input from './input.jsx';
 import Map from './TrailMap.jsx';
 import Carousel from './Carousel.jsx';
 import AddComment from './AddComment.jsx';
 import AddPicture from './AddPicture.jsx';
 import PlantId from './PlantId.jsx';
+import TrailPlantIdInfoList from './TrailPlantIdInfoList.jsx';
 
 const StyledHeart = styled(Heart)`
   color: #00470F;
@@ -30,7 +38,7 @@ const StyledFillHeart = styled(HeartFill)`
 `;
 
 // Favorite Heart Component
-const FavHeart = ({fav, ch}) => (
+const FavHeart = ({ fav, ch }) => (
   <>
     {fav ? <StyledFillHeart onClick={ch} /> : <StyledHeart onClick={ch} />}
   </>
@@ -99,7 +107,8 @@ const trail = ({ user }) => {
   const [plantCommonName, setCommonName] = useState('');
   const [plantWikiUrl, setWikiUrl] = useState('');
   const [plantPhoto, setPlantPhoto] = useState('');
-  
+  const [plantInfoArray, setPlantInfoArray] = useState([]);
+
   // Set all the initial data with DB calls based on id in useParams
   useEffect(() => {
     getTrailData(id, user.id)
@@ -139,6 +148,12 @@ const trail = ({ user }) => {
         });
     }
   }, [user]);
+
+  useEffect(() => {
+    getTrailPlantIdData(id)
+      .then((response) => setPlantInfoArray(response))
+      .catch((err) => console.error(err));
+  }, []);
 
   /**
    * Toggles wether the rating is editable based on user clicks, if it is
@@ -283,7 +298,7 @@ const trail = ({ user }) => {
           </Col>
         </Row>
         <div style={{ width: '100%', height: '300px' }}>
-        {/* <PlantId /> */}
+          {/* <PlantId /> */}
           <Map
             googleMapURL={`https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=geometry,drawing,places&key=${process.env.GOOGLE_MAPS_API_KEY}`}
             containerElement={<div style={{ height: '100%' }} />}
@@ -387,6 +402,7 @@ const trail = ({ user }) => {
               )}
           </>
         )}
+        <TrailPlantIdInfoList plantInfoArray={plantInfoArray} />
       </Col>
     </>
   );
