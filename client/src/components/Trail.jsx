@@ -95,6 +95,11 @@ const trail = ({ user }) => {
   const [redirect, setRedirect] = useState(false);
   // Redirect if no trail info is found
 
+  const [plantScientificName, setScientificName] = useState('');
+  const [plantCommonName, setCommonName] = useState('');
+  const [plantWikiUrl, setWikiUrl] = useState('');
+  const [plantPhoto, setPlantPhoto] = useState('');
+  
   // Set all the initial data with DB calls based on id in useParams
   useEffect(() => {
     getTrailData(id, user.id)
@@ -293,8 +298,8 @@ const trail = ({ user }) => {
           {/* <PlantId /> */}
         </div>
         <div>
-        <PlantId />
-        <br />
+          <PlantId trailId={trailInfo.id} userId={user.id} />
+          <br />
           <p>{trailInfo.description}</p>
           <Image className="w-50" src={trailInfo.thumbnail} />
           <Row>

@@ -21,6 +21,7 @@ const {
   deletePhoto,
   addFavorite,
   deleteFavorite,
+  addPlantIdInfo
 } = require('../../database/index.js');
 
 // import GCS functions
@@ -205,6 +206,19 @@ router.post('/photos', (req, res) => {
     // Not Authorized
     res.sendStatus(401);
   }
+});
+
+router.post('/plantId', (req, res) => {
+  // console.log(req);
+  console.log('req.body in server', req.body);
+  const { body } = req;
+  addPlantIdInfo(body)
+    .then((success) => {
+      res.send(success);
+    })
+    .catch(error => {
+      res.status(500).send(error);
+    });
 });
 
 /*
