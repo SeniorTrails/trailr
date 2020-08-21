@@ -294,7 +294,6 @@ const trail = ({ user }) => {
           </Col>
         </Row>
         <div style={{ width: '100%', height: '300px' }}>
-          {/* <PlantId /> */}
           <Map
             googleMapURL={`https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=geometry,drawing,places&key=${process.env.GOOGLE_MAPS_API_KEY}`}
             containerElement={<div style={{ height: '100%' }} />}
@@ -306,10 +305,9 @@ const trail = ({ user }) => {
             changeCurrentPhoto={changeCurrentPhoto}
             currentPhoto={currentPhoto}
           />
-          {/* <PlantId /> */}
         </div>
         <div>
-          <PlantId trailId={trailInfo.id} userId={user.id} />
+          {user.loggedIn && <PlantId trailId={trailInfo.id} userId={user.id} />}
           <br />
           <p>{trailInfo.description}</p>
           <Image className="w-50" src={trailInfo.thumbnail} />

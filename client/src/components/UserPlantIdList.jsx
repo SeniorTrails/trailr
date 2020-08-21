@@ -12,8 +12,9 @@ const UserPlantIdList = ({ plantInfoArray, userName }) => (
         <UserPlantIdListItem
           commonName={plantInfo.plant_common_name}
           plantPhoto={plantInfo.plantId_photo}
-          scienceName={plantInfo.plant_science_name}
+          scienceName={plantInfo.plant_scientific_name}
           wikiUrl={plantInfo.plant_wiki_url}
+          trailId={plantInfo.id_trail}
         />
         <br />
         <br />

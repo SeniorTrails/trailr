@@ -10,10 +10,7 @@ const PlantId = ({ trailId, userId }) => {
   const [plantCommonName, setCommonName] = useState('');
   const [plantWikiUrl, setWikiUrl] = useState('');
   const [plantPhoto, setPlantPhoto] = useState('');
-
-  useEffect(() => {
-    postToServer(plantScientificName, plantCommonName, plantWikiUrl, plantPhoto);
-  }, [plantPhoto]);
+  const [buttonWasClicked, setButtonWasClicked] = useState(false);
 
   const handleInput = (files) => {
     setPlantFile(files);
@@ -37,6 +34,10 @@ const PlantId = ({ trailId, userId }) => {
         .catch((err) => console.log('nope', err));
     }
   };
+
+  useEffect(() => {
+    postToServer(plantScientificName, plantCommonName, plantWikiUrl, plantPhoto);
+  }, [plantPhoto]);
 
   const postPlantIdPic = () => {
     // const data = {
@@ -67,16 +68,18 @@ const PlantId = ({ trailId, userId }) => {
     //     setCommonName(common_names[0]);
     //     setWikiUrl(url);
     //     setPlantPhoto(responseData.images[0].url);
+    //      setButtonWasClicked(true);
     //   })
     //   .catch((err) => console.log('no dice', err));
     // console.log(PlantIdData);
     // console.log(PlantIdData.default.suggestions[0].plant_details.url);
-    // const { url, scientific_name, common_names } = PlantIdData.default.suggestions[0].plant_details;
+    const { url, scientific_name, common_names } = PlantIdData.default.suggestions[0].plant_details;
 
     // setScientificName(scientific_name);
     setCommonName(common_names[0]);
     setWikiUrl(url);
     setPlantPhoto(PlantIdData.default.images[0].url);
+    setButtonWasClicked(true);
     console.log('userId', userId);
   };
 
@@ -89,24 +92,16 @@ const PlantId = ({ trailId, userId }) => {
         multiple={false}
         onDone={handleInput}
       />
+      <br />
+      <br />
       <div>
-        {/* { plantFile && plantFile.base64.slice(23)} */}
-        {/* <img src={PlantIdData.default.images[0].url} alt="" />
-        <div>
-          scientific name: {scientific_name}
-        </div>
-        <div>
-          common name: {common_names[0]}
-        </div>
-        <div>
-          wikipedia link: <a href={url} target="_blank" rel="noreferrer">{url}</a>
-        </div> */}
         <button
-          style={{ backgroundColor: '#309D20', color: 'white', borderRadius: '5px' }}
+          style={{ backgroundColor: '#309D20', color: 'white', borderRadius: '5px', borderStyle: 'solid' }}
           onClick={postPlantIdPic}
         >
           ID your plant here!
         </button>
+        {buttonWasClicked && <p><b>Go to your profile to see the results!</b></p>}
       </div>
     </div>
   );

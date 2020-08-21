@@ -118,7 +118,7 @@ const userPage = ({ user }) => {
                 : null}
             </>
           )}
-        <UserPlantIdList plantInfoArray={plantInfoArray} userName={userInfo.name} trailId={} />
+        <UserPlantIdList plantInfoArray={plantInfoArray} userName={userInfo.name} />
       </Col>
       <Col xs={6}>
         <Image thumbnail src={userInfo.url} />
