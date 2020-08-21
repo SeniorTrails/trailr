@@ -403,6 +403,8 @@ const trail = ({ user }) => {
           </>
         )}
         <TrailPlantIdInfoList plantInfoArray={plantInfoArray} />
+        <br />
+        <br />
       </Col>
     </>
   );

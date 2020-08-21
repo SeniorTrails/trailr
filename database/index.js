@@ -894,6 +894,47 @@ const getTrailPlantIdPhoto = (id) => new Promise((resolve, reject) => {
   });
 });
 
+const getUserPlantIdPhoto = (id) => new Promise((resolve, reject) => {
+  poolConnection.getConnection((error, connection) => {
+    if (error) reject(error);
+
+    const getPlantIdInfoCommand = `
+    SELECT * FROM plantId WHERE id_user = ? 
+    `;
+
+    connection.beginTransaction((error) => {
+      if (error) {
+        connection.rollback(() => {
+          connection.release();
+          resolve(error);
+        });
+      }
+      connection.query(getPlantIdInfoCommand,
+        [id],
+        (error, plantPhotoResult) => {
+          if (error) {
+            connection.rollback(() => {
+              connection.release();
+              resolve(error);
+            });
+          }
+          connection.commit((error) => {
+            if (error) {
+              connection.rollback(() => {
+                connection.release();
+                resolve(error);
+              });
+            }
+            // const addedPlantPhotoResult = addedPlantPhoto
+            //   ? { id: addedPlantPhoto.insertId } : { id: null, affectedRows: 0 };
+            connection.release();
+            resolve(plantPhotoResult);
+          });
+        });
+    });
+  });
+});
+
 /**
  * Adds photo after photo is uploaded to storage bucket. If successful, returns an object containing
  * inserted photo's id. Otherwise, returns error message or object containing affectedRows: 0.
@@ -1174,6 +1215,7 @@ const updateComment = (commentObject) => new Promise((resolve, reject) => {
 });
 
 module.exports = {
+  getUserPlantIdPhoto,
   getTrailPlantIdPhoto,
   addPlantIdInfo,
   getUser,

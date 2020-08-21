@@ -124,6 +124,11 @@ router.get('/plantId/trail/:id', (req, res) => {
     .catch((err) => res.status(500).send(err));
 });
 
+router.get('/plantId/user/:id', (req, res) => {
+  const { id } = req.params;
+  res.send(id);
+});
+
 /* POST Request Handlers */
 
 /*
