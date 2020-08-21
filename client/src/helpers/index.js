@@ -104,6 +104,22 @@ export const getTrailPlantIdData = (trailId) => new Promise((resolve, reject) =>
     });
 });
 
+export const getUserPlantIdData = (userId) => new Promise((resolve, reject) => {
+  axios({
+    method: 'get',
+    url: `/api/plantId/user/${userId}`,
+    params: {
+      id: userId,
+    },
+  })
+    .then((response) => {
+      resolve(response.data);
+    })
+    .catch((err) => {
+      reject(err);
+    });
+});
+
 /**
  * Update the user's rating must be like or diff returns new rating
  * @param {String} type like or diff which rating to update

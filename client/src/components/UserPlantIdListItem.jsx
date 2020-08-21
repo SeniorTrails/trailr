@@ -1,6 +1,8 @@
 import React from 'react';
 
-const TrailPlantIdInfoListItem = ({ commonName, plantPhoto, scienceName, wikiUrl, }) => (
+const UserPlantIdListItem = ({
+  commonName, plantPhoto, scienceName, wikiUrl,
+}) => (
   <div>
     <br />
     <img style={{ float: 'left', borderRadius: '12px' }} src={plantPhoto} alt="" width="200" height="200" />
@@ -15,4 +17,4 @@ const TrailPlantIdInfoListItem = ({ commonName, plantPhoto, scienceName, wikiUrl
   </div>
 );
 
-export default TrailPlantIdInfoListItem;
+export default UserPlantIdListItem;

@@ -103,10 +103,6 @@ const trail = ({ user }) => {
   const [redirect, setRedirect] = useState(false);
   // Redirect if no trail info is found
 
-  const [plantScientificName, setScientificName] = useState('');
-  const [plantCommonName, setCommonName] = useState('');
-  const [plantWikiUrl, setWikiUrl] = useState('');
-  const [plantPhoto, setPlantPhoto] = useState('');
   const [plantInfoArray, setPlantInfoArray] = useState([]);
 
   // Set all the initial data with DB calls based on id in useParams

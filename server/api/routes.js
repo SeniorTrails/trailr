@@ -23,6 +23,7 @@ const {
   deleteFavorite,
   addPlantIdInfo,
   getTrailPlantIdPhoto,
+  getUserPlantIdPhoto,
 } = require('../../database/index.js');
 
 // import GCS functions
@@ -126,7 +127,9 @@ router.get('/plantId/trail/:id', (req, res) => {
 
 router.get('/plantId/user/:id', (req, res) => {
   const { id } = req.params;
-  res.send(id);
+  getUserPlantIdPhoto(id)
+    .then((success) => res.send(success))
+    .catch((err) => res.status(500).send(err));
 });
 
 /* POST Request Handlers */
