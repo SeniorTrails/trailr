@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import PropTypes from 'prop-types';
 import GoogleMapReact from 'google-map-react';
 import Marker from './Marker.jsx';
@@ -22,7 +23,7 @@ const Map = ({
     center={location}
     defaultZoom={15}
   >
-    <Marker lat={location.lat} lng={location.lng} clickHandler={()=>{}} />
+    <Marker lat={location.lat} lng={location.lng} clickHandler={() => {}} />
     {photoInfo.map((item, i) => (
       <Marker
         color={i === currentPhoto ? 'green' : 'blue'}

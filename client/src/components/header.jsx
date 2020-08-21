@@ -10,6 +10,9 @@ const header = ({ user }) => (
     <Link to="/" className="navbar-brand">
       Trailr
     </Link>
+    <Link to="/birdwatcher" className="navbar-brand">
+      Birdr
+    </Link>
     <Navbar.Toggle aria-controls="menuBar" />
     <Navbar.Collapse id="menuBar">
       <Nav>

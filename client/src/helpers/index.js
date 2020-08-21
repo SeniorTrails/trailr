@@ -273,7 +273,7 @@ export const uploadPhoto = (data) => new Promise((resolve, reject) => {
     method: 'post',
     url: '/api/uploads',
     data,
-    headers: { 'Content-Type': 'multipart/form-data' }
+    headers: { 'Content-Type': 'multipart/form-data' },
   })
     .then((response) => {
       resolve(response.data);

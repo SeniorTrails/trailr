@@ -7,7 +7,9 @@ import Col from 'react-bootstrap/Col';
 import Image from 'react-bootstrap/Image';
 import Badge from 'react-bootstrap/Badge';
 import { Heart, HeartFill } from 'react-bootstrap-icons';
-import { getTrailData, updateUserRating, updateFavorite, getFavoriteStatus, uploadPhoto } from '../helpers';
+import {
+  getTrailData, updateUserRating, updateFavorite, getFavoriteStatus, uploadPhoto,
+} from '../helpers';
 import Input from './input.jsx';
 import Map from './TrailMap.jsx';
 import Carousel from './Carousel.jsx';
@@ -29,7 +31,7 @@ const StyledFillHeart = styled(HeartFill)`
 `;
 
 // Favorite Heart Component
-const FavHeart = ({fav, ch}) => (
+const FavHeart = ({ fav, ch }) => (
   <>
     {fav ? <StyledFillHeart onClick={ch} /> : <StyledHeart onClick={ch} />}
   </>

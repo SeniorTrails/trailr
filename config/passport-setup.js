@@ -11,7 +11,7 @@ const { addUser } = require('../database/index');
 passport.use(
   new GoogleStrategy({
   // options for the strategy, input clientID && clientSecret
-    callbackURL: process.env.NODE_ENV === 'PROD' ? 'https://trailr.org/auth/google/redirect' : '/auth/google/redirect',
+    callbackURL: process.env.NODE_ENV === 'PROD' ? 'https://trailr2.uc.r.appspot.com/auth/google/redirect' : '/auth/google/redirect',
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
   }, (accessToken, refreshToken, profile, done) => {

@@ -26,7 +26,7 @@ const uploadImage = (file) => new Promise((resolve, reject) => {
   })
     .on('error', (error) => {
       console.log(error);
-      reject('Unable to upload image, something went wrong');
+      reject(error, 'Unable to upload image, something went wrong');
     })
     .end(buffer);
 });

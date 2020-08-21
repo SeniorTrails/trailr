@@ -5,7 +5,7 @@ const { Storage } = require('@google-cloud/storage');
 const path = require('path');
 
 // our project ID
-const GOOGLE_CLOUD_PROJECT_ID = 'trailr-285713';
+const GOOGLE_CLOUD_PROJECT_ID = 'trailr2';
 
 // path to the project private key
 const GOOGLE_CLOUD_KEYFILE = path.join(__dirname, './trailr-cloud-storage.json');

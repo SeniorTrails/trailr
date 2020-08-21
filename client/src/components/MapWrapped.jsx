@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import React, { useEffect, useState } from 'react';
 import isEmpty from 'lodash.isempty';
 import { Link } from 'react-router-dom';
@@ -64,8 +65,7 @@ const MapWithASearchBox = React.memo(() => {
   useEffect(() => {
     updateTrails(100, userLocation.lat, userLocation.lng);
     const script = document.createElement('script');
-    script.src =
-      'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/markerclusterer.js';
+    script.src = 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/markerclusterer.js';
     script.async = true;
     document.body.appendChild(script);
 
@@ -105,8 +105,8 @@ const MapWithASearchBox = React.memo(() => {
         const range = 1.2; // lat/lon degrees needed to change in order to search again
         const radius = 100; // search radius in miles
         if (
-          Math.abs(+currentCenter.lat - +lastSearchedCenter.lat) > range ||
-          Math.abs(+currentCenter.lng - +lastSearchedCenter.lng) > range
+          Math.abs(+currentCenter.lat - +lastSearchedCenter.lat) > range
+          || Math.abs(+currentCenter.lng - +lastSearchedCenter.lng) > range
         ) {
           lastSearchedCenter = currentCenter;
           updateTrails(radius, currentCenter.lat, currentCenter.lng);
@@ -125,14 +125,11 @@ const MapWithASearchBox = React.memo(() => {
           coordinates.push({ lat: +currentTrail.lat, lng: +currentTrail.lon });
           return coordinates;
         }, []);
-        const markers =
-          locations &&
-          locations.map((location) => {
-            return new googleRef.Marker({
-              position: location,
-              icon: transparentMarker,
-            });
-          });
+        const markers = locations
+          && locations.map((location) => new googleRef.Marker({
+            position: location,
+            icon: transparentMarker,
+          }));
         new MarkerClusterer(map, markers, {
           imagePath:
             'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m',
@@ -172,8 +169,8 @@ const MapWithASearchBox = React.memo(() => {
         onGoogleApiLoaded={({ map, maps }) => setGoogleMapRef(map, maps)}
         options={{ streetViewControl: false }}
       >
-        {!isEmpty(places) &&
-          places.map((place, i) => (
+        {!isEmpty(places)
+          && places.map((place, i) => (
             <Marker
               color={i === selectedTrailIndex ? 'green' : 'blue'}
               key={place.id}
