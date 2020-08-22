@@ -1,7 +1,10 @@
+/* eslint-disable object-curly-newline */
+/* eslint-disable react/require-default-props */
 import React from 'react';
 import { Link } from 'react-router-dom';
+import PropTypes from 'prop-types';
 
-const UserPlantIdListItem = ({commonName, plantPhoto, scienceName, wikiUrl, trailId}) => (
+const UserPlantIdListItem = ({ commonName, plantPhoto, scienceName, wikiUrl, trailId }) => (
   <div>
     <br />
     <img style={{ float: 'left', borderRadius: '12px' }} src={plantPhoto} alt="" width="200" height="200" />
@@ -17,5 +20,13 @@ const UserPlantIdListItem = ({commonName, plantPhoto, scienceName, wikiUrl, trai
     <br />
   </div>
 );
+
+UserPlantIdListItem.propTypes = {
+  commonName: PropTypes.string,
+  plantPhoto: PropTypes.string,
+  scienceName: PropTypes.string,
+  wikiUrl: PropTypes.string,
+  trailId: PropTypes.number,
+};
 
 export default UserPlantIdListItem;

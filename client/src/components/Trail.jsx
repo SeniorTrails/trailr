@@ -104,6 +104,7 @@ const trail = ({ user }) => {
   // Redirect if no trail info is found
 
   const [plantInfoArray, setPlantInfoArray] = useState([]);
+  const [plantIdButtonLoading, setPlantIdButtonLoading] = useState(false);
 
   // Set all the initial data with DB calls based on id in useParams
   useEffect(() => {

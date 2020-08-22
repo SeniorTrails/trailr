@@ -1,8 +1,12 @@
+/* eslint-disable react/require-default-props */
+/* eslint-disable no-console */
 /* eslint-disable camelcase */
 import React, { useState, useEffect } from 'react';
 import FileBase64 from 'react-file-base64';
 import axios from 'axios';
-import * as PlantIdData from '../data/plant-id-data.json';
+import PropTypes from 'prop-types';
+import Spinner from './Spinner.jsx';
+// import * as PlantIdData from '../data/plant-id-data.json';
 
 const PlantId = ({ trailId, userId }) => {
   const [plantFile, setPlantFile] = useState(null);
@@ -11,6 +15,7 @@ const PlantId = ({ trailId, userId }) => {
   const [plantWikiUrl, setWikiUrl] = useState('');
   const [plantPhoto, setPlantPhoto] = useState('');
   const [buttonWasClicked, setButtonWasClicked] = useState(false);
+  const [plantIdButtonLoading, setPlantIdButtonLoading] = useState(false);
 
   const handleInput = (files) => {
     setPlantFile(files);
@@ -40,47 +45,38 @@ const PlantId = ({ trailId, userId }) => {
   }, [plantPhoto]);
 
   const postPlantIdPic = () => {
-    // const data = {
-    //   api_key: process.env.PLANT_ID_API_KEY,
-    //   images: [plantFile.base64.slice(23)],
-    //   modifiers: ['crops_fast', 'similar_images'],
-    //   plant_language: 'en',
-    //   plant_details: ['common_names',
-    //     'url',
-    //     'name_authority',
-    //     'wiki_description',
-    //     'taxonomy',
-    //     'synonyms'],
-    // };
-    // fetch('https://api.plant.id/v2/identify', {
-    //   method: 'POST',
-    //   headers: {
-    //     'Content-Type': 'application/json',
-    //   },
-    //   body: JSON.stringify(data),
-    // })
-    //   .then((response) => response.json())
-    //   .then((responseData) => {
-    //     // console.log('Success:', JSON.stringify(responseData));
-    //     // console.log('this is responsedata', responseData);
-    //     const { url, scientific_name, common_names } = responseData.suggestions[0].plant_details;
-    //     setScientificName(scientific_name);
-    //     setCommonName(common_names[0]);
-    //     setWikiUrl(url);
-    //     setPlantPhoto(responseData.images[0].url);
-    //      setButtonWasClicked(true);
-    //   })
-    //   .catch((err) => console.log('no dice', err));
-    // console.log(PlantIdData);
-    // console.log(PlantIdData.default.suggestions[0].plant_details.url);
-    const { url, scientific_name, common_names } = PlantIdData.default.suggestions[0].plant_details;
-
-    // setScientificName(scientific_name);
-    setCommonName(common_names[0]);
-    setWikiUrl(url);
-    setPlantPhoto(PlantIdData.default.images[0].url);
-    setButtonWasClicked(true);
-    console.log('userId', userId);
+    setPlantIdButtonLoading(true);
+    const data = {
+      api_key: process.env.PLANT_ID_API_KEY,
+      images: [plantFile.base64.slice(23)],
+      modifiers: ['crops_fast', 'similar_images'],
+      plant_language: 'en',
+      plant_details: ['common_names',
+        'url',
+        'name_authority',
+        'wiki_description',
+        'taxonomy',
+        'synonyms'],
+    };
+    fetch('https://api.plant.id/v2/identify', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    })
+      .then((response) => response.json())
+      .then((responseData) => {
+        console.log('Success:', responseData);
+        const { url, scientific_name, common_names } = responseData.suggestions[0].plant_details;
+        setScientificName(scientific_name);
+        setCommonName(common_names[0]);
+        setWikiUrl(url);
+        setPlantPhoto(responseData.images[0].url);
+        setButtonWasClicked(true);
+        setPlantIdButtonLoading(false);
+      })
+      .catch((err) => console.log(err));
   };
 
   return (
@@ -96,15 +92,26 @@ const PlantId = ({ trailId, userId }) => {
       <br />
       <div>
         <button
-          style={{ backgroundColor: '#309D20', color: 'white', borderRadius: '5px', borderStyle: 'solid' }}
+          style={{
+            backgroundColor: '#309D20',
+            color: 'white',
+            borderRadius: '5px',
+            borderStyle: 'solid',
+          }}
           onClick={postPlantIdPic}
         >
           ID your plant here!
         </button>
+        {plantIdButtonLoading && <Spinner />}
         {buttonWasClicked && <p><b>Go to your profile to see the results!</b></p>}
       </div>
     </div>
   );
+};
+
+PlantId.propTypes = {
+  trailId: PropTypes.number,
+  userId: PropTypes.number,
 };
 
 export default PlantId;

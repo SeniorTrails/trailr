@@ -1,10 +1,11 @@
+/* eslint-disable react/require-default-props */
 import React from 'react';
+import PropTypes from 'prop-types';
 import TrailPlantIdInfoListItem from './TrailPlantIdInfoListItem.jsx';
 
 const TrailPlantIdInfoList = ({ plantInfoArray }) => (
   <div>
     <br />
-    {/* <h6>Here are some pictures of plants that were indentified on this trail!</h6> */}
     {plantInfoArray.map((plantInfo, index) => (
       <div key={plantInfo.id}>
         <br />
@@ -21,5 +22,9 @@ const TrailPlantIdInfoList = ({ plantInfoArray }) => (
     ))}
   </div>
 );
+
+TrailPlantIdInfoList.propTypes = {
+  plantInfoArray: PropTypes.array,
+};
 
 export default TrailPlantIdInfoList;

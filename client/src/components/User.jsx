@@ -24,7 +24,6 @@ const userPage = ({ user }) => {
   const [myTrails, setMyTrails] = useState([]);
   const [redirect, setRedirect] = useState(false);
   const [userInfo, setUserInfo] = useState({});
-
   const [plantInfoArray, setPlantInfoArray] = useState([]);
 
   // Set all the initial data with DB calls based on id in useParams

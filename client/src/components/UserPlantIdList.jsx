@@ -1,5 +1,6 @@
+/* eslint-disable react/require-default-props */
 import React from 'react';
-import { Link } from 'react-router-dom';
+import PropTypes from 'prop-types';
 import UserPlantIdListItem from './UserPlantIdListItem.jsx';
 
 const UserPlantIdList = ({ plantInfoArray, userName }) => (
@@ -22,5 +23,10 @@ const UserPlantIdList = ({ plantInfoArray, userName }) => (
     ))}
   </div>
 );
+
+UserPlantIdList.propTypes = {
+  plantInfoArray: PropTypes.arrayOf,
+  userName: PropTypes.string,
+};
 
 export default UserPlantIdList;
