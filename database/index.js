@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 /* eslint-disable camelcase */
 /* eslint-disable no-shadow */
 /* eslint-disable no-console */
@@ -63,6 +64,7 @@ const getUser = (id) => new Promise((resolve, reject) => {
       FROM photos
       WHERE id_user = ?
     `;
+
     const getCommentsCommand = `
       SELECT users.*, comments.*
       FROM comments
@@ -808,6 +810,131 @@ const addComment = (commentObject) => new Promise((resolve, reject) => {
   });
 });
 
+const addPlantIdInfo = (plantIdObject) => new Promise((resolve, reject) => {
+  poolConnection.getConnection((error, connection) => {
+    if (error) reject(error);
+
+    const addPlantIdInfoCommand = `
+    INSERT INTO plantId (id_user, id_trail, plant_scientific_name, plant_common_name, plant_wiki_url, plantId_photo)
+    VALUES (?, ?, ?, ?, ?, ?)
+    `;
+
+    connection.beginTransaction((error) => {
+      if (error) {
+        connection.rollback(() => {
+          connection.release();
+          resolve(error);
+        });
+      }
+      connection.query(addPlantIdInfoCommand,
+        [plantIdObject.id_user, plantIdObject.id_trail, plantIdObject.plant_scientific_name,
+          plantIdObject.plant_common_name, plantIdObject.plant_wiki_url, plantIdObject.plantId_photo],
+        (error, addedPlantPhoto) => {
+          if (error) {
+            connection.rollback(() => {
+              connection.release();
+              resolve(error);
+            });
+          }
+          connection.commit((error) => {
+            if (error) {
+              connection.rollback(() => {
+                connection.release();
+                resolve(error);
+              });
+            }
+            const addedPlantPhotoResult = addedPlantPhoto
+              ? { id: addedPlantPhoto.insertId } : { id: null, affectedRows: 0 };
+            connection.release();
+            resolve(addedPlantPhotoResult);
+          });
+        });
+    });
+  });
+});
+
+const getTrailPlantIdPhoto = (id) => new Promise((resolve, reject) => {
+  poolConnection.getConnection((error, connection) => {
+    if (error) reject(error);
+
+    const getPlantIdInfoCommand = `
+    SELECT * FROM plantId WHERE id_trail = ? 
+    `;
+
+    connection.beginTransaction((error) => {
+      if (error) {
+        connection.rollback(() => {
+          connection.release();
+          resolve(error);
+        });
+      }
+      connection.query(getPlantIdInfoCommand,
+        [id],
+        (error, plantPhotoResult) => {
+          if (error) {
+            connection.rollback(() => {
+              connection.release();
+              resolve(error);
+            });
+          }
+          connection.commit((error) => {
+            if (error) {
+              connection.rollback(() => {
+                connection.release();
+                resolve(error);
+              });
+            }
+            // const addedPlantPhotoResult = addedPlantPhoto
+            //   ? { id: addedPlantPhoto.insertId } : { id: null, affectedRows: 0 };
+            connection.release();
+            resolve(plantPhotoResult);
+          });
+        });
+    });
+  });
+});
+
+const getUserPlantIdPhoto = (id) => new Promise((resolve, reject) => {
+  poolConnection.getConnection((error, connection) => {
+    if (error) reject(error);
+
+    const getPlantIdInfoCommand = `
+    SELECT * FROM plantId WHERE id_user = ? 
+    `;
+
+    connection.beginTransaction((error) => {
+      if (error) {
+        connection.rollback(() => {
+          connection.release();
+          resolve(error);
+        });
+      }
+      connection.query(getPlantIdInfoCommand,
+        [id],
+        (error, plantPhotoResult) => {
+          if (error) {
+            connection.rollback(() => {
+              connection.release();
+              resolve(error);
+            });
+          }
+          connection.commit((error) => {
+            if (error) {
+              connection.rollback(() => {
+                connection.release();
+                resolve(error);
+              });
+            }
+            // const addedPlantPhotoResult = addedPlantPhoto
+            //   ? { id: addedPlantPhoto.insertId } : { id: null, affectedRows: 0 };
+            connection.release();
+            resolve(plantPhotoResult);
+          });
+        });
+    });
+  });
+});
+
 /**
  * Adds photo after photo is uploaded to storage bucket. If successful, returns an object containing
  * inserted photo's id. Otherwise, returns error message or object containing affectedRows: 0.
@@ -1088,6 +1215,9 @@ const updateComment = (commentObject) => new Promise((resolve, reject) => {
 });
 
 module.exports = {
+  getUserPlantIdPhoto,
+  getTrailPlantIdPhoto,
+  addPlantIdInfo,
   getUser,
   addUser,
   getTrail,

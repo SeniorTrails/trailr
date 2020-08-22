@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import React, { useState, useEffect } from 'react';
 import { Link, useParams, Redirect } from 'react-router-dom';
 import PropTypes from 'prop-types';
@@ -7,9 +8,10 @@ import Accordion from 'react-bootstrap/Accordion';
 import Card from 'react-bootstrap/Card';
 import Badge from 'react-bootstrap/Badge';
 import Image from 'react-bootstrap/Image';
-import { getUserData, getAuth } from '../helpers';
+import { getUserData, getAuth, getUserPlantIdData } from '../helpers';
 import Carousel from './Carousel.jsx';
 import AddComment from './AddComment.jsx';
+import UserPlantIdList from './UserPlantIdList.jsx';
 
 /**
  * Displays the indiviual user page with their saved trails and all their photos
@@ -22,6 +24,7 @@ const userPage = ({ user }) => {
   const [myTrails, setMyTrails] = useState([]);
   const [redirect, setRedirect] = useState(false);
   const [userInfo, setUserInfo] = useState({});
+  const [plantInfoArray, setPlantInfoArray] = useState([]);
 
   // Set all the initial data with DB calls based on id in useParams
   // You can only see your user page
@@ -51,6 +54,12 @@ const userPage = ({ user }) => {
         console.error(err);
         setRedirect(true);
       });
+  }, []);
+
+  useEffect(() => {
+    getUserPlantIdData(user.id)
+      .then((response) => setPlantInfoArray(response))
+      .catch((err) => console.error(err));
   }, []);
 
   const removePhoto = (photoId) => {
@@ -83,7 +92,7 @@ const userPage = ({ user }) => {
 
   return (
     <>
-      {redirect ? <Redirect to='/404' /> : null}
+      {redirect ? <Redirect to="/404" /> : null}
       <Col xs={6}>
         {!photoInfo.length
           ? null
@@ -108,6 +117,7 @@ const userPage = ({ user }) => {
                 : null}
             </>
           )}
+        <UserPlantIdList plantInfoArray={plantInfoArray} userName={userInfo.name} />
       </Col>
       <Col xs={6}>
         <Image thumbnail src={userInfo.url} />
