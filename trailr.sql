@@ -82,6 +82,19 @@ CREATE TABLE favorites (
   FOREIGN KEY (id_trail) REFERENCES trails(id)
 );
 
+CREATE TABLE plantId (
+  id int AUTO_INCREMENT,
+  id_user int,
+  id_trail int,
+  plant_scientific_name varchar(255),
+  plant_common_name varchar(255),
+  plant_wiki_url varchar(255),
+  plantId_photo varchar(255),
+  PRIMARY KEY (id),
+  FOREIGN KEY (id_user) REFERENCES users(id),
+  FOREIGN KEY (Id_trail) REFERENCES trails(id)
+);
+
 INSERT into users (google_id, name, profile_photo_url) VALUES ("100320448870922542711", "Daniel", "https://lh3.googleusercontent.com/a-/AOh14GgCnlLMDczQTYGKy6XfF5EeNsrbDXh4y8j3hLdNvw");
 INSERT into users (google_id, name, profile_photo_url) VALUES ("100876014081435780413", "Grant", "https://i.pinimg.com/originals/5c/66/c6/5c66c624f16feab720c601f832b2235e.jpg");
 INSERT into users (google_id, name, profile_photo_url) VALUES ("100235682659824703476", "James", "https://avatars1.githubusercontent.com/u/57680469?s=400&u=58ab864ffb55ce45866c75fb05e1f6a8e8c6dfb1&v=4");

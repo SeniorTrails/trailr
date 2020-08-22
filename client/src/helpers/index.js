@@ -58,7 +58,7 @@ export const getUserData = (userId) => new Promise((resolve, reject) => {
       resolve(response.data);
     })
     .catch((err) => {
-      console.error("ERROR GETTING USER:", err);
+      console.error('ERROR GETTING USER:', err);
       reject(err);
     });
 });
@@ -82,6 +82,38 @@ export const getTrailData = (trailId, userId) => new Promise((resolve, reject) =
       } else {
         resolve(response.data);
       }
+    })
+    .catch((err) => {
+      reject(err);
+    });
+});
+
+export const getTrailPlantIdData = (trailId) => new Promise((resolve, reject) => {
+  axios({
+    method: 'get',
+    url: `/api/plantId/trail/${trailId}`,
+    params: {
+      id: trailId,
+    },
+  })
+    .then((response) => {
+      resolve(response.data);
+    })
+    .catch((err) => {
+      reject(err);
+    });
+});
+
+export const getUserPlantIdData = (userId) => new Promise((resolve, reject) => {
+  axios({
+    method: 'get',
+    url: `/api/plantId/user/${userId}`,
+    params: {
+      id: userId,
+    },
+  })
+    .then((response) => {
+      resolve(response.data);
     })
     .catch((err) => {
       reject(err);

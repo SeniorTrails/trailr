@@ -8,13 +8,20 @@ import Image from 'react-bootstrap/Image';
 import Badge from 'react-bootstrap/Badge';
 import { Heart, HeartFill } from 'react-bootstrap-icons';
 import {
-  getTrailData, updateUserRating, updateFavorite, getFavoriteStatus, uploadPhoto,
+  getTrailData,
+  updateUserRating,
+  updateFavorite,
+  getFavoriteStatus,
+  uploadPhoto,
+  getTrailPlantIdData,
 } from '../helpers';
 import Input from './input.jsx';
 import Map from './TrailMap.jsx';
 import Carousel from './Carousel.jsx';
 import AddComment from './AddComment.jsx';
 import AddPicture from './AddPicture.jsx';
+import PlantId from './PlantId.jsx';
+import TrailPlantIdInfoList from './TrailPlantIdInfoList.jsx';
 
 const StyledHeart = styled(Heart)`
   color: #00470F;
@@ -96,6 +103,9 @@ const trail = ({ user }) => {
   const [redirect, setRedirect] = useState(false);
   // Redirect if no trail info is found
 
+  const [plantInfoArray, setPlantInfoArray] = useState([]);
+  const [plantIdButtonLoading, setPlantIdButtonLoading] = useState(false);
+
   // Set all the initial data with DB calls based on id in useParams
   useEffect(() => {
     getTrailData(id, user.id)
@@ -135,6 +145,12 @@ const trail = ({ user }) => {
         });
     }
   }, [user]);
+
+  useEffect(() => {
+    getTrailPlantIdData(id)
+      .then((response) => setPlantInfoArray(response))
+      .catch((err) => console.error(err));
+  }, []);
 
   /**
    * Toggles wether the rating is editable based on user clicks, if it is
@@ -292,6 +308,8 @@ const trail = ({ user }) => {
           />
         </div>
         <div>
+          {user.loggedIn && <PlantId trailId={trailInfo.id} userId={user.id} />}
+          <br />
           <p>{trailInfo.description}</p>
           <Image className="w-50" src={trailInfo.thumbnail} />
           <Row>
@@ -379,6 +397,9 @@ const trail = ({ user }) => {
               )}
           </>
         )}
+        <TrailPlantIdInfoList plantInfoArray={plantInfoArray} />
+        <br />
+        <br />
       </Col>
     </>
   );
