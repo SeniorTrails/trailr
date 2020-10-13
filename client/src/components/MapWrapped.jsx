@@ -130,7 +130,7 @@ const MapWithASearchBox = React.memo(() => {
           icon: transparentMarker,
         }));
         // took new keyword off maybe breaks something //
-        MarkerClusterer(map, markers, {
+        new MarkerClusterer(map, markers, {
           imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m',
           gridSize: 15,
           minimumClusterSize: 2,
