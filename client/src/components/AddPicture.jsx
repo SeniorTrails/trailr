@@ -35,7 +35,7 @@ const addPicture = ({ appendPhoto, center, userId, trailId }) => {
 
   /**
    * Handles whenever a user adds files from their computer. It parses
-   *  the gps data off the phot. Then uploads it to the browser, but if
+   *  the gps data off the photo. Then uploads it to the browser, but if
    *  it is a heic file it has to first convert it. Finally it adds them
    *  to the images state.
    * @param {Event} e event that we persist and pull the files off
@@ -44,6 +44,7 @@ const addPicture = ({ appendPhoto, center, userId, trailId }) => {
     e.persist();
     if (e.target.files) {
       for (let i = 0; i < e.target.files.length; i += 1) {
+        console.log('i in add pic', i)
         // Parse the metadata off the image,
         // latitude and longitude
         exifr.parse(e.target.files[i])

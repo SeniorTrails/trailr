@@ -11,10 +11,11 @@ import Marker from './Marker.jsx';
  * @param {Number} currentPhoto number that represents id of current photo
  */
 const Map = ({
-  location,
+  location: { lat, lng },
   photoInfo,
   changeCurrentPhoto,
   currentPhoto,
+
 }) => (
   <GoogleMapReact
     bootstrapURLKeys={{ key: process.env.GOOGLE_MAPS_API_KEY }}
@@ -22,11 +23,11 @@ const Map = ({
     center={location}
     defaultZoom={15}
   >
-    <Marker lat={location.lat} lng={location.lng} clickHandler={()=>{}} />
+    <Marker lat={lat} lng={lng} clickHandler={()=>{}} />
     {photoInfo.map((item, i) => (
       <Marker
-        color={i === currentPhoto ? 'green' : 'blue'}
-        clickHandler={() => changeCurrentPhoto(i)}
+      color={i === currentPhoto ? 'green' : 'blue'}
+      clickHandler={() => changeCurrentPhoto(i)}
         key={item.id}
         lat={item.lat}
         lng={item.lng}
