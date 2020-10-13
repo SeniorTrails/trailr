@@ -182,6 +182,7 @@ const MapWithASearchBox = React.memo(() => {
               lat={place.lat || place.geometry.location.lat()}
               lng={place.lon || place.geometry.location.lng()}
               clickHandler={() => {
+                console.log('is this i?', i)
                 if (selectedTrailIndex === i) {
                   clearSelectedTrail();
                 } else {

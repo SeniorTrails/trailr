@@ -10,7 +10,7 @@ const { addUser } = require('../database/index');
 // set up passport middleware to use google strategy in our project
 passport.use(
   new GoogleStrategy({
-  // options for the strategy, input clientID && clientSecret
+    // options for the strategy, input clientID && clientSecret
     callbackURL: process.env.NODE_ENV === 'PROD' ? 'https://trailr.org/auth/google/redirect' : '/auth/google/redirect',
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
