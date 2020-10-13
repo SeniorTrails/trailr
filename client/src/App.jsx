@@ -10,7 +10,6 @@ import HeaderImage from './components/HeaderImage.jsx';
 // import Signup from './components/Signup.jsx';
 // import Login from './components/Login.jsx';
 
-
 // Logged out state
 const loggedOut = { loggedIn: false };
 
