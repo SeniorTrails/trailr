@@ -29,7 +29,7 @@ const StyledFillHeart = styled(HeartFill)`
 `;
 
 // Favorite Heart Component
-const FavHeart = ({fav, ch}) => (
+const FavHeart = ({ fav, ch }) => (
   <>
     {fav ? <StyledFillHeart onClick={ch} /> : <StyledHeart onClick={ch} />}
   </>
@@ -118,6 +118,7 @@ const trail = ({ user }) => {
         }
       })
       .catch((err) => {
+        console.error(err);
         setRedirect(true);
       });
   }, []);
@@ -244,7 +245,7 @@ const trail = ({ user }) => {
 
   const toggleFavorite = () => {
     updateFavorite(id, user.id, favorite)
-      .then((response) => {
+      .then(() => {
         setFavorite((prev) => !prev);
       })
       .catch((err) => {

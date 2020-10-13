@@ -83,7 +83,7 @@ const userPage = ({ user }) => {
 
   return (
     <>
-      {redirect ? <Redirect to='/404' /> : null}
+      {redirect ? <Redirect to="/404" /> : null}
       <Col xs={6}>
         {!photoInfo.length
           ? null

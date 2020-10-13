@@ -13,7 +13,12 @@
     "import/extensions": ["error", {
       "jsx": "always",
       "json": "always"
-    }],
+    },
+    {
+      "no-console": 
+      "error"
+    }
+  ],
     "react/jsx-one-expression-per-line": 0,
     "space-before-function-paren": ["error", "never"],
 

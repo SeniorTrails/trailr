@@ -18,7 +18,9 @@ const LinkDiv = styled.div`
  * @param {Function} onCloseClick a function that changes the current photo
  */
 
-const InfoWindow = React.memo(({ selectedTrail, onCloseClick }) => {
+const InfoWindow = React.memo(({
+  selectedTrail, onCloseClick,
+}) => {
   const [redirect, setRedirect] = useState(false);
   const place = selectedTrail;
   const { thumbnail } = place;
@@ -46,6 +48,7 @@ const InfoWindow = React.memo(({ selectedTrail, onCloseClick }) => {
         setRedirect(`/trail/${response.id}`);
       })
       .catch((err) => {
+        console.error(err);
         setRedirect('/404');
       });
   };
