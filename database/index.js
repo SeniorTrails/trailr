@@ -422,9 +422,18 @@ const addTrail = (trailObject) => new Promise((resolve, reject) => {
           });
         } else if (!trailResult.length) {
           connection.query(addTrailCommand,
-            [trailObject.api_id, trailObject.name, trailObject.city, trailObject.region,
-              trailObject.country, trailObject.latitude, trailObject.longitude,
-              trailObject.url, trailObject.thumbnail, trailObject.description],
+            [
+              trailObject.api_id,
+              trailObject.name,
+              trailObject.city,
+              trailObject.region,
+              trailObject.country,
+              trailObject.latitude,
+              trailObject.longitude,
+              trailObject.url,
+              trailObject.thumbnail,
+              trailObject.description,
+            ],
             (error, addedTrail) => {
               if (error) {
                 connection.rollback(() => {
@@ -484,9 +493,20 @@ const updateTrail = (trailObject) => new Promise((resolve, reject) => {
         });
       }
       connection.query(updateTrailCommand,
-        [trailObject.api_id, trailObject.name, trailObject.city, trailObject.region,
-          trailObject.country, trailObject.latitude, trailObject.longitude, trailObject.url,
-          trailObject.thumbnail, trailObject.description, trailObject.status, trailObject.id],
+        [
+          trailObject.api_id,
+          trailObject.name,
+          trailObject.city,
+          trailObject.region,
+          trailObject.country,
+          trailObject.latitude,
+          trailObject.longitude,
+          trailObject.url,
+          trailObject.thumbnail,
+          trailObject.description,
+          trailObject.status,
+          trailObject.id,
+        ],
         (error, updatedTrail) => {
           if (error) {
             connection.rollback(() => {
@@ -829,8 +849,14 @@ const addPhoto = (photoObject) => new Promise((resolve, reject) => {
         });
       }
       connection.query(addPhotoCommand,
-        [photoObject.url, photoObject.description, photoObject.lat,
-          photoObject.lng, photoObject.id_user, photoObject.id_trail],
+        [
+          photoObject.url,
+          photoObject.description,
+          photoObject.lat,
+          photoObject.lng,
+          photoObject.id_user,
+          photoObject.id_trail,
+        ],
         (error, addedPhoto) => {
           if (error) {
             connection.rollback(() => {
