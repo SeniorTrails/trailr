@@ -15,7 +15,10 @@
       "json": "always"
     }
   ],
-    "no-console": ["error", "info"],
+    "no-console": [
+      "error", {"allow": "error"},
+      "info", {"allow": "info"} 
+    ],
     "react/jsx-one-expression-per-line": 0,
     "space-before-function-paren": ["error", "never"],
 
