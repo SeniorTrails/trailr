@@ -12,11 +12,8 @@
   "rules": {
     "import/extensions": ["error", {
       "jsx": "always",
-      "json": "always"
-    },
-    {
-      "no-console": 
-      "error"
+      "json": "always",
+      "no-console": "error"
     }
   ],
     "react/jsx-one-expression-per-line": 0,
