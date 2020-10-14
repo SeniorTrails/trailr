@@ -4,20 +4,14 @@
     "es6": true,
     "node": true
   },
-  "extends": ["airbnb"],
+  "extends": ["eslint:recommended", "plugin:react/recommended"],
   "parser": "babel-eslint",
   "plugins": [
-    "react"
+    "import",
+    "require"
   ],
   "rules": {
-    "import/extensions": ["error", {
-      "jsx": "always",
-      "json": "always"
-    }
-  ],
-    "no-console": 
-      "off",
-      // ["error", {"allow": ["error", "info"]}],
+    "import/first": "error",
     "react/jsx-one-expression-per-line": 0,
     "space-before-function-paren": ["error", "never"],
 
