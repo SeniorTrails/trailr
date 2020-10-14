@@ -7,12 +7,19 @@ const path = require('path');
 // our project ID
 // const GOOGLE_CLOUD_PROJECT_ID = 'trailr-285713';
 
+// Hanging-Chads project ID
+const GOOGLE_CLOUD_PROJECT_ID = 'trailr-292420';
+
 // path to the project private key
-const GOOGLE_CLOUD_KEYFILE = path.join(__dirname, './trailr-cloud-storage.json');
+// const GOOGLE_CLOUD_KEYFILE = path.join(
+//   __dirname,
+//   './trailr-cloud-storage.json'
+// );
+const GOOGLE_CLOUD_KEYFILE = path.join(__dirname, './service_acct.json');
 
 // create a new instance of the cloud storage service in our project for data persistance
 const storage = new Storage({
-  // projectId: GOOGLE_CLOUD_PROJECT_ID,
+  projectId: GOOGLE_CLOUD_PROJECT_ID,
   keyFilename: GOOGLE_CLOUD_KEYFILE,
 });
 

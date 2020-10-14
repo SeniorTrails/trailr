@@ -81,3 +81,4 @@ dist
 # Google user information
 config/keys.js
 config/trailr-cloud-storage.json
+config/service_acct.json
