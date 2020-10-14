@@ -77,7 +77,8 @@ app.use(session({
  * in the session and a cookie is sent to the browser for the same to maintain the session.
  */
 passport.serializeUser((user, done) => {
-  console.log('serilize', user)
+  // eslint-disable-next-line no-console
+  console.info('serilize', user);
   done(null, { id: user.id, name: user.name });
 });
 
@@ -127,5 +128,5 @@ app.get('*', (req, res) => {
 
 // set server to listen for requests on configured report
 app.listen(process.env.PORT || PORT, () => {
-  console.log(`Server Walking The Trails on http://localhost:${PORT}`);
+  console.info(`Server Walking The Trails on http://localhost:${PORT}`);
 });

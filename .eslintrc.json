@@ -12,10 +12,10 @@
   "rules": {
     "import/extensions": ["error", {
       "jsx": "always",
-      "json": "always",
-      "no-console": "error"
+      "json": "always"
     }
   ],
+    "no-console": ["error", "info"],
     "react/jsx-one-expression-per-line": 0,
     "space-before-function-paren": ["error", "never"],
 
