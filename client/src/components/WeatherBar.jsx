@@ -2,12 +2,10 @@ import React, {useState, useEffect} from 'react';
 import {CardDeck, Card} from 'react-bootstrap'
 
 
-const WeatherBar = (user) => {
-  const [userLocation, setUserLocation] = useState({
-    lat: 30.0766974,
-    lng: -89.8788793,
-  })
+const WeatherBar = ({lat, lng}) => {
   
+  
+
   return <div>
     <h1>Weather Widget Here</h1>
     <CardDeck>
@@ -21,7 +19,7 @@ const WeatherBar = (user) => {
       </Card.Text>
     </Card.Body>
   </Card>
-</CardDeBck>
+</CardDeck>
   </div>;
 };
 export default WeatherBar;
