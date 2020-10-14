@@ -32,9 +32,9 @@ const MapWithASearchBox = React.memo(() => {
   const [selectedTrail, setSelectedTrail] = useState(null);
   const [selectedTrailIndex, setSelectedTrailIndex] = useState(null);
 
-  // const getInput = (data) => {
-  //   console.log(data)
-  // }
+  const getInput = (data) => {
+    console.log(data)
+  }
 
   const addPlace = (place) => {
     setPlaces(place);

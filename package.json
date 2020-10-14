@@ -73,5 +73,13 @@
     "eslint-plugin-require": "0.0.1",
     "husky": "^4.3.0",
     "parcel-bundler": "^1.12.4"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.js": "eslint --cache --fix"
   }
 }
