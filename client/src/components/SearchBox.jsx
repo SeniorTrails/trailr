@@ -38,7 +38,7 @@ class SearchBox extends Component {
     }
 
     addplace(selected);
-    getInput(this.searchBox.getPlaces())
+    getInput(this.searchBox.getPlaces());
     this.searchInput.blur();
   };
 
@@ -62,7 +62,6 @@ class SearchBox extends Component {
           ref={(ref) => {
             this.searchInput = ref;
           }}
-          
           type="text"
           onFocus={this.clearSearchBox}
         />

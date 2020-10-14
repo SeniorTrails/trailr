@@ -32,9 +32,9 @@ const MapWithASearchBox = React.memo(() => {
   const [selectedTrail, setSelectedTrail] = useState(null);
   const [selectedTrailIndex, setSelectedTrailIndex] = useState(null);
 
-  const getInput = (data) => {
-    console.log(data)
-  }
+  // const getInput = (data) => {
+  //   console.log(data)
+  // }
 
   const addPlace = (place) => {
     setPlaces(place);
@@ -157,12 +157,13 @@ const MapWithASearchBox = React.memo(() => {
           mapApi={mapApi}
           places={places}
           addplace={addPlace}
+          // eslint-disable-next-line no-undef
           getInput={getInput}
         />
       )}
       <div className="mb-3">
-        <WeatherBar 
-        userLocation={userLocation}
+        <WeatherBar
+          userLocation={userLocation}
         />
       </div>
       <GoogleMap
@@ -190,7 +191,7 @@ const MapWithASearchBox = React.memo(() => {
               lat={place.lat || place.geometry.location.lat()}
               lng={place.lon || place.geometry.location.lng()}
               clickHandler={() => {
-                console.log('is this i?', i)
+                // console.log('is this i?', i);
                 if (selectedTrailIndex === i) {
                   clearSelectedTrail();
                 } else {
