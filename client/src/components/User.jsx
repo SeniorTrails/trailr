@@ -111,7 +111,7 @@ const userPage = ({ user }) => {
       </Col>
       <Col xs={6}>
         <Image thumbnail src={userInfo.url} />
-        <h2>{userInfo.name}'s Saved Trails</h2>
+        <h2>{userInfo.name} Saved Trails</h2>
         {!myTrails.length
           ? null
           : myTrails.map((trail) => (

@@ -1,3 +1,4 @@
+/* eslint-disable no-use-before-define */
 import React, { useEffect, useState } from 'react';
 import isEmpty from 'lodash.isempty';
 import { Link } from 'react-router-dom';
@@ -134,7 +135,7 @@ const MapWithASearchBox = React.memo(() => {
           position: location,
           icon: transparentMarker,
         }));
-        // took new keyword off maybe breaks something //
+        // eslint-disable-next-line no-new
         new MarkerClusterer(map, markers, {
           imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m',
           gridSize: 15,

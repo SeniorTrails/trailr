@@ -6,6 +6,7 @@
   "scripts": {
     "start": "node server/index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint **/*.js --ignore-pattern node_modules/",
     "build-react": "parcel client/index.html -d client/dist",
     "start:dev": "nodemon server/index.js",
     "start:prod": "NODE_ENV=PROD_LOCAL nodemon server/index.js"
@@ -65,7 +66,7 @@
   },
   "devDependencies": {
     "babel-eslint": "^10.1.0",
-    "eslint": "^7.6.0",
+    "eslint": "^7.11.0",
     "eslint-config-airbnb": "^18.2.0",
     "eslint-plugin-import": "^2.22.0",
     "eslint-plugin-react": "^7.20.5",
