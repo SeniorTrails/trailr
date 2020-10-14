@@ -8,6 +8,7 @@ import InfoWindow from './InfoWindow.jsx';
 import GoogleMap from './GoogleMap.jsx';
 import SearchBox from './SearchBox.jsx';
 import transparentMarker from '../../assets/imgs/transparentMarker.png';
+import WeatherBar from './WeatherBar.jsx'
 import * as trailData from '../data/trail-data.json';
 
 /**
@@ -29,6 +30,10 @@ const MapWithASearchBox = React.memo(() => {
   });
   const [selectedTrail, setSelectedTrail] = useState(null);
   const [selectedTrailIndex, setSelectedTrailIndex] = useState(null);
+
+  const getInput = (data) => {
+    console.log(data)
+  }
 
   const addPlace = (place) => {
     setPlaces(place);
@@ -151,8 +156,14 @@ const MapWithASearchBox = React.memo(() => {
           mapApi={mapApi}
           places={places}
           addplace={addPlace}
+          getInput={getInput}
         />
       )}
+      <div className="mb-3">
+        <WeatherBar 
+        userLocation={userLocation}
+        />
+      </div>
       <GoogleMap
         defaultZoom={10}
         defaultCenter={{

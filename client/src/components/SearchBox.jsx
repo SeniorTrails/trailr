@@ -26,7 +26,7 @@ class SearchBox extends Component {
     mapApi.event.clearInstanceListeners(this.searchInput);
   }
 
-  onPlacesChanged = ({ map, addplace } = this.props) => {
+  onPlacesChanged = ({ map, addplace, getInput } = this.props) => {
     const selected = this.searchBox.getPlaces();
     const { 0: place } = selected;
     if (!place.geometry) return;
@@ -38,6 +38,7 @@ class SearchBox extends Component {
     }
 
     addplace(selected);
+    getInput(this.searchBox.getPlaces())
     this.searchInput.blur();
   };
 
@@ -61,6 +62,7 @@ class SearchBox extends Component {
           ref={(ref) => {
             this.searchInput = ref;
           }}
+          
           type="text"
           onFocus={this.clearSearchBox}
         />
