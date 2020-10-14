@@ -11,7 +11,9 @@ import Input from './input.jsx';
  * @param {Number} photoId current photo to add a comment to
  * @param {String} username current logged in user's name
  */
-const addComment = ({ appendComments, userId, photoId, name }) => {
+const addComment = ({
+  appendComments, userId, photoId, name,
+}) => {
   /**
    * Runs on the form submit and updates database and runs appendComments
    * @param {String} text extracted from a values object
@@ -19,7 +21,10 @@ const addComment = ({ appendComments, userId, photoId, name }) => {
   const commentSubmit = ({ text }) => {
     addCommentToPhoto(text, userId, photoId)
       .then(({ id }) => {
-        appendComments({ text, id: +id, name, id_user: userId });
+        appendComments({
+          text, id: +id, name, id_user: userId,
+        });
+
         values.text = '';
       })
       .catch((err) => {
