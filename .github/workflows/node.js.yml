@@ -19,6 +19,13 @@ jobs:
         node-version: [ 10.x, 12.x, 14.x ]
 
     steps:
+      env:
+        TRAIL_API_KEY: ${{ secrets.TRAIL_API_KEY }},
+        GOOGLE_MAPS_API_KEY: ${{ secrets.GOOGLE_MAPS_API_KEY }},
+        GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }},
+        GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }},
+        SECRET: ${{ secrets.SECRET }},
+        GCLOUD_BUCKET_NAME: ${{ secrets.GCLOUD_BUCKET_NAME }},
     - uses: actions/checkout@v2
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v1
@@ -26,11 +33,3 @@ jobs:
         node-version: ${{ matrix.node-version }}
     - run: npm ci
     - run: npm run start
-      env: {
-        TRAIL_API_KEY: ${{ secrets.TRAIL_API_KEY }},
-        GOOGLE_MAPS_API_KEY: ${{ secrets.GOOGLE_MAPS_API_KEY }},
-        GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }},
-        GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }},
-        SECRET: ${{ secrets.SECRET }},
-        GCLOUD_BUCKET_NAME: ${{ secrets.GCLOUD_BUCKET_NAME }},
-      } 
