@@ -7,9 +7,7 @@ cache:
     - node_modules
 
 before_install:
-  - npm ci
+  - npm install
 
 before_deploy:
   - npm run start
-
-script: true
