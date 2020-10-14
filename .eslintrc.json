@@ -16,8 +16,7 @@
     }
   ],
     "no-console": [
-      "error", {"allow": "error"},
-      "info", {"allow": "info"} 
+      "error", {"allow": ["error", "info"]}
     ],
     "react/jsx-one-expression-per-line": 0,
     "space-before-function-paren": ["error", "never"],
