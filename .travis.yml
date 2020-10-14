@@ -11,7 +11,7 @@ before_install:
 
 before_deploy:
   - npm run start
-  # - npm run lint
+  - npm run lint
 
 script:
-  - zip -r trailrapp.zip build
+  # - zip -r trailrapp.zip build
