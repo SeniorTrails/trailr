@@ -8,3 +8,6 @@ cache:
 
 before_install:
   - npm install
+
+before_deploy:
+  - npm run start
