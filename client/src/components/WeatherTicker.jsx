@@ -16,28 +16,28 @@ const WeatherTicker = ({time, temp, description, icon, day, eve}) =>
 {
   return temp ? 
   <CardGroup>
-  <Card style={{backgroundColor: '#0080FF80'}}>
+  <Card style={{backgroundColor: '#D6EAF8'}}>
     <Card.Body>
-    <Card.Text>{
+    <Card.Text style={{color: '#85929E'}}>{
     hourConverter(time)
     }
     </Card.Text>
       <Card.Img variant="bottom" src={`http://openweathermap.org/img/wn/${icon}@2x.png`} />
-      <Card.Text>{temp}°F</Card.Text>
+      <Card.Text style={{textAlign: 'center', color: '#2471A3'}}>{temp}°F</Card.Text>
     </Card.Body>
   </Card>
   </CardGroup>
 :
 <CardGroup>
-<Card style={{backgroundColor: '#0080FF80'}}>
+<Card style={{backgroundColor: '#D6EAF8'}}>
   <Card.Body>
-  <Card.Text>{
+  <Card.Text style={{color: '#85929E'}}>{
   dayConverter(time)
   }</Card.Text>
     <Card.Img variant="top" src={`http://openweathermap.org/img/wn/${icon}@2x.png`} />
-    <Card.Text>
-      <div syle={{color: 'red'}}>{day}°F</div> 
-      <div style={{color: 'blue'}}>{eve}°F</div>
+    <Card.Text style={{textAlign: 'center'}}>
+      <div style={{color: '#CD6155'}}>{day}°F</div> 
+      <div style={{color: '#2471A3'}}>{eve}°F</div>
       </Card.Text>
   </Card.Body>
 </Card>
