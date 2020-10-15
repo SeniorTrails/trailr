@@ -21,6 +21,7 @@ if (!process.env.NODE_ENV) {
     database: 'trailr',
   });
 } else if (process.env.NODE_ENV === 'PROD_LOCAL') {
+  console.log(process.env.DB_HOST);
   poolConnection = mysql.createPool({
     user: process.env.DB_USER,
     password: process.env.DB_PASS,

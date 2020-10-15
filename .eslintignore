@@ -1,2 +1,4 @@
 node_modules
-client/dist
+.env
+bundle.js
+test

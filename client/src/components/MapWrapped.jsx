@@ -1,3 +1,4 @@
+/* eslint-disable no-use-before-define */
 import React, { useEffect, useState } from 'react';
 import isEmpty from 'lodash.isempty';
 import { Link } from 'react-router-dom';
@@ -134,7 +135,7 @@ const MapWithASearchBox = React.memo(() => {
           position: location,
           icon: transparentMarker,
         }));
-        // took new keyword off maybe breaks something //
+        // eslint-disable-next-line no-new
         new MarkerClusterer(map, markers, {
           imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m',
           gridSize: 15,
@@ -156,12 +157,13 @@ const MapWithASearchBox = React.memo(() => {
           mapApi={mapApi}
           places={places}
           addplace={addPlace}
+          // eslint-disable-next-line no-undef
           getInput={getInput}
         />
       )}
       <div className="mb-3">
-        <WeatherBar 
-        userLocation={userLocation}
+        <WeatherBar
+          userLocation={userLocation}
         />
       </div>
       <GoogleMap
@@ -189,7 +191,7 @@ const MapWithASearchBox = React.memo(() => {
               lat={place.lat || place.geometry.location.lat()}
               lng={place.lon || place.geometry.location.lng()}
               clickHandler={() => {
-                console.log('is this i?', i)
+                // console.log('is this i?', i);
                 if (selectedTrailIndex === i) {
                   clearSelectedTrail();
                 } else {
